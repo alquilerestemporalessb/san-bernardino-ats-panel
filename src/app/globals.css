@@ -101,3 +101,37 @@ body {
 .animate-fade-up {
   animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* ---------- Calendario (react-day-picker) — theming de marca ---------- */
+.rdp-root {
+  --rdp-accent-color: var(--sb-accent);
+  --rdp-accent-background-color: var(--sb-accent-muted);
+  --rdp-today-color: var(--sb-accent);
+  color: var(--sb-cream);
+}
+.rdp-day_blocked button {
+  background-color: rgba(194, 72, 60, 0.18);
+  color: var(--sb-danger);
+  text-decoration: line-through;
+}
+
+/* ---------- Mapa (Leaflet) — pin custom + popup con estilo de marca ---------- */
+.sb-map-pin {
+  background: transparent;
+  border: none;
+}
+.leaflet-popup-content-wrapper {
+  background: var(--sb-bg-elevated);
+  color: var(--sb-cream);
+  border: 1px solid var(--sb-border-subtle);
+  border-radius: 12px;
+}
+.leaflet-popup-tip {
+  background: var(--sb-bg-elevated);
+}
+.leaflet-popup-content a {
+  color: var(--sb-accent);
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--sb-cream-muted);
+}

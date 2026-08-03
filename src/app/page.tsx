@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
 import { PropertyCard } from "@/components/site/PropertyCard";
+import { FilterBar } from "@/components/site/FilterBar";
+import { PropertiesMapLoader } from "@/components/site/PropertiesMapLoader";
 import { TrustSection } from "@/components/site/TrustSection";
 import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
@@ -12,21 +15,60 @@ import type { PropertyWithPhotos } from "@/types/database";
 // pre-renderizar estatico. Tambien evita que el build intente prerenderizarla contra Supabase.
 export const dynamic = "force-dynamic";
 
-async function getActiveProperties(): Promise<PropertyWithPhotos[]> {
+interface Filters {
+  capacity?: string;
+  zone?: string;
+  checkin?: string;
+  checkout?: string;
+}
+
+async function getZones(): Promise<string[]> {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    const { data } = await supabase.from("properties").select("zone").eq("active", true);
+    const zones = new Set((data ?? []).map((p) => p.zone));
+    return [...zones].sort();
+  } catch {
+    return [];
+  }
+}
+
+async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhotos[]> {
+  try {
+    const supabase = await createClient();
+    let query = supabase
       .from("properties")
       .select("*, property_photos(*)")
       .eq("active", true)
       .order("code", { ascending: true })
       .order("sort_order", { referencedTable: "property_photos" });
 
+    if (filters.capacity) query = query.gte("capacity", Number(filters.capacity));
+    if (filters.zone) query = query.eq("zone", filters.zone);
+
+    const { data, error } = await query;
     if (error) {
       console.error("[landing] error cargando propiedades:", error.message);
       return [];
     }
-    return data ?? [];
+    let properties = data ?? [];
+
+    if (filters.checkin && filters.checkout && properties.length > 0) {
+      const { data: blocked } = await supabase
+        .from("property_blocked_dates")
+        .select("property_id")
+        .in(
+          "property_id",
+          properties.map((p) => p.id)
+        )
+        .gte("date", filters.checkin)
+        .lte("date", filters.checkout);
+
+      const blockedPropertyIds = new Set((blocked ?? []).map((b) => b.property_id));
+      properties = properties.filter((p) => !blockedPropertyIds.has(p.id));
+    }
+
+    return properties;
   } catch (err) {
     // Supabase sin configurar todavia (env vars de placeholder) — no debe tirar abajo la landing.
     console.error("[landing] fallo la conexion a Supabase:", err);
@@ -34,8 +76,19 @@ async function getActiveProperties(): Promise<PropertyWithPhotos[]> {
   }
 }
 
-export default async function HomePage() {
-  const properties = await getActiveProperties();
+export default async function HomePage({
+  searchParams,
+}: PageProps<"/">) {
+  const filters = (await searchParams) as Filters;
+  const [properties, zones] = await Promise.all([
+    getFilteredProperties(filters),
+    getZones(),
+  ]);
+  const hasActiveFilters = Boolean(filters.capacity || filters.zone || filters.checkin);
+  const propertiesWithLocation = properties.filter(
+    (p): p is PropertyWithPhotos & { latitude: number; longitude: number } =>
+      p.latitude !== null && p.longitude !== null
+  );
 
   return (
     <>
@@ -45,7 +98,7 @@ export default async function HomePage() {
 
         <section id="catalogo" className="bg-sb-bg py-20 sm:py-28">
           <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-12 max-w-xl">
+            <div className="mb-8 max-w-xl">
               <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
                 Catálogo
               </span>
@@ -57,12 +110,19 @@ export default async function HomePage() {
               </p>
             </div>
 
+            <div className="mb-10">
+              <Suspense fallback={null}>
+                <FilterBar zones={zones} />
+              </Suspense>
+            </div>
+
             {properties.length === 0 ? (
               <div className="flex flex-col items-center gap-4 rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated px-6 py-16 text-center">
                 <HouseGlyph className="h-12 w-12 text-sb-cream-faint" />
                 <p className="max-w-sm text-sm text-sb-cream-muted">
-                  Estamos sumando las primeras propiedades verificadas. Muy pronto vas a poder verlas
-                  acá — mientras tanto, escribinos por WhatsApp y te contamos qué tenemos disponible.
+                  {hasActiveFilters
+                    ? "No encontramos propiedades con esos filtros — probá con otras fechas, capacidad o zona."
+                    : "Estamos sumando las primeras propiedades verificadas. Muy pronto vas a poder verlas acá — mientras tanto, escribinos por WhatsApp y te contamos qué tenemos disponible."}
                 </p>
               </div>
             ) : (
@@ -74,6 +134,22 @@ export default async function HomePage() {
             )}
           </div>
         </section>
+
+        {propertiesWithLocation.length > 0 && (
+          <section id="ubicacion" className="bg-sb-bg-sunken py-20 sm:py-28">
+            <div className="mx-auto max-w-6xl px-6">
+              <div className="mb-8 max-w-xl">
+                <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
+                  Ubicación
+                </span>
+                <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+                  Dónde están las propiedades
+                </h2>
+              </div>
+              <PropertiesMapLoader properties={propertiesWithLocation} />
+            </div>
+          </section>
+        )}
 
         <TrustSection />
         <OwnersSection />

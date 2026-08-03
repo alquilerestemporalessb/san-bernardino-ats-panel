@@ -32,6 +32,8 @@ function readPropertyFields(formData: FormData) {
   const zone = String(formData.get("zone") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const whatsappMessage = String(formData.get("whatsapp_message") ?? "").trim();
+  const latitudeRaw = String(formData.get("latitude") ?? "").trim();
+  const longitudeRaw = String(formData.get("longitude") ?? "").trim();
   const photoUrls = formData
     .getAll("photo_urls")
     .map((v) => String(v).trim())
@@ -46,6 +48,22 @@ function readPropertyFields(formData: FormData) {
     return { error: "La capacidad tiene que ser un numero entero mayor a 0." } as const;
   }
 
+  let latitude: number | null = null;
+  if (latitudeRaw) {
+    latitude = Number(latitudeRaw);
+    if (Number.isNaN(latitude) || latitude < -90 || latitude > 90) {
+      return { error: "La latitud tiene que ser un numero entre -90 y 90." } as const;
+    }
+  }
+
+  let longitude: number | null = null;
+  if (longitudeRaw) {
+    longitude = Number(longitudeRaw);
+    if (Number.isNaN(longitude) || longitude < -180 || longitude > 180) {
+      return { error: "La longitud tiene que ser un numero entre -180 y 180." } as const;
+    }
+  }
+
   return {
     fields: {
       code,
@@ -54,6 +72,8 @@ function readPropertyFields(formData: FormData) {
       zone,
       description: description || null,
       whatsapp_message: whatsappMessage || null,
+      latitude,
+      longitude,
     },
     photoUrls,
   } as const;

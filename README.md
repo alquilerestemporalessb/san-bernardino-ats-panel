@@ -34,6 +34,7 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 1. Contenido completo de `supabase/migrations/0001_properties.sql` (tabla + escritura para el equipo ATS).
 2. Contenido completo de `supabase/migrations/0002_public_read_active.sql` (lectura pública de propiedades activas — esto es lo que alimenta `/`).
 3. Contenido completo de `supabase/migrations/0003_property_photos.sql` (galería de fotos por propiedad).
+4. Contenido completo de `supabase/migrations/0004_search_and_map.sql` (coordenadas + calendario de disponibilidad).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -72,16 +73,14 @@ Todos los botones de WhatsApp del sitio público arman el link desde un solo lug
 `src/lib/whatsapp.ts` → constante `WHATSAPP_NUMBER`. Reemplazar ahí el número de placeholder por el
 real del negocio.
 
-## Deploy (cuando se decida llevarlo a producción)
+## Deploy
 
-Pendiente a propósito — no se hizo en esta sesión porque implica crear/configurar cuentas e
-infraestructura real del usuario. Cuando se quiera:
-
-1. Crear un proyecto nuevo en Vercel apuntando a esta carpeta (`panel-admin/`), separado del
-   proyecto de GES.
-2. Cargar las mismas variables de entorno (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
-   en Vercel → Project Settings → Environment Variables.
-3. Deploy.
+Ya está en producción: https://panel-admin-phi-nine.vercel.app (cuenta y proyecto de Vercel propios
+de `alquilerestemporalessb`, sin relación con GES). El repo
+(`github.com/alquilerestemporalessb/san-bernardino-ats-panel`) está conectado a Vercel — cualquier
+`git push` a `main` dispara un deploy automático a producción. Variables de entorno
+(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) ya cargadas en Vercel → Project
+Settings → Environment Variables (production + development).
 
 ## Estructura
 
@@ -98,26 +97,33 @@ src/
         page.tsx                      -> listado de propiedades ("/admin")
         properties/new/page.tsx       -> alta
         properties/[id]/edit/page.tsx -> edicion
+        properties/[id]/availability/page.tsx -> calendario de disponibilidad
     propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO propio)
   components/
-    PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos dinamicas
+    PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos + lat/lng dinamicos
     DeleteButton.tsx                  -> boton de borrado con confirmacion (admin)
+    AvailabilityCalendar.tsx          -> calendario de bloqueo de fechas (admin)
     site/                             -> componentes de la landing publica
       Nav.tsx, Hero.tsx, PropertyCard.tsx, TrustSection.tsx, OwnersSection.tsx, Footer.tsx, icons.tsx
       Gallery.tsx                     -> galeria con miniaturas (pagina de detalle)
       PhotoPlaceholder.tsx            -> placeholder compartido cuando una propiedad no tiene fotos
+      FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas)
+      PropertiesMap.tsx / PropertiesMapLoader.tsx -> mapa Leaflet (el Loader hace el dynamic import ssr:false)
   lib/
     supabase/client.ts                -> cliente browser
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS
     actions/auth.ts                   -> login, logout
-    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive + fotos
+    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive + fotos + lat/lng
+    actions/availability.ts           -> blockDates, unblockDates
     whatsapp.ts                       -> numero + armado de mensajes prearmados (un solo lugar)
-  types/database.ts                   -> tipos de properties y property_photos
+    dates.ts                          -> helpers de fecha compartidos (ISO <-> Date, formato es-PY)
+  types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
   0001_properties.sql                 -> tabla + escritura autenticada
   0002_public_read_active.sql         -> lectura publica de propiedades activas
   0003_property_photos.sql            -> galeria de fotos por propiedad
+  0004_search_and_map.sql             -> lat/lng + calendario de disponibilidad
 ```
 
 ## Por qué este stack

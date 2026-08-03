@@ -92,6 +92,12 @@ export default async function PropertiesPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-4">
                       <Link
+                        href={`/admin/properties/${property.id}/availability`}
+                        className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
+                      >
+                        Disponibilidad
+                      </Link>
+                      <Link
                         href={`/admin/properties/${property.id}/edit`}
                         className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
                       >

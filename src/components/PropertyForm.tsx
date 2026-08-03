@@ -77,6 +77,35 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
         />
       </Field>
 
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Latitud (opcional)" htmlFor="latitude">
+          <input
+            id="latitude"
+            name="latitude"
+            type="number"
+            step="any"
+            placeholder="-25.32"
+            defaultValue={defaultValues?.latitude ?? ""}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Longitud (opcional)" htmlFor="longitude">
+          <input
+            id="longitude"
+            name="longitude"
+            type="number"
+            step="any"
+            placeholder="-57.28"
+            defaultValue={defaultValues?.longitude ?? ""}
+            className={inputClass}
+          />
+        </Field>
+      </div>
+      <p className="-mt-3 text-xs text-sb-cream-faint">
+        Para ubicar la propiedad en el mapa: clic derecho sobre el punto en Google Maps → copiar las
+        coordenadas y pegarlas acá.
+      </p>
+
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1.5 text-xs font-medium text-sb-cream-muted">
           Fotos (opcional) — la primera es la portada en el catálogo

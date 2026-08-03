@@ -19,6 +19,8 @@ export interface Database {
           whatsapp_message: string | null;
           verified: boolean;
           active: boolean;
+          latitude: number | null;
+          longitude: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -32,6 +34,8 @@ export interface Database {
           whatsapp_message?: string | null;
           verified?: boolean;
           active?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -45,6 +49,8 @@ export interface Database {
           whatsapp_message?: string | null;
           verified?: boolean;
           active?: boolean;
+          latitude?: number | null;
+          longitude?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -82,6 +88,35 @@ export interface Database {
           },
         ];
       };
+      property_blocked_dates: {
+        Row: {
+          id: string;
+          property_id: string;
+          date: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          property_id: string;
+          date: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          property_id?: string;
+          date?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "property_blocked_dates_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -92,4 +127,5 @@ export interface Database {
 
 export type Property = Database["public"]["Tables"]["properties"]["Row"];
 export type PropertyPhoto = Database["public"]["Tables"]["property_photos"]["Row"];
+export type PropertyBlockedDate = Database["public"]["Tables"]["property_blocked_dates"]["Row"];
 export type PropertyWithPhotos = Property & { property_photos: PropertyPhoto[] };
