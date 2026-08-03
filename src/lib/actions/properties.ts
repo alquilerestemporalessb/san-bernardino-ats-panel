@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { PropertyStatus } from "@/types/database";
+import { AMENITIES } from "@/lib/amenities";
 
 export interface PropertyFormState {
   error?: string;
@@ -39,6 +40,16 @@ function readPropertyFields(formData: FormData) {
   const longitudeRaw = String(formData.get("longitude") ?? "").trim();
   const ownerName = String(formData.get("owner_name") ?? "").trim();
   const ownerContact = String(formData.get("owner_contact") ?? "").trim();
+  const pricePerNightRaw = String(formData.get("price_per_night") ?? "").trim();
+  const bedroomsRaw = String(formData.get("bedrooms") ?? "").trim();
+  const bedsRaw = String(formData.get("beds") ?? "").trim();
+  const bathroomsRaw = String(formData.get("bathrooms") ?? "").trim();
+  const tourUrl = String(formData.get("tour_url") ?? "").trim();
+  const validAmenityValues = new Set(AMENITIES.map((a) => a.value));
+  const amenities = formData
+    .getAll("amenities")
+    .map((v) => String(v))
+    .filter((v) => validAmenityValues.has(v as (typeof AMENITIES)[number]["value"]));
   const existingPhotoUrls = formData
     .getAll("existing_photo_urls")
     .map((v) => String(v).trim())
@@ -72,6 +83,42 @@ function readPropertyFields(formData: FormData) {
     }
   }
 
+  let pricePerNight: number | null = null;
+  if (pricePerNightRaw) {
+    pricePerNight = Number(pricePerNightRaw);
+    if (!Number.isFinite(pricePerNight) || pricePerNight <= 0) {
+      return { error: "El precio por noche tiene que ser un numero mayor a 0." } as const;
+    }
+  }
+
+  let bedrooms: number | null = null;
+  if (bedroomsRaw) {
+    bedrooms = Number(bedroomsRaw);
+    if (!Number.isInteger(bedrooms) || bedrooms < 0) {
+      return { error: "Dormitorios tiene que ser un numero entero mayor o igual a 0." } as const;
+    }
+  }
+
+  let beds: number | null = null;
+  if (bedsRaw) {
+    beds = Number(bedsRaw);
+    if (!Number.isInteger(beds) || beds < 0) {
+      return { error: "Camas tiene que ser un numero entero mayor o igual a 0." } as const;
+    }
+  }
+
+  let bathrooms: number | null = null;
+  if (bathroomsRaw) {
+    bathrooms = Number(bathroomsRaw);
+    if (!Number.isInteger(bathrooms) || bathrooms < 0) {
+      return { error: "Banos tiene que ser un numero entero mayor o igual a 0." } as const;
+    }
+  }
+
+  if (tourUrl && !tourUrl.startsWith("https://")) {
+    return { error: "El link del tour tiene que empezar con https://" } as const;
+  }
+
   for (const file of newPhotoFiles) {
     if (!file.type.startsWith("image/")) {
       return { error: `"${file.name}" no es una imagen valida.` } as const;
@@ -91,6 +138,12 @@ function readPropertyFields(formData: FormData) {
       whatsapp_message: whatsappMessage || null,
       latitude,
       longitude,
+      price_per_night: pricePerNight,
+      bedrooms,
+      beds,
+      bathrooms,
+      amenities,
+      tour_url: tourUrl || null,
     },
     ownerName,
     ownerContact,

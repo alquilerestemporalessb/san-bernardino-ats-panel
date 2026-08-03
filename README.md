@@ -14,8 +14,9 @@ son "el sitio" — quedan como material de referencia para handoff a Canva/dise�
 `../landing/README.md`). El sitio real es este proyecto.
 
 Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
-archivos reales desde `/admin` (Supabase Storage). El equipo ATS opera como agencia curadora: carga
-las propiedades, y ahora también registra reservas formales (huésped, fechas, monto y comisión) en
+archivos reales desde `/admin` (Supabase Storage), precio, dormitorios/camas/baños, amenities y un
+link opcional a un tour virtual externo (ej. Polycam) o video. El equipo ATS opera como agencia
+curadora: carga las propiedades, y registra reservas formales (huésped, fechas, monto y comisión) en
 `/admin/reservas` — el modelo de negocio es comisión por reserva cerrada, cobrada por transferencia,
 no un marketplace de pagos online. Ver `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el
 detalle de alcance y las decisiones de arquitectura de la iteración más reciente.
@@ -41,6 +42,7 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 7. Contenido completo de `supabase/migrations/0007_property_status.sql` (estado operativo: disponible/reservada/alquilada temporada).
 8. Contenido completo de `supabase/migrations/0008_property_owners.sql` (datos del propietario, uso interno).
 9. Contenido completo de `supabase/migrations/0009_property_bookings.sql` (reservas formales + comisión).
+10. Contenido completo de `supabase/migrations/0010_property_details.sql` (precio, dormitorios/camas/baños, amenities, tour virtual).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -122,7 +124,7 @@ src/
       Nav.tsx, Hero.tsx, PropertyCard.tsx, TrustSection.tsx, OwnersSection.tsx, Footer.tsx, icons.tsx
       Gallery.tsx                     -> galeria con miniaturas (pagina de detalle)
       PhotoPlaceholder.tsx            -> placeholder compartido cuando una propiedad no tiene fotos
-      FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas)
+      FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas, precio maximo, dormitorios, amenities)
       PropertiesMap.tsx / PropertiesMapLoader.tsx -> mapa Leaflet (el Loader hace el dynamic import ssr:false)
       WhatsappCtaLink.tsx             -> link de WhatsApp que registra el clic (fetch keepalive a /api/events)
   lib/
@@ -138,7 +140,8 @@ src/
     currency.ts                       -> formatGs (formato de guaranies)
     site-url.ts                       -> URL base del sitio (VERCEL_PROJECT_PRODUCTION_URL)
     property-status.ts                -> labels del badge de estado + helper isPropertyAvailable
-  types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates, property_events, property_owners, property_bookings
+    amenities.ts                      -> lista fija de amenities + helper amenityLabel
+  types/database.ts                   -> tipos de properties (con precio/detalles/amenities/tour_url), property_photos, property_blocked_dates, property_events, property_owners, property_bookings
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
   0001_properties.sql                 -> tabla + escritura autenticada
@@ -150,6 +153,7 @@ supabase/migrations/
   0007_property_status.sql            -> estado operativo (disponible/reservada/alquilada temporada)
   0008_property_owners.sql            -> datos del propietario (uso interno, sin politica publica)
   0009_property_bookings.sql          -> reservas formales + comision (uso interno, sin politica publica)
+  0010_property_details.sql           -> precio, dormitorios/camas/banos, amenities, tour_url (publico)
 ```
 
 ## Por qué este stack

@@ -25,6 +25,28 @@ export function PinIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+export function BedIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6" />
+      <path d="M3 18v2" />
+      <path d="M21 18v2" />
+      <path d="M3 12V8a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M13 12V9a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3" />
+    </svg>
+  );
+}
+
+export function BathIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3Z" />
+      <path d="M4 12V6a2 2 0 0 1 2-2c1 0 2 .8 2 2" />
+      <path d="M3 19h18" />
+    </svg>
+  );
+}
+
 export function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>

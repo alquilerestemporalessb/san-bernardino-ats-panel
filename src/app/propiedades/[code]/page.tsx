@@ -7,10 +7,12 @@ import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/anon";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
+import { formatGs } from "@/lib/currency";
+import { amenityLabel } from "@/lib/amenities";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Gallery } from "@/components/site/Gallery";
-import { PeopleIcon, PinIcon, WhatsappIcon } from "@/components/site/icons";
+import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "@/components/site/icons";
 import { WhatsappCtaLink } from "@/components/site/WhatsappCtaLink";
 import { getSiteUrl } from "@/lib/site-url";
 import type { PropertyWithPhotos } from "@/types/database";
@@ -103,6 +105,21 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
       "@type": "QuantitativeValue",
       maxValue: property.capacity,
     },
+    ...(property.price_per_night !== null
+      ? {
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "PYG",
+            price: property.price_per_night,
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: property.price_per_night,
+              priceCurrency: "PYG",
+              unitText: "NIGHT",
+            },
+          },
+        }
+      : {}),
   };
 
   return (
@@ -154,12 +171,54 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                   <PinIcon className="h-4 w-4 text-sb-accent" />
                   {property.zone}
                 </li>
+                {property.bedrooms !== null && (
+                  <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
+                    <BedIcon className="h-4 w-4 text-sb-accent" />
+                    {property.bedrooms} dormitorio{property.bedrooms === 1 ? "" : "s"}
+                  </li>
+                )}
+                {property.beds !== null && (
+                  <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
+                    <BedIcon className="h-4 w-4 text-sb-accent" />
+                    {property.beds} cama{property.beds === 1 ? "" : "s"}
+                  </li>
+                )}
+                {property.bathrooms !== null && (
+                  <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
+                    <BathIcon className="h-4 w-4 text-sb-accent" />
+                    {property.bathrooms} baño{property.bathrooms === 1 ? "" : "s"}
+                  </li>
+                )}
               </ul>
+
+              {property.amenities.length > 0 && (
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {property.amenities.map((amenity) => (
+                    <li
+                      key={amenity}
+                      className="rounded-full border border-sb-border-subtle px-3 py-1 text-xs text-sb-cream-muted"
+                    >
+                      {amenityLabel(amenity)}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {property.description && (
               <p className="text-sm leading-relaxed text-sb-cream-muted">{property.description}</p>
             )}
+
+            <p className="text-lg font-medium text-sb-cream">
+              {property.price_per_night ? (
+                <>
+                  {formatGs(property.price_per_night)}{" "}
+                  <span className="text-sm font-normal text-sb-cream-muted">/ noche</span>
+                </>
+              ) : (
+                <span className="text-sm font-normal text-sb-cream-muted">Consultar precio</span>
+              )}
+            </p>
 
             <WhatsappCtaLink
               propertyId={property.id}
@@ -171,6 +230,23 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
             </WhatsappCtaLink>
           </div>
         </div>
+
+        {property.tour_url && (
+          <div className="mt-12">
+            <h2 className="mb-4 font-serif text-xl text-sb-cream">Tour virtual</h2>
+            <div className="aspect-video w-full overflow-hidden rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated">
+              <iframe
+                src={property.tour_url}
+                title={`Tour virtual — ${property.name}`}
+                className="h-full w-full"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+                loading="lazy"
+                allow="xr-spatial-tracking; gyroscope; accelerometer"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </>

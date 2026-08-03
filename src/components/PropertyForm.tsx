@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import type { PropertyFormState } from "@/lib/actions/properties";
 import type { Property } from "@/types/database";
+import { AMENITIES } from "@/lib/amenities";
 
 const initialState: PropertyFormState = {};
 
@@ -67,6 +68,90 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
           className={inputClass}
         />
       </Field>
+
+      <Field label="Precio por noche en Gs. (opcional)" htmlFor="price_per_night">
+        <input
+          id="price_per_night"
+          name="price_per_night"
+          type="number"
+          min={0}
+          step="1"
+          placeholder="450000"
+          defaultValue={defaultValues?.price_per_night ?? ""}
+          className={inputClass}
+        />
+      </Field>
+
+      <div className="grid gap-5 sm:grid-cols-3">
+        <Field label="Dormitorios (opcional)" htmlFor="bedrooms">
+          <input
+            id="bedrooms"
+            name="bedrooms"
+            type="number"
+            min={0}
+            step="1"
+            defaultValue={defaultValues?.bedrooms ?? ""}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Camas (opcional)" htmlFor="beds">
+          <input
+            id="beds"
+            name="beds"
+            type="number"
+            min={0}
+            step="1"
+            defaultValue={defaultValues?.beds ?? ""}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Banos (opcional)" htmlFor="bathrooms">
+          <input
+            id="bathrooms"
+            name="bathrooms"
+            type="number"
+            min={0}
+            step="1"
+            defaultValue={defaultValues?.bathrooms ?? ""}
+            className={inputClass}
+          />
+        </Field>
+      </div>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-1 text-xs font-medium text-sb-cream-muted">
+          Comodidades (opcional)
+        </legend>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
+          {AMENITIES.map((amenity) => (
+            <label key={amenity.value} className="flex items-center gap-2 text-sm text-sb-cream-muted">
+              <input
+                type="checkbox"
+                name="amenities"
+                value={amenity.value}
+                defaultChecked={defaultValues?.amenities?.includes(amenity.value)}
+                className="h-4 w-4 rounded border-sb-border-subtle accent-sb-accent"
+              />
+              {amenity.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <Field label="Tour virtual / video (opcional)" htmlFor="tour_url">
+        <input
+          id="tour_url"
+          name="tour_url"
+          type="url"
+          placeholder="https://poly.cam/... o link de YouTube"
+          defaultValue={defaultValues?.tour_url ?? ""}
+          className={inputClass}
+        />
+      </Field>
+      <p className="-mt-3 text-xs text-sb-cream-faint">
+        Link embebible de un tour 3D (ej. Polycam) o un video — se muestra como sección aparte en la
+        página de la propiedad.
+      </p>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Latitud (opcional)" htmlFor="latitude">

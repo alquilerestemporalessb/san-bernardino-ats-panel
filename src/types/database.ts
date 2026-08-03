@@ -22,6 +22,12 @@ export interface Database {
           latitude: number | null;
           longitude: number | null;
           status: "disponible" | "reservada" | "alquilada_temporada";
+          price_per_night: number | null;
+          bedrooms: number | null;
+          beds: number | null;
+          bathrooms: number | null;
+          amenities: string[];
+          tour_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -38,6 +44,12 @@ export interface Database {
           latitude?: number | null;
           longitude?: number | null;
           status?: "disponible" | "reservada" | "alquilada_temporada";
+          price_per_night?: number | null;
+          bedrooms?: number | null;
+          beds?: number | null;
+          bathrooms?: number | null;
+          amenities?: string[];
+          tour_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -54,6 +66,12 @@ export interface Database {
           latitude?: number | null;
           longitude?: number | null;
           status?: "disponible" | "reservada" | "alquilada_temporada";
+          price_per_night?: number | null;
+          bedrooms?: number | null;
+          beds?: number | null;
+          bathrooms?: number | null;
+          amenities?: string[];
+          tour_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };

@@ -22,6 +22,9 @@ interface Filters {
   zone?: string;
   checkin?: string;
   checkout?: string;
+  maxPrice?: string;
+  bedrooms?: string;
+  amenities?: string | string[];
 }
 
 async function getZones(): Promise<string[]> {
@@ -47,6 +50,12 @@ async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhot
 
     if (filters.capacity) query = query.gte("capacity", Number(filters.capacity));
     if (filters.zone) query = query.eq("zone", filters.zone);
+    if (filters.maxPrice) query = query.lte("price_per_night", Number(filters.maxPrice));
+    if (filters.bedrooms) query = query.gte("bedrooms", Number(filters.bedrooms));
+    if (filters.amenities) {
+      const amenities = Array.isArray(filters.amenities) ? filters.amenities : [filters.amenities];
+      if (amenities.length > 0) query = query.contains("amenities", amenities);
+    }
 
     const { data, error } = await query;
     if (error) {
@@ -86,7 +95,9 @@ export default async function HomePage({
     getFilteredProperties(filters),
     getZones(),
   ]);
-  const hasActiveFilters = Boolean(filters.capacity || filters.zone || filters.checkin);
+  const hasActiveFilters = Boolean(
+    filters.capacity || filters.zone || filters.checkin || filters.maxPrice || filters.bedrooms || filters.amenities
+  );
   const propertiesWithLocation = properties.filter(
     (p): p is PropertyWithPhotos & { latitude: number; longitude: number } =>
       p.latitude !== null && p.longitude !== null

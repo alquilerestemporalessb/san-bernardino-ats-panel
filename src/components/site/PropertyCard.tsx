@@ -3,7 +3,8 @@ import Link from "next/link";
 import type { PropertyWithPhotos } from "@/types/database";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
-import { PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
+import { formatGs } from "@/lib/currency";
+import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
 import { PhotoPlaceholder } from "./PhotoPlaceholder";
 import { WhatsappCtaLink } from "./WhatsappCtaLink";
 
@@ -65,7 +66,30 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
             <PinIcon className="h-4 w-4 text-sb-accent" />
             {property.zone}
           </li>
+          {property.bedrooms !== null && (
+            <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
+              <BedIcon className="h-4 w-4 text-sb-accent" />
+              {property.bedrooms} dorm.
+            </li>
+          )}
+          {property.bathrooms !== null && (
+            <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
+              <BathIcon className="h-4 w-4 text-sb-accent" />
+              {property.bathrooms} baños
+            </li>
+          )}
         </ul>
+
+        <p className="text-sm font-medium text-sb-cream">
+          {property.price_per_night ? (
+            <>
+              Desde {formatGs(property.price_per_night)}{" "}
+              <span className="font-normal text-sb-cream-muted">/ noche</span>
+            </>
+          ) : (
+            <span className="text-sb-cream-muted">Consultar precio</span>
+          )}
+        </p>
 
         <WhatsappCtaLink
           propertyId={property.id}
