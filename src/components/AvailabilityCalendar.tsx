@@ -4,17 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { DayPicker, type DateRange } from "react-day-picker";
 import "react-day-picker/style.css";
 import { blockDates, unblockDates } from "@/lib/actions/availability";
-import { toISODate, formatDateEs, fromISODate } from "@/lib/dates";
-
-function datesInRange(from: Date, to: Date): string[] {
-  const dates: string[] = [];
-  const cursor = new Date(from);
-  while (cursor <= to) {
-    dates.push(toISODate(cursor));
-    cursor.setDate(cursor.getDate() + 1);
-  }
-  return dates;
-}
+import { toISODate, formatDateEs, fromISODate, datesInRange } from "@/lib/dates";
 
 /** Agrupa fechas ISO consecutivas para mostrar "10 ago - 14 ago" en vez de 5 filas sueltas. */
 function groupConsecutive(sortedDates: string[]): string[][] {

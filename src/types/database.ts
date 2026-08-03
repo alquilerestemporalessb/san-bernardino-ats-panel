@@ -149,6 +149,85 @@ export interface Database {
           },
         ];
       };
+      property_owners: {
+        Row: {
+          property_id: string;
+          owner_name: string;
+          owner_contact: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          property_id: string;
+          owner_name: string;
+          owner_contact?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          property_id?: string;
+          owner_name?: string;
+          owner_contact?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "property_owners_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: true;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      property_bookings: {
+        Row: {
+          id: string;
+          property_id: string;
+          guest_name: string;
+          guest_contact: string | null;
+          check_in: string;
+          check_out: string;
+          amount: number;
+          commission_pct: number;
+          status: "confirmada" | "cancelada";
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          property_id: string;
+          guest_name: string;
+          guest_contact?: string | null;
+          check_in: string;
+          check_out: string;
+          amount: number;
+          commission_pct?: number;
+          status?: "confirmada" | "cancelada";
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          property_id?: string;
+          guest_name?: string;
+          guest_contact?: string | null;
+          check_in?: string;
+          check_out?: string;
+          amount?: number;
+          commission_pct?: number;
+          status?: "confirmada" | "cancelada";
+          notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "property_bookings_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -163,3 +242,7 @@ export type PropertyPhoto = Database["public"]["Tables"]["property_photos"]["Row
 export type PropertyBlockedDate = Database["public"]["Tables"]["property_blocked_dates"]["Row"];
 export type PropertyEvent = Database["public"]["Tables"]["property_events"]["Row"];
 export type PropertyWithPhotos = Property & { property_photos: PropertyPhoto[] };
+export type PropertyOwner = Database["public"]["Tables"]["property_owners"]["Row"];
+export type Booking = Database["public"]["Tables"]["property_bookings"]["Row"];
+export type BookingStatus = Booking["status"];
+export type BookingWithProperty = Booking & { properties: Pick<Property, "code" | "name"> };

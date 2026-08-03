@@ -37,6 +37,8 @@ function readPropertyFields(formData: FormData) {
   const whatsappMessage = String(formData.get("whatsapp_message") ?? "").trim();
   const latitudeRaw = String(formData.get("latitude") ?? "").trim();
   const longitudeRaw = String(formData.get("longitude") ?? "").trim();
+  const ownerName = String(formData.get("owner_name") ?? "").trim();
+  const ownerContact = String(formData.get("owner_contact") ?? "").trim();
   const existingPhotoUrls = formData
     .getAll("existing_photo_urls")
     .map((v) => String(v).trim())
@@ -90,9 +92,35 @@ function readPropertyFields(formData: FormData) {
       latitude,
       longitude,
     },
+    ownerName,
+    ownerContact,
     existingPhotoUrls,
     newPhotoFiles,
   } as const;
+}
+
+async function saveOwner(
+  supabase: Awaited<ReturnType<typeof requireUser>>,
+  propertyId: string,
+  ownerName: string,
+  ownerContact: string
+) {
+  if (!ownerName) {
+    const { error } = await supabase
+      .from("property_owners")
+      .delete()
+      .eq("property_id", propertyId);
+    if (error) throw new Error(error.message);
+    return;
+  }
+
+  const { error } = await supabase.from("property_owners").upsert({
+    property_id: propertyId,
+    owner_name: ownerName,
+    owner_contact: ownerContact || null,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw new Error(error.message);
 }
 
 async function uploadPropertyPhotos(
@@ -161,6 +189,7 @@ export async function createProperty(
 
   const uploadedUrls = await uploadPropertyPhotos(supabase, inserted.id, parsed.newPhotoFiles);
   await replacePropertyPhotos(supabase, inserted.id, [...parsed.existingPhotoUrls, ...uploadedUrls]);
+  await saveOwner(supabase, inserted.id, parsed.ownerName, parsed.ownerContact);
 
   revalidateCatalog();
   redirect("/admin");
@@ -187,6 +216,7 @@ export async function updateProperty(
 
   const uploadedUrls = await uploadPropertyPhotos(supabase, id, parsed.newPhotoFiles);
   await replacePropertyPhotos(supabase, id, [...parsed.existingPhotoUrls, ...uploadedUrls]);
+  await saveOwner(supabase, id, parsed.ownerName, parsed.ownerContact);
 
   revalidateCatalog();
   redirect("/admin");

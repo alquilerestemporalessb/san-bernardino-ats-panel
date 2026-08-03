@@ -103,6 +103,12 @@ export default async function PropertiesPage() {
                         Disponibilidad
                       </Link>
                       <Link
+                        href={`/admin/properties/${property.id}/bookings`}
+                        className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
+                      >
+                        Reservas
+                      </Link>
+                      <Link
                         href={`/admin/properties/${property.id}/edit`}
                         className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
                       >

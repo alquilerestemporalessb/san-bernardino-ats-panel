@@ -9,7 +9,10 @@ const initialState: PropertyFormState = {};
 
 interface PropertyFormProps {
   action: (prevState: PropertyFormState, formData: FormData) => Promise<PropertyFormState>;
-  defaultValues?: Partial<Property> & { photos?: { url: string }[] };
+  defaultValues?: Partial<Property> & {
+    photos?: { url: string }[];
+    owner?: { owner_name: string; owner_contact: string | null };
+  };
   submitLabel: string;
 }
 
@@ -95,6 +98,32 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
       </p>
 
       <PhotoUploader defaultPhotos={defaultValues?.photos} />
+
+      <fieldset className="flex flex-col gap-3 rounded-md border border-sb-border-subtle p-4">
+        <legend className="px-1 text-xs font-medium text-sb-cream-muted">
+          Datos del propietario (uso interno, no se muestra en el sitio público)
+        </legend>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Nombre del propietario (opcional)" htmlFor="owner_name">
+            <input
+              id="owner_name"
+              name="owner_name"
+              placeholder="Nombre y apellido"
+              defaultValue={defaultValues?.owner?.owner_name ?? ""}
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Contacto del propietario (opcional)" htmlFor="owner_contact">
+            <input
+              id="owner_contact"
+              name="owner_contact"
+              placeholder="Telefono / WhatsApp"
+              defaultValue={defaultValues?.owner?.owner_contact ?? ""}
+              className={inputClass}
+            />
+          </Field>
+        </div>
+      </fieldset>
 
       <Field label="Descripcion (opcional)" htmlFor="description">
         <textarea

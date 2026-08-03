@@ -14,9 +14,11 @@ son "el sitio" — quedan como material de referencia para handoff a Canva/dise�
 `../landing/README.md`). El sitio real es este proyecto.
 
 Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
-archivos reales desde `/admin` (Supabase Storage). No hay captura de leads más allá de los links de
-WhatsApp. Ver `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el detalle de alcance y las
-decisiones de arquitectura de la iteración más reciente.
+archivos reales desde `/admin` (Supabase Storage). El equipo ATS opera como agencia curadora: carga
+las propiedades, y ahora también registra reservas formales (huésped, fechas, monto y comisión) en
+`/admin/reservas` — el modelo de negocio es comisión por reserva cerrada, cobrada por transferencia,
+no un marketplace de pagos online. Ver `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el
+detalle de alcance y las decisiones de arquitectura de la iteración más reciente.
 
 ## Setup (primera vez)
 
@@ -37,6 +39,8 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 5. Contenido completo de `supabase/migrations/0005_property_events.sql` (tracking de vistas/clics para el dashboard de métricas).
 6. Contenido completo de `supabase/migrations/0006_property_photos_storage.sql` (bucket de Storage para fotos reales).
 7. Contenido completo de `supabase/migrations/0007_property_status.sql` (estado operativo: disponible/reservada/alquilada temporada).
+8. Contenido completo de `supabase/migrations/0008_property_owners.sql` (datos del propietario, uso interno).
+9. Contenido completo de `supabase/migrations/0009_property_bookings.sql` (reservas formales + comisión).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -100,14 +104,18 @@ src/
         properties/new/page.tsx       -> alta
         properties/[id]/edit/page.tsx -> edicion
         properties/[id]/availability/page.tsx -> calendario de disponibilidad
+        properties/[id]/bookings/page.tsx -> reservas de una propiedad (alta + lista + cancelar)
+        reservas/page.tsx             -> dashboard global de reservas (resumen del mes + tabla)
         metrics/page.tsx              -> dashboard de vistas/clics por propiedad (ultimos 30 dias)
     propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO, JSON-LD)
     api/events/route.ts               -> registra clics a WhatsApp (fetch keepalive desde el cliente)
     sitemap.ts / robots.ts            -> SEO
   components/
-    PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos + lat/lng dinamicos
+    PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos + lat/lng + datos del propietario
     PhotoUploader.tsx                 -> upload de fotos reales (Supabase Storage) + reordenar/quitar (admin)
     StatusSelect.tsx                  -> selector de estado (disponible/reservada/alquilada temporada) (admin)
+    BookingForm.tsx                   -> alta de reserva (calendario de rango + huesped/monto/comision) (admin)
+    CancelBookingButton.tsx           -> cancela una reserva y libera sus fechas (admin)
     DeleteButton.tsx                  -> boton de borrado con confirmacion (admin)
     AvailabilityCalendar.tsx          -> calendario de bloqueo de fechas (admin)
     site/                             -> componentes de la landing publica
@@ -122,13 +130,15 @@ src/
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS
     supabase/anon.ts                  -> cliente sin cookies, para escrituras publicas dentro de after()
     actions/auth.ts                   -> login, logout
-    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive/updatePropertyStatus + fotos + lat/lng
+    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive/updatePropertyStatus + fotos + lat/lng + propietario
     actions/availability.ts           -> blockDates, unblockDates
+    actions/bookings.ts               -> createBooking (valida, chequea solapamiento, bloquea fechas), cancelBooking
     whatsapp.ts                       -> numero + armado de mensajes prearmados (un solo lugar)
-    dates.ts                          -> helpers de fecha compartidos (ISO <-> Date, formato es-PY)
+    dates.ts                          -> helpers de fecha compartidos (ISO <-> Date, formato es-PY, datesInRange)
+    currency.ts                       -> formatGs (formato de guaranies)
     site-url.ts                       -> URL base del sitio (VERCEL_PROJECT_PRODUCTION_URL)
     property-status.ts                -> labels del badge de estado + helper isPropertyAvailable
-  types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates, property_events
+  types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates, property_events, property_owners, property_bookings
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
   0001_properties.sql                 -> tabla + escritura autenticada
@@ -138,6 +148,8 @@ supabase/migrations/
   0005_property_events.sql            -> tracking de vistas/clics (escritura publica, lectura solo admin)
   0006_property_photos_storage.sql    -> bucket de Storage para fotos reales
   0007_property_status.sql            -> estado operativo (disponible/reservada/alquilada temporada)
+  0008_property_owners.sql            -> datos del propietario (uso interno, sin politica publica)
+  0009_property_bookings.sql          -> reservas formales + comision (uso interno, sin politica publica)
 ```
 
 ## Por qué este stack

@@ -16,3 +16,14 @@ export function formatDateEs(iso: string): string {
     year: "numeric",
   });
 }
+
+/** Lista de fechas ISO entre from y to, ambos extremos incluidos. */
+export function datesInRange(from: Date, to: Date): string[] {
+  const dates: string[] = [];
+  const cursor = new Date(from);
+  while (cursor <= to) {
+    dates.push(toISODate(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}

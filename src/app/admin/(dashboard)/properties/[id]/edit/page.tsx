@@ -8,12 +8,15 @@ export default async function EditPropertyPage(props: PageProps<"/admin/properti
   const { id } = await props.params;
 
   const supabase = await createClient();
-  const { data: property } = await supabase
-    .from("properties")
-    .select("*, property_photos(*)")
-    .eq("id", id)
-    .order("sort_order", { referencedTable: "property_photos" })
-    .single();
+  const [{ data: property }, { data: owner }] = await Promise.all([
+    supabase
+      .from("properties")
+      .select("*, property_photos(*)")
+      .eq("id", id)
+      .order("sort_order", { referencedTable: "property_photos" })
+      .single(),
+    supabase.from("property_owners").select("*").eq("property_id", id).maybeSingle(),
+  ]);
 
   if (!property) notFound();
 
@@ -29,7 +32,7 @@ export default async function EditPropertyPage(props: PageProps<"/admin/properti
 
       <PropertyForm
         action={updateProperty.bind(null, property.id)}
-        defaultValues={{ ...property, photos: property.property_photos }}
+        defaultValues={{ ...property, photos: property.property_photos, owner: owner ?? undefined }}
         submitLabel="Guardar cambios"
       />
     </div>
