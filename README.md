@@ -15,7 +15,8 @@ son "el sitio" — quedan como material de referencia para handoff a Canva/dise�
 
 Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
 archivos reales desde `/admin` (Supabase Storage), precio, dormitorios/camas/baños, amenities y un
-link opcional a un tour virtual externo (ej. Polycam) o video. El equipo ATS opera como agencia
+link opcional a un tour virtual externo (ej. Polycam) o video. Desde el catálogo se pueden marcar
+hasta 3 propiedades para comparar lado a lado en `/comparar`. El equipo ATS opera como agencia
 curadora: carga las propiedades, y registra reservas formales (huésped, fechas, monto y comisión) en
 `/admin/reservas` — el modelo de negocio es comisión por reserva cerrada, cobrada por transferencia,
 no un marketplace de pagos online. Ver `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el
@@ -110,6 +111,7 @@ src/
         reservas/page.tsx             -> dashboard global de reservas (resumen del mes + tabla)
         metrics/page.tsx              -> dashboard de vistas/clics por propiedad (ultimos 30 dias)
     propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO, JSON-LD)
+    comparar/page.tsx                 -> comparador publico (tabla lado a lado, hasta 3 propiedades)
     api/events/route.ts               -> registra clics a WhatsApp (fetch keepalive desde el cliente)
     sitemap.ts / robots.ts            -> SEO
   components/
@@ -127,6 +129,8 @@ src/
       FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas, precio maximo, dormitorios, amenities)
       PropertiesMap.tsx / PropertiesMapLoader.tsx -> mapa Leaflet (el Loader hace el dynamic import ssr:false)
       WhatsappCtaLink.tsx             -> link de WhatsApp que registra el clic (fetch keepalive a /api/events)
+      CompareToggle.tsx               -> checkbox "Comparar" en cada card (estado vive en la URL, param compare)
+      CompareBar.tsx                  -> barra fija con las propiedades marcadas para comparar
   lib/
     supabase/client.ts                -> cliente browser
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS

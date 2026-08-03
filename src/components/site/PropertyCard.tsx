@@ -7,6 +7,7 @@ import { formatGs } from "@/lib/currency";
 import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
 import { PhotoPlaceholder } from "./PhotoPlaceholder";
 import { WhatsappCtaLink } from "./WhatsappCtaLink";
+import { CompareToggle } from "./CompareToggle";
 
 export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
   const cover = property.property_photos[0]?.url;
@@ -90,6 +91,8 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
             <span className="text-sb-cream-muted">Consultar precio</span>
           )}
         </p>
+
+        <CompareToggle code={property.code.toLowerCase()} />
 
         <WhatsappCtaLink
           propertyId={property.id}

@@ -4,6 +4,7 @@ import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
 import { PropertyCard } from "@/components/site/PropertyCard";
 import { FilterBar } from "@/components/site/FilterBar";
+import { CompareBar } from "@/components/site/CompareBar";
 import { PropertiesMapLoader } from "@/components/site/PropertiesMapLoader";
 import { Reveal } from "@/components/site/Reveal";
 import { TrustSection } from "@/components/site/TrustSection";
@@ -197,6 +198,7 @@ export default async function HomePage({
         <TrustSection />
         <OwnersSection />
       </main>
+      <CompareBar />
       <Footer />
     </>
   );
