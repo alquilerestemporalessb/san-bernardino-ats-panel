@@ -69,18 +69,62 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
         />
       </Field>
 
-      <Field label="Precio por noche en Gs. (opcional)" htmlFor="price_per_night">
-        <input
-          id="price_per_night"
-          name="price_per_night"
-          type="number"
-          min={0}
-          step="1"
-          placeholder="450000"
-          defaultValue={defaultValues?.price_per_night ?? ""}
-          className={inputClass}
-        />
-      </Field>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Precio por noche en Gs. (opcional)" htmlFor="price_per_night">
+          <input
+            id="price_per_night"
+            name="price_per_night"
+            type="number"
+            min={0}
+            step="1"
+            placeholder="450000"
+            defaultValue={defaultValues?.price_per_night ?? ""}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Minimo de noches (para alquiler por noche)" htmlFor="min_nights">
+          <input
+            id="min_nights"
+            name="min_nights"
+            type="number"
+            min={1}
+            step="1"
+            defaultValue={defaultValues?.min_nights ?? 1}
+            className={inputClass}
+          />
+        </Field>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Precio por semana en Gs. (opcional)" htmlFor="price_per_week">
+          <input
+            id="price_per_week"
+            name="price_per_week"
+            type="number"
+            min={0}
+            step="1"
+            placeholder="2500000"
+            defaultValue={defaultValues?.price_per_week ?? ""}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Precio por mes en Gs. (opcional)" htmlFor="price_per_month">
+          <input
+            id="price_per_month"
+            name="price_per_month"
+            type="number"
+            min={0}
+            step="1"
+            placeholder="8000000"
+            defaultValue={defaultValues?.price_per_month ?? ""}
+            className={inputClass}
+          />
+        </Field>
+      </div>
+      <p className="-mt-3 text-xs text-sb-cream-faint">
+        Cargá cualquier combinación de precios según cómo se alquile la propiedad — si solo alquilás
+        por mes (ej. enero), dejá el precio por noche vacío.
+      </p>
 
       <div className="grid gap-5 sm:grid-cols-3">
         <Field label="Dormitorios (opcional)" htmlFor="bedrooms">

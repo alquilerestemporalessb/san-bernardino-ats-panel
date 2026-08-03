@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/anon";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
-import { formatGs } from "@/lib/currency";
+import { priceLines } from "@/lib/rental-pricing";
 import { amenityLabel } from "@/lib/amenities";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -62,6 +62,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
 
   const available = isPropertyAvailable(property.status);
   const statusLabel = STATUS_BADGE_LABELS[property.status];
+  const prices = priceLines(property);
 
   // Registra la vista despues de mandar la respuesta — no suma latencia a la carga de la pagina.
   // Cliente sin cookies: cookies() no esta disponible dentro de after() en un Server Component.
@@ -105,18 +106,46 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
       "@type": "QuantitativeValue",
       maxValue: property.capacity,
     },
-    ...(property.price_per_night !== null
+    ...(property.price_per_night !== null ||
+    property.price_per_week !== null ||
+    property.price_per_month !== null
       ? {
           offers: {
             "@type": "Offer",
             priceCurrency: "PYG",
-            price: property.price_per_night,
-            priceSpecification: {
-              "@type": "UnitPriceSpecification",
-              price: property.price_per_night,
-              priceCurrency: "PYG",
-              unitText: "NIGHT",
-            },
+            price: property.price_per_night ?? property.price_per_week ?? property.price_per_month,
+            priceSpecification: [
+              ...(property.price_per_night !== null
+                ? [
+                    {
+                      "@type": "UnitPriceSpecification",
+                      price: property.price_per_night,
+                      priceCurrency: "PYG",
+                      unitText: "NIGHT",
+                    },
+                  ]
+                : []),
+              ...(property.price_per_week !== null
+                ? [
+                    {
+                      "@type": "UnitPriceSpecification",
+                      price: property.price_per_week,
+                      priceCurrency: "PYG",
+                      unitText: "WEEK",
+                    },
+                  ]
+                : []),
+              ...(property.price_per_month !== null
+                ? [
+                    {
+                      "@type": "UnitPriceSpecification",
+                      price: property.price_per_month,
+                      priceCurrency: "PYG",
+                      unitText: "MONTH",
+                    },
+                  ]
+                : []),
+            ],
           },
         }
       : {}),
@@ -209,16 +238,13 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               <p className="text-sm leading-relaxed text-sb-cream-muted">{property.description}</p>
             )}
 
-            <p className="text-lg font-medium text-sb-cream">
-              {property.price_per_night ? (
-                <>
-                  {formatGs(property.price_per_night)}{" "}
-                  <span className="text-sm font-normal text-sb-cream-muted">/ noche</span>
-                </>
+            <div className="flex flex-col gap-1 text-lg font-medium text-sb-cream">
+              {prices.length > 0 ? (
+                prices.map((line) => <p key={line}>{line}</p>)
               ) : (
-                <span className="text-sm font-normal text-sb-cream-muted">Consultar precio</span>
+                <p className="text-sm font-normal text-sb-cream-muted">Consultar precio</p>
               )}
-            </p>
+            </div>
 
             <WhatsappCtaLink
               propertyId={property.id}

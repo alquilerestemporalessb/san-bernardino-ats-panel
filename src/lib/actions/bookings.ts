@@ -62,6 +62,22 @@ export async function createBooking(
     return { error: "La comision tiene que ser un numero entre 0 y 100." };
   }
 
+  const nights = Math.round(
+    (fromISODate(checkOut).getTime() - fromISODate(checkIn).getTime()) / 86400000
+  );
+
+  const { data: property, error: propertyError } = await supabase
+    .from("properties")
+    .select("min_nights")
+    .eq("id", propertyId)
+    .single();
+  if (propertyError) return { error: propertyError.message };
+  if (nights < property.min_nights) {
+    return {
+      error: `La estadia tiene que ser de al menos ${property.min_nights} noche${property.min_nights === 1 ? "" : "s"} para esta propiedad.`,
+    };
+  }
+
   const dates = datesInRange(fromISODate(checkIn), fromISODate(checkOut));
 
   const { data: overlapping, error: overlapError } = await supabase

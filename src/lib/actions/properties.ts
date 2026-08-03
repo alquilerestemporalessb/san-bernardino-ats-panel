@@ -41,6 +41,9 @@ function readPropertyFields(formData: FormData) {
   const ownerName = String(formData.get("owner_name") ?? "").trim();
   const ownerContact = String(formData.get("owner_contact") ?? "").trim();
   const pricePerNightRaw = String(formData.get("price_per_night") ?? "").trim();
+  const pricePerWeekRaw = String(formData.get("price_per_week") ?? "").trim();
+  const pricePerMonthRaw = String(formData.get("price_per_month") ?? "").trim();
+  const minNightsRaw = String(formData.get("min_nights") ?? "").trim();
   const bedroomsRaw = String(formData.get("bedrooms") ?? "").trim();
   const bedsRaw = String(formData.get("beds") ?? "").trim();
   const bathroomsRaw = String(formData.get("bathrooms") ?? "").trim();
@@ -88,6 +91,30 @@ function readPropertyFields(formData: FormData) {
     pricePerNight = Number(pricePerNightRaw);
     if (!Number.isFinite(pricePerNight) || pricePerNight <= 0) {
       return { error: "El precio por noche tiene que ser un numero mayor a 0." } as const;
+    }
+  }
+
+  let pricePerWeek: number | null = null;
+  if (pricePerWeekRaw) {
+    pricePerWeek = Number(pricePerWeekRaw);
+    if (!Number.isFinite(pricePerWeek) || pricePerWeek <= 0) {
+      return { error: "El precio por semana tiene que ser un numero mayor a 0." } as const;
+    }
+  }
+
+  let pricePerMonth: number | null = null;
+  if (pricePerMonthRaw) {
+    pricePerMonth = Number(pricePerMonthRaw);
+    if (!Number.isFinite(pricePerMonth) || pricePerMonth <= 0) {
+      return { error: "El precio por mes tiene que ser un numero mayor a 0." } as const;
+    }
+  }
+
+  let minNights = 1;
+  if (minNightsRaw) {
+    minNights = Number(minNightsRaw);
+    if (!Number.isInteger(minNights) || minNights < 1) {
+      return { error: "El minimo de noches tiene que ser un numero entero mayor o igual a 1." } as const;
     }
   }
 
@@ -139,6 +166,9 @@ function readPropertyFields(formData: FormData) {
       latitude,
       longitude,
       price_per_night: pricePerNight,
+      price_per_week: pricePerWeek,
+      price_per_month: pricePerMonth,
+      min_nights: minNights,
       bedrooms,
       beds,
       bathrooms,

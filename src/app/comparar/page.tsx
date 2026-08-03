@@ -16,7 +16,7 @@ import {
   WhatsappIcon,
 } from "@/components/site/icons";
 import { buildWhatsappLink } from "@/lib/whatsapp";
-import { formatGs } from "@/lib/currency";
+import { priceLines } from "@/lib/rental-pricing";
 import { AMENITIES } from "@/lib/amenities";
 import { isPropertyAvailable } from "@/lib/property-status";
 import type { PropertyWithPhotos } from "@/types/database";
@@ -108,18 +108,18 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                 </tr>
 
                 <Row label="Precio">
-                  {properties.map((p) => (
-                    <Cell key={p.id}>
-                      {p.price_per_night ? (
-                        <>
-                          {formatGs(p.price_per_night)}{" "}
-                          <span className="text-xs text-sb-cream-faint">/ noche</span>
-                        </>
-                      ) : (
-                        "Consultar precio"
-                      )}
-                    </Cell>
-                  ))}
+                  {properties.map((p) => {
+                    const lines = priceLines(p);
+                    return (
+                      <Cell key={p.id}>
+                        {lines.length > 0 ? (
+                          lines.map((line) => <p key={line}>{line}</p>)
+                        ) : (
+                          <>Consultar precio</>
+                        )}
+                      </Cell>
+                    );
+                  })}
                 </Row>
 
                 <Row label="Capacidad">

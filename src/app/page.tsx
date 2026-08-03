@@ -12,6 +12,7 @@ import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
 import { HouseGlyph } from "@/components/site/icons";
 import { getSiteUrl } from "@/lib/site-url";
+import { fromISODate } from "@/lib/dates";
 import type { PropertyWithPhotos } from "@/types/database";
 
 // Depende de datos en vivo (lo que se carga en /admin tiene que verse aca al instante) — nunca
@@ -78,6 +79,11 @@ async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhot
 
       const blockedPropertyIds = new Set((blocked ?? []).map((b) => b.property_id));
       properties = properties.filter((p) => !blockedPropertyIds.has(p.id));
+
+      const requestedNights = Math.round(
+        (fromISODate(filters.checkout).getTime() - fromISODate(filters.checkin).getTime()) / 86400000
+      );
+      properties = properties.filter((p) => p.min_nights <= requestedNights);
     }
 
     return properties;

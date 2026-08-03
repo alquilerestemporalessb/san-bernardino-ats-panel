@@ -161,7 +161,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
           type="number"
           min={0}
           step="1"
-          placeholder="Precio maximo (Gs.)"
+          placeholder="Precio por noche max. (Gs.)"
           value={maxPrice}
           onChange={(e) => setMaxPrice(e.target.value)}
           className="rounded-md border border-sb-border-subtle bg-sb-bg px-3.5 py-2.5 text-sm text-sb-cream outline-none transition-colors hover:border-sb-border-accent sm:w-48"

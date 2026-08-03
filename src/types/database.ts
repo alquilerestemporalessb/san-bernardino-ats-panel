@@ -23,6 +23,9 @@ export interface Database {
           longitude: number | null;
           status: "disponible" | "reservada" | "alquilada_temporada";
           price_per_night: number | null;
+          price_per_week: number | null;
+          price_per_month: number | null;
+          min_nights: number;
           bedrooms: number | null;
           beds: number | null;
           bathrooms: number | null;
@@ -45,6 +48,9 @@ export interface Database {
           longitude?: number | null;
           status?: "disponible" | "reservada" | "alquilada_temporada";
           price_per_night?: number | null;
+          price_per_week?: number | null;
+          price_per_month?: number | null;
+          min_nights?: number;
           bedrooms?: number | null;
           beds?: number | null;
           bathrooms?: number | null;
@@ -67,6 +73,9 @@ export interface Database {
           longitude?: number | null;
           status?: "disponible" | "reservada" | "alquilada_temporada";
           price_per_night?: number | null;
+          price_per_week?: number | null;
+          price_per_month?: number | null;
+          min_nights?: number;
           bedrooms?: number | null;
           beds?: number | null;
           bathrooms?: number | null;

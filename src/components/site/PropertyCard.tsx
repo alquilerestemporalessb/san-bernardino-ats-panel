@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { PropertyWithPhotos } from "@/types/database";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
-import { formatGs } from "@/lib/currency";
+import { priceLines } from "@/lib/rental-pricing";
 import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
 import { PhotoPlaceholder } from "./PhotoPlaceholder";
 import { WhatsappCtaLink } from "./WhatsappCtaLink";
@@ -14,6 +14,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
   const detailHref = `/propiedades/${property.code.toLowerCase()}`;
   const available = isPropertyAvailable(property.status);
   const statusLabel = STATUS_BADGE_LABELS[property.status];
+  const prices = priceLines(property);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-sb-border-accent hover:shadow-[0_16px_36px_rgba(0,0,0,0.45)]">
@@ -81,16 +82,13 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
           )}
         </ul>
 
-        <p className="text-sm font-medium text-sb-cream">
-          {property.price_per_night ? (
-            <>
-              Desde {formatGs(property.price_per_night)}{" "}
-              <span className="font-normal text-sb-cream-muted">/ noche</span>
-            </>
+        <div className="text-sm font-medium text-sb-cream">
+          {prices.length > 0 ? (
+            prices.map((line) => <p key={line}>{line}</p>)
           ) : (
-            <span className="text-sb-cream-muted">Consultar precio</span>
+            <p className="text-sb-cream-muted">Consultar precio</p>
           )}
-        </p>
+        </div>
 
         <CompareToggle code={property.code.toLowerCase()} />
 
