@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { InstagramIcon, TiktokIcon } from "./icons";
 
 export function Footer() {
@@ -42,7 +43,12 @@ export function Footer() {
 
         <div className="flex flex-col gap-3 border-t border-sb-border-subtle pt-6 text-xs text-sb-cream-faint sm:flex-row sm:items-center sm:justify-between">
           <span>© {year} San Bernardino — Alquileres Temporales. San Bernardino, Paraguay.</span>
-          <span>Todas las reservas se coordinan directamente por WhatsApp.</span>
+          <div className="flex items-center gap-4">
+            <span>Todas las reservas se coordinan directamente por WhatsApp.</span>
+            <Link href="/admin" className="text-sb-cream-faint/70 transition-colors hover:text-sb-cream-faint">
+              Acceso equipo
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
