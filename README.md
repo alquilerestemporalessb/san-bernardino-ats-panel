@@ -35,6 +35,7 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 2. Contenido completo de `supabase/migrations/0002_public_read_active.sql` (lectura pública de propiedades activas — esto es lo que alimenta `/`).
 3. Contenido completo de `supabase/migrations/0003_property_photos.sql` (galería de fotos por propiedad).
 4. Contenido completo de `supabase/migrations/0004_search_and_map.sql` (coordenadas + calendario de disponibilidad).
+5. Contenido completo de `supabase/migrations/0005_property_events.sql` (tracking de vistas/clics para el dashboard de métricas).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -98,7 +99,10 @@ src/
         properties/new/page.tsx       -> alta
         properties/[id]/edit/page.tsx -> edicion
         properties/[id]/availability/page.tsx -> calendario de disponibilidad
-    propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO propio)
+        metrics/page.tsx              -> dashboard de vistas/clics por propiedad (ultimos 30 dias)
+    propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO, JSON-LD)
+    api/events/route.ts               -> registra clics a WhatsApp (fetch keepalive desde el cliente)
+    sitemap.ts / robots.ts            -> SEO
   components/
     PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos + lat/lng dinamicos
     DeleteButton.tsx                  -> boton de borrado con confirmacion (admin)
@@ -109,21 +113,25 @@ src/
       PhotoPlaceholder.tsx            -> placeholder compartido cuando una propiedad no tiene fotos
       FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas)
       PropertiesMap.tsx / PropertiesMapLoader.tsx -> mapa Leaflet (el Loader hace el dynamic import ssr:false)
+      WhatsappCtaLink.tsx             -> link de WhatsApp que registra el clic (fetch keepalive a /api/events)
   lib/
     supabase/client.ts                -> cliente browser
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS
+    supabase/anon.ts                  -> cliente sin cookies, para escrituras publicas dentro de after()
     actions/auth.ts                   -> login, logout
     actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive + fotos + lat/lng
     actions/availability.ts           -> blockDates, unblockDates
     whatsapp.ts                       -> numero + armado de mensajes prearmados (un solo lugar)
     dates.ts                          -> helpers de fecha compartidos (ISO <-> Date, formato es-PY)
-  types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates
+    site-url.ts                       -> URL base del sitio (VERCEL_PROJECT_PRODUCTION_URL)
+  types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates, property_events
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
   0001_properties.sql                 -> tabla + escritura autenticada
   0002_public_read_active.sql         -> lectura publica de propiedades activas
   0003_property_photos.sql            -> galeria de fotos por propiedad
   0004_search_and_map.sql             -> lat/lng + calendario de disponibilidad
+  0005_property_events.sql            -> tracking de vistas/clics (escritura publica, lectura solo admin)
 ```
 
 ## Por qué este stack

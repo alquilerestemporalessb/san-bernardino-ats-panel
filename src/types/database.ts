@@ -117,6 +117,35 @@ export interface Database {
           },
         ];
       };
+      property_events: {
+        Row: {
+          id: string;
+          property_id: string;
+          event_type: "view" | "whatsapp_click";
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          property_id: string;
+          event_type: "view" | "whatsapp_click";
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          property_id?: string;
+          event_type?: "view" | "whatsapp_click";
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "property_events_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -128,4 +157,5 @@ export interface Database {
 export type Property = Database["public"]["Tables"]["properties"]["Row"];
 export type PropertyPhoto = Database["public"]["Tables"]["property_photos"]["Row"];
 export type PropertyBlockedDate = Database["public"]["Tables"]["property_blocked_dates"]["Row"];
+export type PropertyEvent = Database["public"]["Tables"]["property_events"]["Row"];
 export type PropertyWithPhotos = Property & { property_photos: PropertyPhoto[] };

@@ -10,6 +10,7 @@ import { TrustSection } from "@/components/site/TrustSection";
 import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
 import { HouseGlyph } from "@/components/site/icons";
+import { getSiteUrl } from "@/lib/site-url";
 import type { PropertyWithPhotos } from "@/types/database";
 
 // Depende de datos en vivo (lo que se carga en /admin tiene que verse aca al instante) — nunca
@@ -91,8 +92,34 @@ export default async function HomePage({
       p.latitude !== null && p.longitude !== null
   );
 
+  const siteUrl = getSiteUrl();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    name: "San Bernardino — Alquileres Temporales",
+    description:
+      "Alquiler temporal de casas en San Bernardino, Paraguay. Propiedades verificadas, atención directa por WhatsApp.",
+    url: siteUrl,
+    logo: `${siteUrl}/isotype.png`,
+    image: `${siteUrl}/isotype.png`,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "San Bernardino",
+      addressRegion: "Cordillera",
+      addressCountry: "PY",
+    },
+    sameAs: [
+      "https://www.instagram.com/alquilertemporal_sanber",
+      "https://www.tiktok.com/@alquiler.temporal.san.bernardino",
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
       <main>
         <Hero />

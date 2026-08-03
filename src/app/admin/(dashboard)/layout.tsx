@@ -24,6 +24,12 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-4">
             <Link
+              href="/admin/metrics"
+              className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
+            >
+              Métricas
+            </Link>
+            <Link
               href="/"
               target="_blank"
               className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -19,8 +22,7 @@ const description =
   "Alquiler temporal de casas en San Bernardino, Paraguay. Propiedades verificadas, atención directa por WhatsApp, sin sorpresas.";
 
 export const metadata: Metadata = {
-  // TODO: reemplazar por el dominio real cuando se defina (o setear NEXT_PUBLIC_SITE_URL en Vercel).
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: title,
     template: "%s · San Bernardino ATS",
@@ -42,7 +44,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="min-h-screen bg-sb-bg text-sb-cream antialiased">{children}</body>
+      <body className="min-h-screen bg-sb-bg text-sb-cream antialiased">
+        {children}
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   );
 }

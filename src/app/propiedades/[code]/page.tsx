@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import { after } from "next/server";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAnonClient } from "@/lib/supabase/anon";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Gallery } from "@/components/site/Gallery";
 import { PeopleIcon, PinIcon, WhatsappIcon } from "@/components/site/icons";
+import { WhatsappCtaLink } from "@/components/site/WhatsappCtaLink";
+import { getSiteUrl } from "@/lib/site-url";
 import type { PropertyWithPhotos } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -53,8 +57,56 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
 
   if (!property) notFound();
 
+  // Registra la vista despues de mandar la respuesta — no suma latencia a la carga de la pagina.
+  // Cliente sin cookies: cookies() no esta disponible dentro de after() en un Server Component.
+  after(async () => {
+    try {
+      const supabase = createAnonClient();
+      await supabase
+        .from("property_events")
+        .insert({ property_id: property.id, event_type: "view" });
+    } catch (err) {
+      console.error("[propiedad] fallo al registrar la vista:", err);
+    }
+  });
+
+  const siteUrl = getSiteUrl();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "House",
+    name: property.name,
+    description:
+      property.description ??
+      `${property.name} en ${property.zone}, San Bernardino. Hasta ${property.capacity} personas.`,
+    url: `${siteUrl}/propiedades/${property.code.toLowerCase()}`,
+    image: property.property_photos.map((p) => p.url),
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: property.zone,
+      addressRegion: "Cordillera",
+      addressCountry: "PY",
+    },
+    ...(property.latitude !== null && property.longitude !== null
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: property.latitude,
+            longitude: property.longitude,
+          },
+        }
+      : {}),
+    occupancy: {
+      "@type": "QuantitativeValue",
+      maxValue: property.capacity,
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
       <main className="mx-auto max-w-6xl px-6 py-10 sm:py-14">
         <Link href="/#catalogo" className="text-xs text-sb-cream-faint hover:text-sb-cream-muted">
@@ -100,15 +152,14 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               <p className="text-sm leading-relaxed text-sb-cream-muted">{property.description}</p>
             )}
 
-            <a
+            <WhatsappCtaLink
+              propertyId={property.id}
               href={buildWhatsappLink(property)}
-              target="_blank"
-              rel="noopener"
               className="btn-press inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
             >
               <WhatsappIcon className="h-[18px] w-[18px]" />
               Consultar por WhatsApp
-            </a>
+            </WhatsappCtaLink>
           </div>
         </div>
       </main>
