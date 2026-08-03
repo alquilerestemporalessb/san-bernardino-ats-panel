@@ -112,7 +112,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
         <button
           type="button"
           onClick={handleSearch}
-          className="flex-1 rounded-md bg-sb-accent px-5 py-2.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover sm:flex-none"
+          className="btn-press flex-1 rounded-md bg-sb-accent px-5 py-2.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover sm:flex-none"
         >
           Buscar
         </button>

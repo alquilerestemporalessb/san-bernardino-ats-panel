@@ -5,6 +5,7 @@ import { Hero } from "@/components/site/Hero";
 import { PropertyCard } from "@/components/site/PropertyCard";
 import { FilterBar } from "@/components/site/FilterBar";
 import { PropertiesMapLoader } from "@/components/site/PropertiesMapLoader";
+import { Reveal } from "@/components/site/Reveal";
 import { TrustSection } from "@/components/site/TrustSection";
 import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
@@ -127,8 +128,10 @@ export default async function HomePage({
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {properties.map((property) => (
-                  <PropertyCard key={property.id} property={property} />
+                {properties.map((property, index) => (
+                  <Reveal key={property.id} delayMs={(index % 3) * 80}>
+                    <PropertyCard property={property} />
+                  </Reveal>
                 ))}
               </div>
             )}
@@ -138,15 +141,17 @@ export default async function HomePage({
         {propertiesWithLocation.length > 0 && (
           <section id="ubicacion" className="bg-sb-bg-sunken py-20 sm:py-28">
             <div className="mx-auto max-w-6xl px-6">
-              <div className="mb-8 max-w-xl">
-                <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
-                  Ubicación
-                </span>
-                <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
-                  Dónde están las propiedades
-                </h2>
-              </div>
-              <PropertiesMapLoader properties={propertiesWithLocation} />
+              <Reveal>
+                <div className="mb-8 max-w-xl">
+                  <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
+                    Ubicación
+                  </span>
+                  <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+                    Dónde están las propiedades
+                  </h2>
+                </div>
+                <PropertiesMapLoader properties={propertiesWithLocation} />
+              </Reveal>
             </div>
           </section>
         )}

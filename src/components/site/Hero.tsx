@@ -42,7 +42,7 @@ export function Hero() {
         >
           <a
             href="#catalogo"
-            className="rounded-md bg-sb-accent px-7 py-3.5 text-sm font-semibold text-sb-bg shadow-[0_8px_24px_rgba(157,101,64,0.35)] transition-all hover:-translate-y-0.5 hover:bg-sb-accent-hover"
+            className="btn-press rounded-md bg-sb-accent px-7 py-3.5 text-sm font-semibold text-sb-bg shadow-[0_8px_24px_rgba(157,101,64,0.35)] transition-all hover:-translate-y-0.5 hover:bg-sb-accent-hover"
           >
             Ver propiedades
           </a>
@@ -50,7 +50,7 @@ export function Hero() {
             href={buildGenericWhatsappLink("Hola, quiero mas info sobre San Bernardino Alquileres Temporales.")}
             target="_blank"
             rel="noopener"
-            className="inline-flex items-center gap-2 rounded-md border border-sb-border-subtle px-7 py-3.5 text-sm font-semibold text-sb-cream transition-colors hover:border-sb-border-accent"
+            className="btn-press inline-flex items-center gap-2 rounded-md border border-sb-border-subtle px-7 py-3.5 text-sm font-semibold text-sb-cream transition-colors hover:border-sb-border-accent"
           >
             <WhatsappIcon className="h-4 w-4" />
             Escribinos

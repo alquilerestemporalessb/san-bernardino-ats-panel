@@ -135,3 +135,56 @@ body {
 .leaflet-container a.leaflet-popup-close-button {
   color: var(--sb-cream-muted);
 }
+
+/* ---------- Skeleton de carga (loading.tsx) ---------- */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+.skeleton {
+  background: var(--sb-bg-elevated);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+/* ---------- Scroll-reveal (componente Reveal) ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Micro-interaccion: feedback tactil en botones ---------- */
+.btn-press {
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* ---------- Accesibilidad: respetar prefers-reduced-motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .skeleton {
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .btn-press {
+    transition: none !important;
+  }
+  .btn-press:active {
+    transform: none !important;
+  }
+}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Reveal } from "./Reveal";
 
 const testimonials = [
   {
@@ -22,21 +23,23 @@ export function TrustSection() {
   return (
     <section id="confianza" className="bg-sb-bg-sunken py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-14 max-w-xl">
-          <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
-            Confianza
-          </span>
-          <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
-            Nada se publica sin que lo veamos primero
-          </h2>
-          <p className="mt-4 text-lg text-sb-cream-muted">
-            Así trabajamos: cada casa la visitamos, sacamos fotos reales y confirmamos que el
-            contrato con el propietario está en regla.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mb-14 max-w-xl">
+            <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
+              Confianza
+            </span>
+            <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+              Nada se publica sin que lo veamos primero
+            </h2>
+            <p className="mt-4 text-lg text-sb-cream-muted">
+              Así trabajamos: cada casa la visitamos, sacamos fotos reales y confirmamos que el
+              contrato con el propietario está en regla.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
-          <div className="flex items-start gap-5 rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated p-8">
+          <Reveal className="flex items-start gap-5 rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated p-8">
             <Image
               src="/verified-badge.svg"
               alt="Propiedad Verificada ATS"
@@ -54,27 +57,26 @@ export function TrustSection() {
                 el sello, está en proceso de verificación.
               </p>
             </div>
-          </div>
+          </Reveal>
 
           <div className="flex flex-col gap-4">
-            {testimonials.map((t) => (
-              <figure
-                key={t.author}
-                className="relative rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated p-6"
-              >
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute -top-2 left-5 font-serif text-5xl text-sb-accent/25"
-                >
-                  &ldquo;
-                </span>
-                <blockquote className="relative text-sm italic leading-relaxed text-sb-cream">
-                  {t.quote}
-                </blockquote>
-                <figcaption className="mt-3 text-xs tracking-wide text-sb-accent">
-                  — {t.author}
-                </figcaption>
-              </figure>
+            {testimonials.map((t, index) => (
+              <Reveal key={t.author} delayMs={index * 100}>
+                <figure className="relative rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated p-6">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -top-2 left-5 font-serif text-5xl text-sb-accent/25"
+                  >
+                    &ldquo;
+                  </span>
+                  <blockquote className="relative text-sm italic leading-relaxed text-sb-cream">
+                    {t.quote}
+                  </blockquote>
+                  <figcaption className="mt-3 text-xs tracking-wide text-sb-accent">
+                    — {t.author}
+                  </figcaption>
+                </figure>
+              </Reveal>
             ))}
           </div>
         </div>

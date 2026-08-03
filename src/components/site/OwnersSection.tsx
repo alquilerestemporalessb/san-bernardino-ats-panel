@@ -1,5 +1,6 @@
 import { buildGenericWhatsappLink } from "@/lib/whatsapp";
 import { CheckIcon, WhatsappIcon } from "./icons";
+import { Reveal } from "./Reveal";
 
 const benefits = [
   "Publicación sin costo, sin comisión de entrada",
@@ -19,7 +20,7 @@ export function OwnersSection() {
       }}
     >
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-16">
-        <div>
+        <Reveal>
           <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
             Para propietarios
           </span>
@@ -39,9 +40,12 @@ export function OwnersSection() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
 
-        <div className="rounded-2xl border border-sb-border-accent bg-sb-bg-elevated p-8 text-center shadow-[0_0_0_1px_rgba(157,101,64,0.15),0_20px_45px_rgba(0,0,0,0.35)] sm:p-10">
+        <Reveal
+          delayMs={120}
+          className="rounded-2xl border border-sb-border-accent bg-sb-bg-elevated p-8 text-center shadow-[0_0_0_1px_rgba(157,101,64,0.15),0_20px_45px_rgba(0,0,0,0.35)] sm:p-10"
+        >
           <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
             Es gratis
           </span>
@@ -54,12 +58,12 @@ export function OwnersSection() {
             )}
             target="_blank"
             rel="noopener"
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
+            className="btn-press inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
           >
             <WhatsappIcon className="h-[18px] w-[18px]" />
             Sumar mi propiedad
           </a>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

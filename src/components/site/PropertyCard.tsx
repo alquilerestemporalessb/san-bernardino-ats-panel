@@ -61,7 +61,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
           href={buildWhatsappLink(property)}
           target="_blank"
           rel="noopener"
-          className="mt-2 inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-4 py-2.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
+          className="btn-press mt-2 inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-4 py-2.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
         >
           <WhatsappIcon className="h-[18px] w-[18px]" />
           Consultar por WhatsApp

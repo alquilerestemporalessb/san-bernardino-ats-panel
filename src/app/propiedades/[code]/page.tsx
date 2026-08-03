@@ -104,7 +104,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               href={buildWhatsappLink(property)}
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
+              className="btn-press inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
             >
               <WhatsappIcon className="h-[18px] w-[18px]" />
               Consultar por WhatsApp
