@@ -13,9 +13,11 @@ Este proyecto Next.js sirve **las dos cosas**:
 son "el sitio" — quedan como material de referencia para handoff a Canva/diseñador (ver
 `../landing/README.md`). El sitio real es este proyecto.
 
-No hay upload de fotos todavía (`photo_url` es un link pegado a mano) ni captura de leads más allá
-de los links de WhatsApp. Ver `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el detalle
-de alcance y las decisiones de arquitectura de esta iteración.
+Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos (varias URLs por
+propiedad, gestionadas desde `/admin`). Todavía no hay upload de archivos (las fotos son URLs pegadas
+a mano) ni captura de leads más allá de los links de WhatsApp. Ver
+`C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el detalle de alcance y las decisiones de
+arquitectura de la iteración más reciente.
 
 ## Setup (primera vez)
 
@@ -31,6 +33,7 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 
 1. Contenido completo de `supabase/migrations/0001_properties.sql` (tabla + escritura para el equipo ATS).
 2. Contenido completo de `supabase/migrations/0002_public_read_active.sql` (lectura pública de propiedades activas — esto es lo que alimenta `/`).
+3. Contenido completo de `supabase/migrations/0003_property_photos.sql` (galería de fotos por propiedad).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -95,22 +98,26 @@ src/
         page.tsx                      -> listado de propiedades ("/admin")
         properties/new/page.tsx       -> alta
         properties/[id]/edit/page.tsx -> edicion
+    propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO propio)
   components/
-    PropertyForm.tsx                  -> form compartido entre alta y edicion (admin)
+    PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos dinamicas
     DeleteButton.tsx                  -> boton de borrado con confirmacion (admin)
     site/                             -> componentes de la landing publica
       Nav.tsx, Hero.tsx, PropertyCard.tsx, TrustSection.tsx, OwnersSection.tsx, Footer.tsx, icons.tsx
+      Gallery.tsx                     -> galeria con miniaturas (pagina de detalle)
+      PhotoPlaceholder.tsx            -> placeholder compartido cuando una propiedad no tiene fotos
   lib/
     supabase/client.ts                -> cliente browser
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS
     actions/auth.ts                   -> login, logout
-    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive
+    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive + fotos
     whatsapp.ts                       -> numero + armado de mensajes prearmados (un solo lugar)
-  types/database.ts                   -> tipos de la tabla properties
+  types/database.ts                   -> tipos de properties y property_photos
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
   0001_properties.sql                 -> tabla + escritura autenticada
   0002_public_read_active.sql         -> lectura publica de propiedades activas
+  0003_property_photos.sql            -> galeria de fotos por propiedad
 ```
 
 ## Por qué este stack

@@ -6,20 +6,21 @@ import { TrustSection } from "@/components/site/TrustSection";
 import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
 import { HouseGlyph } from "@/components/site/icons";
-import type { Property } from "@/types/database";
+import type { PropertyWithPhotos } from "@/types/database";
 
 // Depende de datos en vivo (lo que se carga en /admin tiene que verse aca al instante) — nunca
 // pre-renderizar estatico. Tambien evita que el build intente prerenderizarla contra Supabase.
 export const dynamic = "force-dynamic";
 
-async function getActiveProperties(): Promise<Property[]> {
+async function getActiveProperties(): Promise<PropertyWithPhotos[]> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("properties")
-      .select("*")
+      .select("*, property_photos(*)")
       .eq("active", true)
-      .order("code", { ascending: true });
+      .order("code", { ascending: true })
+      .order("sort_order", { referencedTable: "property_photos" });
 
     if (error) {
       console.error("[landing] error cargando propiedades:", error.message);

@@ -1,30 +1,27 @@
 import Image from "next/image";
-import type { Property } from "@/types/database";
+import Link from "next/link";
+import type { PropertyWithPhotos } from "@/types/database";
 import { buildWhatsappLink } from "@/lib/whatsapp";
-import { HouseGlyph, PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
+import { PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
+import { PhotoPlaceholder } from "./PhotoPlaceholder";
 
-export function PropertyCard({ property }: { property: Property }) {
+export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
+  const cover = property.property_photos[0]?.url;
+  const detailHref = `/propiedades/${property.code.toLowerCase()}`;
+
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-sb-border-accent hover:shadow-[0_16px_36px_rgba(0,0,0,0.45)]">
-      <div className="relative aspect-[4/3] overflow-hidden">
-        {property.photo_url ? (
+      <Link href={detailHref} className="relative block aspect-[4/3] overflow-hidden">
+        {cover ? (
           <Image
-            src={property.photo_url}
+            src={cover}
             alt={property.name}
             fill
             sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div
-            className="flex h-full w-full items-center justify-center"
-            style={{
-              background:
-                "linear-gradient(155deg, rgba(157,101,64,0.35) 0%, rgba(14,28,41,0.9) 55%, #0e1c29 100%)",
-            }}
-          >
-            <HouseGlyph className="h-16 w-16 text-sb-cream/25" />
-          </div>
+          <PhotoPlaceholder />
         )}
 
         <span className="absolute left-3 top-3 rounded-full border border-sb-border-accent bg-sb-bg/80 px-3 py-1 text-xs font-semibold tracking-wide text-sb-cream backdrop-blur-sm">
@@ -40,10 +37,14 @@ export function PropertyCard({ property }: { property: Property }) {
             className="absolute right-3 top-3 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
           />
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <h3 className="font-serif text-lg font-medium leading-snug text-sb-cream">{property.name}</h3>
+        <Link href={detailHref}>
+          <h3 className="font-serif text-lg font-medium leading-snug text-sb-cream transition-colors group-hover:text-sb-accent">
+            {property.name}
+          </h3>
+        </Link>
 
         <ul className="flex flex-wrap gap-x-4 gap-y-2">
           <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">

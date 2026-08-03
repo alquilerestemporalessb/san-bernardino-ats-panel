@@ -1,8 +1,9 @@
 /**
- * Tipos de la base de datos, a mano (v1 tiene una sola tabla).
+ * Tipos de la base de datos, a mano.
  * Sigue la forma que genera `supabase gen types typescript` para que
- * @supabase/supabase-js pueda inferir correctamente los tipos de cada query.
- * Si el esquema crece, conviene migrar a tipos generados de verdad.
+ * @supabase/supabase-js pueda inferir correctamente los tipos de cada query
+ * (incluidos los selects anidados via Relationships, ej. properties -> property_photos).
+ * Si el esquema crece mucho mas, conviene migrar a tipos generados de verdad.
  */
 export interface Database {
   public: {
@@ -15,7 +16,6 @@ export interface Database {
           capacity: number;
           zone: string;
           description: string | null;
-          photo_url: string | null;
           whatsapp_message: string | null;
           verified: boolean;
           active: boolean;
@@ -29,7 +29,6 @@ export interface Database {
           capacity: number;
           zone: string;
           description?: string | null;
-          photo_url?: string | null;
           whatsapp_message?: string | null;
           verified?: boolean;
           active?: boolean;
@@ -43,7 +42,6 @@ export interface Database {
           capacity?: number;
           zone?: string;
           description?: string | null;
-          photo_url?: string | null;
           whatsapp_message?: string | null;
           verified?: boolean;
           active?: boolean;
@@ -51,6 +49,38 @@ export interface Database {
           updated_at?: string;
         };
         Relationships: [];
+      };
+      property_photos: {
+        Row: {
+          id: string;
+          property_id: string;
+          url: string;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          property_id: string;
+          url: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          property_id?: string;
+          url?: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "property_photos_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: Record<string, never>;
@@ -61,3 +91,5 @@ export interface Database {
 }
 
 export type Property = Database["public"]["Tables"]["properties"]["Row"];
+export type PropertyPhoto = Database["public"]["Tables"]["property_photos"]["Row"];
+export type PropertyWithPhotos = Property & { property_photos: PropertyPhoto[] };

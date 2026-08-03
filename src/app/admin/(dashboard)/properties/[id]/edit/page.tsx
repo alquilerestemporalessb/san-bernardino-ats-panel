@@ -8,7 +8,12 @@ export default async function EditPropertyPage(props: PageProps<"/admin/properti
   const { id } = await props.params;
 
   const supabase = await createClient();
-  const { data: property } = await supabase.from("properties").select("*").eq("id", id).single();
+  const { data: property } = await supabase
+    .from("properties")
+    .select("*, property_photos(*)")
+    .eq("id", id)
+    .order("sort_order", { referencedTable: "property_photos" })
+    .single();
 
   if (!property) notFound();
 
@@ -24,7 +29,7 @@ export default async function EditPropertyPage(props: PageProps<"/admin/properti
 
       <PropertyForm
         action={updateProperty.bind(null, property.id)}
-        defaultValues={property}
+        defaultValues={{ ...property, photos: property.property_photos }}
         submitLabel="Guardar cambios"
       />
     </div>

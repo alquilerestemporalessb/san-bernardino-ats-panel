@@ -31,8 +31,11 @@ function readPropertyFields(formData: FormData) {
   const capacityRaw = String(formData.get("capacity") ?? "").trim();
   const zone = String(formData.get("zone") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const photoUrl = String(formData.get("photo_url") ?? "").trim();
   const whatsappMessage = String(formData.get("whatsapp_message") ?? "").trim();
+  const photoUrls = formData
+    .getAll("photo_urls")
+    .map((v) => String(v).trim())
+    .filter(Boolean);
 
   if (!code) return { error: "El codigo es obligatorio (ej. SB-001)." } as const;
   if (!name) return { error: "El nombre es obligatorio." } as const;
@@ -50,10 +53,33 @@ function readPropertyFields(formData: FormData) {
       capacity,
       zone,
       description: description || null,
-      photo_url: photoUrl || null,
       whatsapp_message: whatsappMessage || null,
     },
+    photoUrls,
   } as const;
+}
+
+async function replacePropertyPhotos(
+  supabase: Awaited<ReturnType<typeof requireUser>>,
+  propertyId: string,
+  photoUrls: string[]
+) {
+  const { error: deleteError } = await supabase
+    .from("property_photos")
+    .delete()
+    .eq("property_id", propertyId);
+  if (deleteError) throw new Error(deleteError.message);
+
+  if (photoUrls.length === 0) return;
+
+  const { error: insertError } = await supabase.from("property_photos").insert(
+    photoUrls.map((url, index) => ({
+      property_id: propertyId,
+      url,
+      sort_order: index,
+    }))
+  );
+  if (insertError) throw new Error(insertError.message);
 }
 
 export async function createProperty(
@@ -65,7 +91,11 @@ export async function createProperty(
   const parsed = readPropertyFields(formData);
   if ("error" in parsed) return { error: parsed.error };
 
-  const { error } = await supabase.from("properties").insert(parsed.fields);
+  const { data: inserted, error } = await supabase
+    .from("properties")
+    .insert(parsed.fields)
+    .select("id")
+    .single();
 
   if (error) {
     if (error.code === "23505") {
@@ -73,6 +103,8 @@ export async function createProperty(
     }
     return { error: error.message };
   }
+
+  await replacePropertyPhotos(supabase, inserted.id, parsed.photoUrls);
 
   revalidateCatalog();
   redirect("/admin");
@@ -96,6 +128,8 @@ export async function updateProperty(
     }
     return { error: error.message };
   }
+
+  await replacePropertyPhotos(supabase, id, parsed.photoUrls);
 
   revalidateCatalog();
   redirect("/admin");
