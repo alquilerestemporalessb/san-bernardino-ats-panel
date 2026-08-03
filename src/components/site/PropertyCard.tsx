@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { PropertyWithPhotos } from "@/types/database";
 import { buildWhatsappLink } from "@/lib/whatsapp";
+import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
 import { PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
 import { PhotoPlaceholder } from "./PhotoPlaceholder";
 import { WhatsappCtaLink } from "./WhatsappCtaLink";
@@ -9,6 +10,8 @@ import { WhatsappCtaLink } from "./WhatsappCtaLink";
 export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
   const cover = property.property_photos[0]?.url;
   const detailHref = `/propiedades/${property.code.toLowerCase()}`;
+  const available = isPropertyAvailable(property.status);
+  const statusLabel = STATUS_BADGE_LABELS[property.status];
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-sb-border-accent hover:shadow-[0_16px_36px_rgba(0,0,0,0.45)]">
@@ -28,6 +31,12 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
         <span className="absolute left-3 top-3 rounded-full border border-sb-border-accent bg-sb-bg/80 px-3 py-1 text-xs font-semibold tracking-wide text-sb-cream backdrop-blur-sm">
           {property.code}
         </span>
+
+        {statusLabel && (
+          <span className="absolute bottom-3 left-3 rounded-full border border-sb-border-accent bg-sb-bg/85 px-3 py-1 text-xs font-semibold tracking-wide text-sb-accent backdrop-blur-sm">
+            {statusLabel}
+          </span>
+        )}
 
         {property.verified && (
           <Image
@@ -64,7 +73,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
           className="btn-press mt-2 inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-4 py-2.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
         >
           <WhatsappIcon className="h-[18px] w-[18px]" />
-          Consultar por WhatsApp
+          {available ? "Consultar por WhatsApp" : "Consultar disponibilidad"}
         </WhatsappCtaLink>
       </div>
     </article>

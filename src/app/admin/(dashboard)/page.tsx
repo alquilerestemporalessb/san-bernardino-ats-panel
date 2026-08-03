@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { toggleActive, toggleVerified } from "@/lib/actions/properties";
 import { DeleteButton } from "@/components/DeleteButton";
+import { StatusSelect } from "@/components/StatusSelect";
 
 export default async function PropertiesPage() {
   const supabase = await createClient();
@@ -51,6 +52,7 @@ export default async function PropertiesPage() {
                 <th className="px-4 py-3 font-medium">Zona</th>
                 <th className="px-4 py-3 font-medium">Verificada</th>
                 <th className="px-4 py-3 font-medium">Activa</th>
+                <th className="px-4 py-3 font-medium">Estado</th>
                 <th className="px-4 py-3 font-medium"></th>
               </tr>
             </thead>
@@ -88,6 +90,9 @@ export default async function PropertiesPage() {
                         {property.active ? "Activa" : "Oculta"}
                       </button>
                     </form>
+                  </td>
+                  <td className="px-4 py-3">
+                    <StatusSelect id={property.id} status={property.status} />
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-4">

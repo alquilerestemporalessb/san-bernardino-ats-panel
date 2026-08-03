@@ -3,10 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { PropertyStatus } from "@/types/database";
 
 export interface PropertyFormState {
   error?: string;
 }
+
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 
 async function requireUser() {
   const supabase = await createClient();
@@ -34,10 +37,13 @@ function readPropertyFields(formData: FormData) {
   const whatsappMessage = String(formData.get("whatsapp_message") ?? "").trim();
   const latitudeRaw = String(formData.get("latitude") ?? "").trim();
   const longitudeRaw = String(formData.get("longitude") ?? "").trim();
-  const photoUrls = formData
-    .getAll("photo_urls")
+  const existingPhotoUrls = formData
+    .getAll("existing_photo_urls")
     .map((v) => String(v).trim())
     .filter(Boolean);
+  const newPhotoFiles = formData
+    .getAll("new_photos")
+    .filter((v): v is File => v instanceof File && v.size > 0);
 
   if (!code) return { error: "El codigo es obligatorio (ej. SB-001)." } as const;
   if (!name) return { error: "El nombre es obligatorio." } as const;
@@ -64,6 +70,15 @@ function readPropertyFields(formData: FormData) {
     }
   }
 
+  for (const file of newPhotoFiles) {
+    if (!file.type.startsWith("image/")) {
+      return { error: `"${file.name}" no es una imagen valida.` } as const;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      return { error: `"${file.name}" pesa mas de 5MB.` } as const;
+    }
+  }
+
   return {
     fields: {
       code,
@@ -75,8 +90,28 @@ function readPropertyFields(formData: FormData) {
       latitude,
       longitude,
     },
-    photoUrls,
+    existingPhotoUrls,
+    newPhotoFiles,
   } as const;
+}
+
+async function uploadPropertyPhotos(
+  supabase: Awaited<ReturnType<typeof requireUser>>,
+  propertyId: string,
+  files: File[]
+) {
+  const urls: string[] = [];
+  for (const file of files) {
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+    const path = `${propertyId}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("property-photos").upload(path, file, {
+      contentType: file.type,
+    });
+    if (error) throw new Error(error.message);
+    const { data } = supabase.storage.from("property-photos").getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
 }
 
 async function replacePropertyPhotos(
@@ -124,7 +159,8 @@ export async function createProperty(
     return { error: error.message };
   }
 
-  await replacePropertyPhotos(supabase, inserted.id, parsed.photoUrls);
+  const uploadedUrls = await uploadPropertyPhotos(supabase, inserted.id, parsed.newPhotoFiles);
+  await replacePropertyPhotos(supabase, inserted.id, [...parsed.existingPhotoUrls, ...uploadedUrls]);
 
   revalidateCatalog();
   redirect("/admin");
@@ -149,7 +185,8 @@ export async function updateProperty(
     return { error: error.message };
   }
 
-  await replacePropertyPhotos(supabase, id, parsed.photoUrls);
+  const uploadedUrls = await uploadPropertyPhotos(supabase, id, parsed.newPhotoFiles);
+  await replacePropertyPhotos(supabase, id, [...parsed.existingPhotoUrls, ...uploadedUrls]);
 
   revalidateCatalog();
   redirect("/admin");
@@ -175,6 +212,13 @@ export async function toggleVerified(id: string, nextValue: boolean) {
 export async function toggleActive(id: string, nextValue: boolean) {
   const supabase = await requireUser();
   const { error } = await supabase.from("properties").update({ active: nextValue }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateCatalog();
+}
+
+export async function updatePropertyStatus(id: string, status: PropertyStatus) {
+  const supabase = await requireUser();
+  const { error } = await supabase.from("properties").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
   revalidateCatalog();
 }

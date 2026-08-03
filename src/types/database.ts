@@ -21,6 +21,7 @@ export interface Database {
           active: boolean;
           latitude: number | null;
           longitude: number | null;
+          status: "disponible" | "reservada" | "alquilada_temporada";
           created_at: string;
           updated_at: string;
         };
@@ -36,6 +37,7 @@ export interface Database {
           active?: boolean;
           latitude?: number | null;
           longitude?: number | null;
+          status?: "disponible" | "reservada" | "alquilada_temporada";
           created_at?: string;
           updated_at?: string;
         };
@@ -51,6 +53,7 @@ export interface Database {
           active?: boolean;
           latitude?: number | null;
           longitude?: number | null;
+          status?: "disponible" | "reservada" | "alquilada_temporada";
           created_at?: string;
           updated_at?: string;
         };
@@ -155,6 +158,7 @@ export interface Database {
 }
 
 export type Property = Database["public"]["Tables"]["properties"]["Row"];
+export type PropertyStatus = Property["status"];
 export type PropertyPhoto = Database["public"]["Tables"]["property_photos"]["Row"];
 export type PropertyBlockedDate = Database["public"]["Tables"]["property_blocked_dates"]["Row"];
 export type PropertyEvent = Database["public"]["Tables"]["property_events"]["Row"];

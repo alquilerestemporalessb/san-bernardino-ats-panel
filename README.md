@@ -13,11 +13,10 @@ Este proyecto Next.js sirve **las dos cosas**:
 son "el sitio" — quedan como material de referencia para handoff a Canva/diseñador (ver
 `../landing/README.md`). El sitio real es este proyecto.
 
-Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos (varias URLs por
-propiedad, gestionadas desde `/admin`). Todavía no hay upload de archivos (las fotos son URLs pegadas
-a mano) ni captura de leads más allá de los links de WhatsApp. Ver
-`C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el detalle de alcance y las decisiones de
-arquitectura de la iteración más reciente.
+Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
+archivos reales desde `/admin` (Supabase Storage). No hay captura de leads más allá de los links de
+WhatsApp. Ver `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el detalle de alcance y las
+decisiones de arquitectura de la iteración más reciente.
 
 ## Setup (primera vez)
 
@@ -36,6 +35,8 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 3. Contenido completo de `supabase/migrations/0003_property_photos.sql` (galería de fotos por propiedad).
 4. Contenido completo de `supabase/migrations/0004_search_and_map.sql` (coordenadas + calendario de disponibilidad).
 5. Contenido completo de `supabase/migrations/0005_property_events.sql` (tracking de vistas/clics para el dashboard de métricas).
+6. Contenido completo de `supabase/migrations/0006_property_photos_storage.sql` (bucket de Storage para fotos reales).
+7. Contenido completo de `supabase/migrations/0007_property_status.sql` (estado operativo: disponible/reservada/alquilada temporada).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -105,6 +106,8 @@ src/
     sitemap.ts / robots.ts            -> SEO
   components/
     PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos + lat/lng dinamicos
+    PhotoUploader.tsx                 -> upload de fotos reales (Supabase Storage) + reordenar/quitar (admin)
+    StatusSelect.tsx                  -> selector de estado (disponible/reservada/alquilada temporada) (admin)
     DeleteButton.tsx                  -> boton de borrado con confirmacion (admin)
     AvailabilityCalendar.tsx          -> calendario de bloqueo de fechas (admin)
     site/                             -> componentes de la landing publica
@@ -119,11 +122,12 @@ src/
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS
     supabase/anon.ts                  -> cliente sin cookies, para escrituras publicas dentro de after()
     actions/auth.ts                   -> login, logout
-    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive + fotos + lat/lng
+    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive/updatePropertyStatus + fotos + lat/lng
     actions/availability.ts           -> blockDates, unblockDates
     whatsapp.ts                       -> numero + armado de mensajes prearmados (un solo lugar)
     dates.ts                          -> helpers de fecha compartidos (ISO <-> Date, formato es-PY)
     site-url.ts                       -> URL base del sitio (VERCEL_PROJECT_PRODUCTION_URL)
+    property-status.ts                -> labels del badge de estado + helper isPropertyAvailable
   types/database.ts                   -> tipos de properties, property_photos, property_blocked_dates, property_events
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
@@ -132,6 +136,8 @@ supabase/migrations/
   0003_property_photos.sql            -> galeria de fotos por propiedad
   0004_search_and_map.sql             -> lat/lng + calendario de disponibilidad
   0005_property_events.sql            -> tracking de vistas/clics (escritura publica, lectura solo admin)
+  0006_property_photos_storage.sql    -> bucket de Storage para fotos reales
+  0007_property_status.sql            -> estado operativo (disponible/reservada/alquilada temporada)
 ```
 
 ## Por qué este stack

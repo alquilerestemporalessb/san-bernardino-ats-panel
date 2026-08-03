@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState } from "react";
+import { PhotoUploader } from "@/components/PhotoUploader";
 import type { PropertyFormState } from "@/lib/actions/properties";
 import type { Property } from "@/types/database";
 
@@ -14,19 +15,6 @@ interface PropertyFormProps {
 
 export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
-
-  const [photoRows, setPhotoRows] = useState(() => {
-    const urls = defaultValues?.photos?.map((p) => p.url) ?? [];
-    return urls.map((value, i) => ({ key: i, value }));
-  });
-  const nextKey = useRef(photoRows.length);
-
-  function addPhotoRow() {
-    setPhotoRows((rows) => [...rows, { key: nextKey.current++, value: "" }]);
-  }
-  function removePhotoRow(key: number) {
-    setPhotoRows((rows) => rows.filter((r) => r.key !== key));
-  }
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
@@ -106,39 +94,7 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
         coordenadas y pegarlas acá.
       </p>
 
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1.5 text-xs font-medium text-sb-cream-muted">
-          Fotos (opcional) — la primera es la portada en el catálogo
-        </legend>
-
-        {photoRows.map((row, index) => (
-          <div key={row.key} className="flex gap-2">
-            <input
-              name="photo_urls"
-              type="url"
-              placeholder={index === 0 ? "https://... (portada)" : "https://..."}
-              defaultValue={row.value}
-              className={`${inputClass} flex-1`}
-            />
-            <button
-              type="button"
-              onClick={() => removePhotoRow(row.key)}
-              aria-label="Quitar foto"
-              className="rounded-md border border-sb-border-subtle px-3 text-sb-cream-muted transition-colors hover:border-sb-danger/40 hover:text-sb-danger"
-            >
-              ×
-            </button>
-          </div>
-        ))}
-
-        <button
-          type="button"
-          onClick={addPhotoRow}
-          className="self-start text-xs font-medium text-sb-accent hover:text-sb-accent-hover"
-        >
-          + Agregar foto
-        </button>
-      </fieldset>
+      <PhotoUploader defaultPhotos={defaultValues?.photos} />
 
       <Field label="Descripcion (opcional)" htmlFor="description">
         <textarea

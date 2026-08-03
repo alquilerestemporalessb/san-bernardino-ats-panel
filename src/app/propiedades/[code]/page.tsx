@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/anon";
 import { buildWhatsappLink } from "@/lib/whatsapp";
+import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Gallery } from "@/components/site/Gallery";
@@ -56,6 +57,9 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
   const property = await getProperty(code);
 
   if (!property) notFound();
+
+  const available = isPropertyAvailable(property.status);
+  const statusLabel = STATUS_BADGE_LABELS[property.status];
 
   // Registra la vista despues de mandar la respuesta — no suma latencia a la carga de la pagina.
   // Cliente sin cookies: cookies() no esta disponible dentro de after() en un Server Component.
@@ -122,6 +126,11 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                 <span className="rounded-full border border-sb-border-accent bg-sb-accent-muted px-3 py-1 text-xs font-semibold tracking-wide text-sb-accent">
                   {property.code}
                 </span>
+                {statusLabel && (
+                  <span className="rounded-full border border-sb-border-accent bg-sb-bg px-3 py-1 text-xs font-semibold tracking-wide text-sb-accent">
+                    {statusLabel}
+                  </span>
+                )}
                 {property.verified && (
                   <Image
                     src="/verified-badge.svg"
@@ -158,7 +167,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               className="btn-press inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
             >
               <WhatsappIcon className="h-[18px] w-[18px]" />
-              Consultar por WhatsApp
+              {available ? "Consultar por WhatsApp" : "Consultar disponibilidad"}
             </WhatsappCtaLink>
           </div>
         </div>
