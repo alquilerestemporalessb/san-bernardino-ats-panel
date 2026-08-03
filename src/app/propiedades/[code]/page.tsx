@@ -267,7 +267,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                 className="h-full w-full"
                 sandbox="allow-scripts allow-same-origin allow-popups"
                 loading="lazy"
-                allow="xr-spatial-tracking; gyroscope; accelerometer"
+                allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; encrypted-media; picture-in-picture"
                 allowFullScreen
               />
             </div>
