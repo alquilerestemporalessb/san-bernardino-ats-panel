@@ -1,0 +1,41 @@
+<svg width="240" height="240" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="badgeTitle">
+  <title id="badgeTitle">Propiedad Verificada ATS</title>
+
+  <!--
+    Sello "Propiedad Verificada ATS"
+    Pensado para superponerse sobre fotos de propiedades (esquina superior o inferior).
+    Colores desde design-system/tokens.css: fondo navy #0E1C29, acento cobre #9D6540, cream #F2F2E6.
+    El glifo central es una version simplificada del isotipo (no un trazado 1:1) —
+    para reproduccion exacta del isotipo usar design-system/assets/isotype-original.png como referencia vectorial.
+  -->
+
+  <defs>
+    <path id="topArc" d="M 24,102 A 76,76 0 0 1 176,102" fill="none" />
+  </defs>
+
+  <!-- Anillo exterior -->
+  <circle cx="100" cy="100" r="96" fill="#0E1C29" fill-opacity="0.92" stroke="#9D6540" stroke-width="2.5" />
+  <!-- Anillo interior sutil -->
+  <circle cx="100" cy="100" r="82" fill="none" stroke="#F2F2E6" stroke-opacity="0.35" stroke-width="1" />
+
+  <!-- Texto en arco superior -->
+  <text fill="#F2F2E6" font-family="'Inter', Arial, sans-serif" font-size="11.5" font-weight="600" letter-spacing="2.6">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">PROPIEDAD VERIFICADA</textPath>
+  </text>
+
+  <!-- Glifo casa (version simplificada del isotipo) -->
+  <g transform="translate(100,98)" stroke="#F2F2E6" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M -26,-4 L 0,-26 L 26,-4" />
+    <line x1="-14" y1="4" x2="-14" y2="24" />
+    <line x1="0" y1="0" x2="0" y2="30" />
+    <line x1="14" y1="4" x2="14" y2="24" />
+  </g>
+
+  <!-- ticks decorativos, eco de los detalles del isotipo -->
+  <line x1="-40" y1="70" x2="-40" y2="80" stroke="#9D6540" stroke-width="3" stroke-linecap="round" transform="translate(100,98)" />
+  <line x1="40" y1="70" x2="40" y2="80" stroke="#9D6540" stroke-width="3" stroke-linecap="round" transform="translate(100,98)" />
+
+  <!-- Monograma inferior -->
+  <text x="100" y="152" fill="#9D6540" font-family="'Inter', Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="4" text-anchor="middle">ATS</text>
+  <text x="100" y="164" fill="#F2F2E6" fill-opacity="0.6" font-family="'Inter', Arial, sans-serif" font-size="7" font-weight="500" letter-spacing="1.5" text-anchor="middle">SAN BERNARDINO</text>
+</svg>
