@@ -47,7 +47,7 @@ function readPropertyFields(formData: FormData) {
   const bedroomsRaw = String(formData.get("bedrooms") ?? "").trim();
   const bedsRaw = String(formData.get("beds") ?? "").trim();
   const bathroomsRaw = String(formData.get("bathrooms") ?? "").trim();
-  const tourUrl = String(formData.get("tour_url") ?? "").trim();
+  let tourUrl = String(formData.get("tour_url") ?? "").trim();
   const validAmenityValues = new Set(AMENITIES.map((a) => a.value));
   const amenities = formData
     .getAll("amenities")
@@ -140,6 +140,13 @@ function readPropertyFields(formData: FormData) {
     if (!Number.isInteger(bathrooms) || bathrooms < 0) {
       return { error: "Banos tiene que ser un numero entero mayor o igual a 0." } as const;
     }
+  }
+
+  // Error comun: pegar el link normal de Vimeo (vimeo.com/ID) en vez del link del reproductor
+  // (player.vimeo.com/video/ID) — el primero no se puede embeber en un iframe. Se corrige solo.
+  const vimeoLinkMatch = tourUrl.match(/^https:\/\/vimeo\.com\/(\d+)/);
+  if (vimeoLinkMatch) {
+    tourUrl = `https://player.vimeo.com/video/${vimeoLinkMatch[1]}`;
   }
 
   if (tourUrl && !tourUrl.startsWith("https://")) {
