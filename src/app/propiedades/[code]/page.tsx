@@ -235,7 +235,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
             </div>
 
             {property.description && (
-              <p className="text-justify text-sm leading-relaxed text-sb-cream-muted">
+              <p className="text-pretty text-sm leading-relaxed text-sb-cream-muted">
                 {property.description}
               </p>
             )}
