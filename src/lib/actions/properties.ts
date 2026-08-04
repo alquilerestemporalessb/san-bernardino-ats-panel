@@ -10,8 +10,6 @@ export interface PropertyFormState {
   error?: string;
 }
 
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
-
 async function requireUser() {
   const supabase = await createClient();
   const {
@@ -30,6 +28,7 @@ function revalidateCatalog() {
 }
 
 function readPropertyFields(formData: FormData) {
+  const id = String(formData.get("id") ?? "").trim();
   const code = String(formData.get("code") ?? "").trim().toUpperCase();
   const name = String(formData.get("name") ?? "").trim();
   const capacityRaw = String(formData.get("capacity") ?? "").trim();
@@ -53,14 +52,12 @@ function readPropertyFields(formData: FormData) {
     .getAll("amenities")
     .map((v) => String(v))
     .filter((v) => validAmenityValues.has(v as (typeof AMENITIES)[number]["value"]));
-  const existingPhotoUrls = formData
-    .getAll("existing_photo_urls")
+  const photoUrls = formData
+    .getAll("photo_urls")
     .map((v) => String(v).trim())
     .filter(Boolean);
-  const newPhotoFiles = formData
-    .getAll("new_photos")
-    .filter((v): v is File => v instanceof File && v.size > 0);
 
+  if (!id) return { error: "Falta el identificador de la propiedad." } as const;
   if (!code) return { error: "El codigo es obligatorio (ej. SB-001)." } as const;
   if (!name) return { error: "El nombre es obligatorio." } as const;
   if (!zone) return { error: "La zona es obligatoria." } as const;
@@ -153,17 +150,9 @@ function readPropertyFields(formData: FormData) {
     return { error: "El link del tour tiene que empezar con https://" } as const;
   }
 
-  for (const file of newPhotoFiles) {
-    if (!file.type.startsWith("image/")) {
-      return { error: `"${file.name}" no es una imagen valida.` } as const;
-    }
-    if (file.size > MAX_PHOTO_BYTES) {
-      return { error: `"${file.name}" pesa mas de 5MB.` } as const;
-    }
-  }
-
   return {
     fields: {
+      id,
       code,
       name,
       capacity,
@@ -184,8 +173,7 @@ function readPropertyFields(formData: FormData) {
     },
     ownerName,
     ownerContact,
-    existingPhotoUrls,
-    newPhotoFiles,
+    photoUrls,
   } as const;
 }
 
@@ -211,25 +199,6 @@ async function saveOwner(
     updated_at: new Date().toISOString(),
   });
   if (error) throw new Error(error.message);
-}
-
-async function uploadPropertyPhotos(
-  supabase: Awaited<ReturnType<typeof requireUser>>,
-  propertyId: string,
-  files: File[]
-) {
-  const urls: string[] = [];
-  for (const file of files) {
-    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
-    const path = `${propertyId}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("property-photos").upload(path, file, {
-      contentType: file.type,
-    });
-    if (error) throw new Error(error.message);
-    const { data } = supabase.storage.from("property-photos").getPublicUrl(path);
-    urls.push(data.publicUrl);
-  }
-  return urls;
 }
 
 async function replacePropertyPhotos(
@@ -277,8 +246,7 @@ export async function createProperty(
     return { error: error.message };
   }
 
-  const uploadedUrls = await uploadPropertyPhotos(supabase, inserted.id, parsed.newPhotoFiles);
-  await replacePropertyPhotos(supabase, inserted.id, [...parsed.existingPhotoUrls, ...uploadedUrls]);
+  await replacePropertyPhotos(supabase, inserted.id, parsed.photoUrls);
   await saveOwner(supabase, inserted.id, parsed.ownerName, parsed.ownerContact);
 
   revalidateCatalog();
@@ -304,8 +272,7 @@ export async function updateProperty(
     return { error: error.message };
   }
 
-  const uploadedUrls = await uploadPropertyPhotos(supabase, id, parsed.newPhotoFiles);
-  await replacePropertyPhotos(supabase, id, [...parsed.existingPhotoUrls, ...uploadedUrls]);
+  await replacePropertyPhotos(supabase, id, parsed.photoUrls);
   await saveOwner(supabase, id, parsed.ownerName, parsed.ownerContact);
 
   revalidateCatalog();

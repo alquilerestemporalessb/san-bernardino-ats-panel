@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import type { PropertyFormState } from "@/lib/actions/properties";
 import type { Property } from "@/types/database";
@@ -19,9 +19,13 @@ interface PropertyFormProps {
 
 export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const [propertyId] = useState(() => defaultValues?.id ?? crypto.randomUUID());
+  const [photosUploading, setPhotosUploading] = useState(false);
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
+      <input type="hidden" name="id" value={propertyId} />
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Codigo" htmlFor="code">
           <input
@@ -226,7 +230,11 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
         coordenadas y pegarlas acá.
       </p>
 
-      <PhotoUploader defaultPhotos={defaultValues?.photos} />
+      <PhotoUploader
+        propertyId={propertyId}
+        defaultPhotos={defaultValues?.photos}
+        onUploadingChange={setPhotosUploading}
+      />
 
       <fieldset className="flex flex-col gap-3 rounded-md border border-sb-border-subtle p-4">
         <legend className="px-1 text-xs font-medium text-sb-cream-muted">
@@ -284,10 +292,10 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
       <div className="flex items-center gap-3">
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || photosUploading}
           className="rounded-md bg-sb-accent px-5 py-2.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover disabled:opacity-60"
         >
-          {pending ? "Guardando..." : submitLabel}
+          {pending ? "Guardando..." : photosUploading ? "Subiendo fotos..." : submitLabel}
         </button>
       </div>
     </form>

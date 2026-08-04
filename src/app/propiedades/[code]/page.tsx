@@ -265,7 +265,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                 src={property.tour_url}
                 title={`Tour virtual — ${property.name}`}
                 className="h-full w-full"
-                sandbox="allow-scripts allow-same-origin allow-popups"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
                 loading="lazy"
                 allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; encrypted-media; picture-in-picture"
                 allowFullScreen

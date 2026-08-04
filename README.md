@@ -120,7 +120,7 @@ src/
     sitemap.ts / robots.ts            -> SEO
   components/
     PropertyForm.tsx                  -> form compartido entre alta y edicion (admin), fotos + lat/lng + datos del propietario
-    PhotoUploader.tsx                 -> upload de fotos reales (Supabase Storage) + reordenar/quitar (admin)
+    PhotoUploader.tsx                 -> upload de fotos directo del navegador a Supabase Storage (sin pasar por el servidor) + reordenar/quitar (admin)
     StatusSelect.tsx                  -> selector de estado (disponible/reservada/alquilada temporada) (admin)
     BookingForm.tsx                   -> alta de reserva (calendario de rango + huesped/monto/comision) (admin)
     CancelBookingButton.tsx           -> cancela una reserva y libera sus fechas (admin)
