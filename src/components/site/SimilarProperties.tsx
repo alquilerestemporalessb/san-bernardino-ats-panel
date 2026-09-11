@@ -48,7 +48,7 @@ export async function SimilarProperties({ excludeId, zone }: { excludeId: string
   if (properties.length === 0) return null;
 
   return (
-    <section className="mt-16 border-t border-site-border pt-12">
+    <section className="mt-24">
       <Reveal>
         <h2 className="font-display text-2xl font-semibold text-site-ink sm:text-3xl">
           Otras casas en San Ber que te pueden interesar

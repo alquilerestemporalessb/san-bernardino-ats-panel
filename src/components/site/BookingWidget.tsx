@@ -99,7 +99,7 @@ export function BookingWidget({
         numberOfMonths={1}
       />
       {property.min_nights > 1 && (
-        <p className="border-t border-site-border px-2 pt-2 text-xs text-site-ink-faint">
+        <p className="mt-2 px-2 text-xs text-site-ink-faint">
           Mínimo {property.min_nights} noches
         </p>
       )}
@@ -109,7 +109,7 @@ export function BookingWidget({
   return (
     <>
       {/* Desktop: tarjeta flotante sticky en la columna derecha */}
-      <div className="hidden flex-col gap-5 rounded-3xl border border-site-border bg-site-bg-elevated p-6 shadow-[0_20px_50px_rgba(36,31,24,0.12)] lg:sticky lg:top-24 lg:flex">
+      <div className="hidden flex-col gap-5 rounded-3xl bg-site-bg-elevated p-6 shadow-[0_40px_80px_rgba(36,31,24,0.05)] lg:sticky lg:top-24 lg:flex">
         {primary ? (
           <div>
             <p className="font-display text-2xl font-semibold text-site-ink">
@@ -157,7 +157,7 @@ export function BookingWidget({
       </div>
 
       {/* Mobile: barra fija abajo, con el CTA siempre a mano del pulgar */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-site-border bg-site-bg-elevated/95 px-4 py-3 shadow-[0_-10px_30px_rgba(36,31,24,0.14)] backdrop-blur-md lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 bg-site-bg-elevated/95 px-4 py-3 shadow-[0_-16px_40px_rgba(36,31,24,0.08)] backdrop-blur-md lg:hidden">
         <div className="min-w-0 flex-1">
           {primary ? (
             <p className="truncate text-sm font-semibold text-site-ink">

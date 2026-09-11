@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
@@ -181,16 +182,24 @@ export default async function HomePage({
 
               <CatalogFade>
                 {properties.length === 0 ? (
-                  <div className="flex flex-col items-center gap-4 rounded-2xl border border-site-border bg-site-bg-elevated px-6 py-16 text-center">
-                    <HouseGlyph className="h-12 w-12 text-site-ink-faint" />
+                  <div className="flex flex-col items-center gap-6 px-6 py-20 text-center">
+                    <HouseGlyph className="h-14 w-14 text-site-ink-faint/40" />
                     <p className="max-w-sm text-sm text-site-ink-muted">
                       {hasActiveFilters
                         ? "No encontramos propiedades con esos filtros — probá con otras fechas, capacidad o zona."
                         : "Estamos sumando las primeras propiedades verificadas. Muy pronto vas a poder verlas acá — mientras tanto, escribinos por WhatsApp y te contamos qué tenemos disponible."}
                     </p>
+                    {hasActiveFilters && (
+                      <Link
+                        href="/#catalogo"
+                        className="btn-press rounded-full bg-site-terracotta px-6 py-3 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+                      >
+                        Ver todo el catálogo
+                      </Link>
+                    )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
                     {properties.map((property, index) => (
                       <Reveal key={property.id} delayMs={(index % 3) * 80}>
                         <PropertyCard property={property} />

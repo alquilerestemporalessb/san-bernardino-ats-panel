@@ -17,7 +17,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
   const prices = priceLines(property);
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-stone-200/60 bg-site-bg-elevated shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
+    <article className="group flex flex-col overflow-hidden rounded-2xl bg-site-bg-elevated shadow-[0_30px_60px_rgba(36,31,24,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_40px_80px_rgba(36,31,24,0.09)]">
       <Link href={detailHref} className="relative block aspect-[4/3] overflow-hidden">
         {property.property_photos.length > 0 ? (
           <PropertyCardGallery photos={property.property_photos} alt={property.name} />

@@ -47,10 +47,13 @@ export function BathIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Marca a medida para listas/comparaciones — un trazo fino dentro de un circulo tenue, en vez
+// del tilde (check) generico de cualquier libreria de iconos.
 export function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M20 6 9 17l-5-5" />
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth={1.1} opacity={0.32} />
+      <path d="M8.25 12.4l2.35 2.35L15.85 9" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

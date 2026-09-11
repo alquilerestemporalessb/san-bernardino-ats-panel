@@ -15,7 +15,7 @@ export function DescriptionSections({ description }: { description: string | nul
           <div className="flex flex-col gap-2">
             {section.blocks.map((block, blockIndex) =>
               block.kind === "p" ? (
-                <p key={blockIndex} className="text-sm leading-relaxed text-stone-700">
+                <p key={blockIndex} className="max-w-prose text-sm leading-relaxed text-stone-700">
                   {block.text}
                 </p>
               ) : (

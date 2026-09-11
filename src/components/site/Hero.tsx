@@ -66,7 +66,7 @@ export function Hero() {
           </div>
 
           <dl
-            className="mt-14 grid w-full animate-fade-up grid-cols-3 gap-6 border-t border-site-border pt-7 sm:gap-10"
+            className="mt-20 grid w-full animate-fade-up grid-cols-3 gap-6 sm:gap-10"
             style={{ animationDelay: "320ms" }}
           >
             {stats.map((stat) => (
