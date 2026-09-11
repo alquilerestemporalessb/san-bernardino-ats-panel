@@ -14,3 +14,17 @@ export function buildWhatsappLink(property: Pick<Property, "code" | "name" | "wh
 export function buildGenericWhatsappLink(message: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
+
+/**
+ * Link de WhatsApp para el widget de reserva de la ficha: si el visitante eligio fechas en el
+ * calendario, el mensaje las incluye (formateadas es-PY) para que el equipo ya arranque la
+ * conversacion sabiendo que consulta. Sin fechas, cae al mensaje generico de siempre.
+ */
+export function buildBookingWhatsappLink(
+  property: Pick<Property, "code" | "name" | "whatsapp_message">,
+  dateRangeLabel?: string
+) {
+  if (!dateRangeLabel) return buildWhatsappLink(property);
+  const message = `Hola, quiero consultar disponibilidad de ${property.name} (${property.code}) del ${dateRangeLabel}, ¿sigue disponible?`;
+  return buildGenericWhatsappLink(message);
+}

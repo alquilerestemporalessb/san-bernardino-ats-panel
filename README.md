@@ -34,10 +34,40 @@ huésped):
 - **Imágenes decorativas** (Hero, Confianza, Propietarios) vienen de Unsplash —
   `src/lib/stock-images.ts` centraliza las URLs. Son las únicas imágenes de stock del sitio; el
   catálogo de propiedades siempre usa fotos reales de Supabase Storage.
-- **CTA de WhatsApp**: además del botón del Nav y el del Hero, hay un boton flotante fijo
-  (`StickyWhatsappFab.tsx`, con brillo pulsante) en todas las páginas públicas.
+- **CTA de WhatsApp**: además del botón del Nav, hay un boton flotante fijo (`StickyWhatsappFab.tsx`,
+  con brillo pulsante) en el catálogo (`/`). En la ficha de propiedad y en el comparador ese FAB no
+  se usa — en la ficha porque el `BookingWidget` ya trae su propio CTA siempre a mano, y en el
+  comparador porque cada fila de la tabla ya tiene su botón de WhatsApp.
 - `next.config.ts` ya permite cualquier host `https` en `images.remotePatterns` — no hizo falta
   agregar `images.unsplash.com` a mano.
+
+### Ficha de propiedad (`/propiedades/[code]`)
+
+- **Galería** (`Gallery.tsx`): grilla editorial (1 foto principal + 4 secundarias, "+N fotos" en la
+  última si hay mas) que abre un `Lightbox.tsx` a pantalla completa al hacer clic (flechas,
+  teclado, Escape). En mobile la grilla se reemplaza por una sola foto + chip "Ver las N fotos"
+  (la grilla de 4 columnas se ve demasiado apretada en una pantalla angosta).
+- **`BookingWidget.tsx`**: precio con equivalente aproximado en la otra moneda (usa la cotización de
+  `/admin/configuracion`), selector de fechas (`react-day-picker`, respeta fechas bloqueadas) con
+  estimado de noches × precio, y CTA de WhatsApp con mensaje dinámico que incluye el nombre de la
+  casa y las fechas elegidas. En desktop es una tarjeta sticky en la columna derecha; en mobile se
+  convierte en una barra fija abajo (`fixed bottom-0`) con el calendario en un bottom-sheet.
+- **`AmenitiesGrid.tsx`**: capacidad/zona/dormitorios/camas/baños + las amenities cargadas, todo en
+  una grilla de 2 columnas con ícono (`amenity-icons.tsx` mapea cada valor de `AMENITIES` a su
+  ícono).
+- **`TrustRulesSection.tsx`**: reexplica el sello verificado + reglas generales de check-in/pago —
+  a propósito no inventa horarios ni reglas puntuales por propiedad (no hay ese dato cargado); deja
+  claro que se confirman por WhatsApp.
+- **`SimilarProperties.tsx`**: franja final con otras propiedades activas (prioriza la misma zona),
+  reusa `PropertyCard` en una fila con scroll horizontal.
+
+### Catálogo (`/` — filtros)
+
+- `FilterBar` es `sticky` bajo el Nav con `backdrop-blur-md` mientras se scrollea el catálogo.
+- Cambiar un filtro no recarga la página (ya era navegación soft de Next.js) y ahora además
+  desvanece la grilla de resultados mientras carga la nueva, en vez de reemplazarla de golpe —
+  `CatalogTransition.tsx` comparte el `isPending` de un `useTransition` entre `FilterBar` (que
+  dispara la navegación) y la grilla (que se atenúa con `CatalogFade`).
 
 Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
 archivos reales desde `/admin` (Supabase Storage), dormitorios/camas/baños, amenities y un link
