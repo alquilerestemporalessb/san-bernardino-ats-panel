@@ -37,6 +37,21 @@ export function Lightbox({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
+  // Precarga la foto anterior y la siguiente (ademas de la actual) para que avanzar con las
+  // flechas sea instantaneo — antes cada clic montaba una <Image> nueva desde cero y se notaba
+  // la descarga como un trabon. Con solo 3 fotos "vivas" a la vez no se paga el costo de bajar
+  // la galeria entera si el visitante nunca llega a recorrerla completa.
+  const prevIndex = (index - 1 + photos.length) % photos.length;
+  const nextIndex = (index + 1) % photos.length;
+  const slides =
+    photos.length > 1
+      ? [
+          { slot: "prev" as const, photoIndex: prevIndex },
+          { slot: "current" as const, photoIndex: index },
+          { slot: "next" as const, photoIndex: nextIndex },
+        ]
+      : [{ slot: "current" as const, photoIndex: index }];
+
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col bg-site-ink/95 backdrop-blur-sm"
@@ -64,14 +79,20 @@ export function Lightbox({
           className="relative h-full w-full max-w-5xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <Image
-            src={photos[index].url}
-            alt={`${name} — foto ${index + 1}`}
-            fill
-            sizes="100vw"
-            priority
-            className="object-contain"
-          />
+          {slides.map(({ slot, photoIndex }) => (
+            <Image
+              key={slot}
+              src={photos[photoIndex].url}
+              alt={`${name} — foto ${photoIndex + 1}`}
+              fill
+              sizes="100vw"
+              priority={slot === "current"}
+              loading={slot === "current" ? undefined : "eager"}
+              className={`object-contain transition-opacity duration-200 ${
+                slot === "current" ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
         </div>
 
         {photos.length > 1 && (
