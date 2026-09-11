@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "./Reveal";
+import { STOCK_IMAGES } from "@/lib/stock-images";
 
 const testimonials = [
   {
@@ -21,17 +22,17 @@ const testimonials = [
 
 export function TrustSection() {
   return (
-    <section id="confianza" className="bg-sb-bg-sunken py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="confianza" className="bg-site-bg-sunken py-20 sm:py-28">
+      <div className="mx-auto max-w-7xl px-6">
         <Reveal>
           <div className="mb-14 max-w-xl">
-            <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
+            <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-site-terracotta">
               Confianza
             </span>
-            <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+            <h2 className="text-balance font-display text-3xl font-semibold leading-tight text-site-ink sm:text-4xl">
               Nada se publica sin que lo veamos primero
             </h2>
-            <p className="mt-4 text-lg text-sb-cream-muted">
+            <p className="mt-4 text-lg text-site-ink-muted">
               Así trabajamos: cada casa la visitamos, sacamos fotos reales y confirmamos que el
               contrato con el propietario está en regla.
             </p>
@@ -39,40 +40,49 @@ export function TrustSection() {
         </Reveal>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
-          <Reveal className="flex items-start gap-5 rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated p-8">
+          <Reveal className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-[0_20px_45px_rgba(36,31,24,0.14)] lg:aspect-auto">
             <Image
-              src="/verified-badge.svg"
-              alt="Propiedad Verificada ATS"
-              width={64}
-              height={64}
-              className="h-16 w-16 shrink-0"
+              src={STOCK_IMAGES.trust}
+              alt="Interior luminoso de una casa boutique en San Bernardino"
+              fill
+              sizes="(min-width: 1024px) 560px, 90vw"
+              className="object-cover"
             />
-            <div>
-              <h3 className="font-serif text-lg font-medium text-sb-cream">
-                Propiedad Verificada ATS
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-sb-cream-muted">
-                El sello indica que el equipo de San Bernardino ATS visitó la propiedad en persona,
-                verificó las fotos y las comodidades, y validó al propietario. Si una casa no tiene
-                el sello, está en proceso de verificación.
-              </p>
+            <div className="absolute inset-0 bg-gradient-to-t from-site-ink/75 via-site-ink/10 to-transparent" />
+            <div className="absolute inset-x-6 bottom-6 flex items-start gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md">
+              <Image
+                src="/verified-badge.svg"
+                alt="Propiedad Verificada ATS"
+                width={52}
+                height={52}
+                className="h-[52px] w-[52px] shrink-0"
+              />
+              <div>
+                <h3 className="font-display text-lg font-semibold text-white">
+                  Propiedad Verificada ATS
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/80">
+                  El sello indica que visitamos la propiedad en persona, verificamos fotos y
+                  comodidades, y validamos al propietario.
+                </p>
+              </div>
             </div>
           </Reveal>
 
           <div className="flex flex-col gap-4">
             {testimonials.map((t, index) => (
               <Reveal key={t.author} delayMs={index * 100}>
-                <figure className="relative rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated p-6">
+                <figure className="relative rounded-2xl border border-site-border bg-site-bg-elevated p-6 shadow-[0_10px_26px_rgba(36,31,24,0.06)]">
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -top-2 left-5 font-serif text-5xl text-sb-accent/25"
+                    className="pointer-events-none absolute -top-3 left-5 font-display text-5xl text-site-terracotta/25"
                   >
                     &ldquo;
                   </span>
-                  <blockquote className="relative text-sm italic leading-relaxed text-sb-cream">
+                  <blockquote className="relative text-sm italic leading-relaxed text-site-ink">
                     {t.quote}
                   </blockquote>
-                  <figcaption className="mt-3 text-xs tracking-wide text-sb-accent">
+                  <figcaption className="mt-3 text-xs font-medium tracking-wide text-site-terracotta">
                     — {t.author}
                   </figcaption>
                 </figure>

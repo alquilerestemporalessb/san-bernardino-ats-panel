@@ -59,18 +59,18 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
   const properties = await getProperties(codes);
 
   return (
-    <>
+    <div className="bg-site-bg font-ui text-site-ink">
       <Nav />
-      <main className="mx-auto max-w-6xl px-6 pb-28 pt-10 sm:pt-14">
-        <Link href="/#catalogo" className="text-xs text-sb-cream-faint hover:text-sb-cream-muted">
+      <main className="mx-auto max-w-7xl px-6 pb-28 pt-10 sm:pt-14">
+        <Link href="/#catalogo" className="text-xs text-site-ink-faint hover:text-site-ink-muted">
           ← Volver al catálogo
         </Link>
 
-        <h1 className="mt-4 font-serif text-3xl text-sb-cream">Comparar propiedades</h1>
+        <h1 className="mt-4 font-display text-3xl text-site-ink">Comparar propiedades</h1>
 
         {properties.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated px-6 py-16 text-center">
-            <p className="text-sm text-sb-cream-muted">
+          <div className="mt-8 rounded-2xl border border-site-border bg-site-bg-elevated px-6 py-16 text-center">
+            <p className="text-sm text-site-ink-muted">
               No elegiste propiedades para comparar. Volvé al catálogo y marcá &quot;Comparar&quot;
               en las que te interesen.
             </p>
@@ -82,7 +82,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                 <tr>
                   <RowLabel />
                   {properties.map((p) => (
-                    <td key={p.id} className="border-b border-sb-border-subtle px-4 py-4 align-top">
+                    <td key={p.id} className="border-b border-site-border px-4 py-4 align-top">
                       <div className="relative aspect-[4/3] w-48 overflow-hidden rounded-xl">
                         {p.property_photos[0] ? (
                           <Image
@@ -98,11 +98,11 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                       </div>
                       <Link
                         href={`/propiedades/${p.code.toLowerCase()}`}
-                        className="mt-2 block font-serif text-base text-sb-cream hover:text-sb-accent"
+                        className="mt-2 block font-display text-base text-site-ink hover:text-site-terracotta"
                       >
                         {p.name}
                       </Link>
-                      <p className="text-xs text-sb-cream-faint">{p.code}</p>
+                      <p className="text-xs text-site-ink-faint">{p.code}</p>
                     </td>
                   ))}
                 </tr>
@@ -126,7 +126,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                   {properties.map((p) => (
                     <Cell key={p.id}>
                       <span className="inline-flex items-center gap-1.5">
-                        <PeopleIcon className="h-4 w-4 text-sb-accent" /> Hasta {p.capacity} personas
+                        <PeopleIcon className="h-4 w-4 text-site-terracotta" /> Hasta {p.capacity} personas
                       </span>
                     </Cell>
                   ))}
@@ -136,7 +136,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                   {properties.map((p) => (
                     <Cell key={p.id}>
                       <span className="inline-flex items-center gap-1.5">
-                        <PinIcon className="h-4 w-4 text-sb-accent" /> {p.zone}
+                        <PinIcon className="h-4 w-4 text-site-terracotta" /> {p.zone}
                       </span>
                     </Cell>
                   ))}
@@ -146,7 +146,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                   {properties.map((p) => (
                     <Cell key={p.id}>
                       <span className="inline-flex items-center gap-1.5">
-                        <BedIcon className="h-4 w-4 text-sb-accent" /> {p.bedrooms ?? "—"}
+                        <BedIcon className="h-4 w-4 text-site-terracotta" /> {p.bedrooms ?? "—"}
                       </span>
                     </Cell>
                   ))}
@@ -156,7 +156,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                   {properties.map((p) => (
                     <Cell key={p.id}>
                       <span className="inline-flex items-center gap-1.5">
-                        <BedIcon className="h-4 w-4 text-sb-accent" /> {p.beds ?? "—"}
+                        <BedIcon className="h-4 w-4 text-site-terracotta" /> {p.beds ?? "—"}
                       </span>
                     </Cell>
                   ))}
@@ -166,7 +166,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                   {properties.map((p) => (
                     <Cell key={p.id}>
                       <span className="inline-flex items-center gap-1.5">
-                        <BathIcon className="h-4 w-4 text-sb-accent" /> {p.bathrooms ?? "—"}
+                        <BathIcon className="h-4 w-4 text-site-terracotta" /> {p.bathrooms ?? "—"}
                       </span>
                     </Cell>
                   ))}
@@ -176,9 +176,9 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                   {properties.map((p) => (
                     <Cell key={p.id}>
                       {p.verified ? (
-                        <CheckIcon className="h-4 w-4 text-sb-accent" />
+                        <CheckIcon className="h-4 w-4 text-site-terracotta" />
                       ) : (
-                        <span className="text-sb-cream-faint">—</span>
+                        <span className="text-site-ink-faint">—</span>
                       )}
                     </Cell>
                   ))}
@@ -189,9 +189,9 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                     {properties.map((p) => (
                       <Cell key={p.id}>
                         {p.amenities.includes(amenity.value) ? (
-                          <CheckIcon className="h-4 w-4 text-sb-accent" />
+                          <CheckIcon className="h-4 w-4 text-site-terracotta" />
                         ) : (
-                          <span className="text-sb-cream-faint">—</span>
+                          <span className="text-site-ink-faint">—</span>
                         )}
                       </Cell>
                     ))}
@@ -205,7 +205,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                       <WhatsappCtaLink
                         propertyId={p.id}
                         href={buildWhatsappLink(p)}
-                        className="btn-press inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-4 py-2.5 text-xs font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
+                        className="btn-press inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-4 py-2.5 text-xs font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
                       >
                         <WhatsappIcon className="h-4 w-4" />
                         {isPropertyAvailable(p.status) ? "Consultar" : "Consultar disponibilidad"}
@@ -220,20 +220,20 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
       </main>
       <CompareBar />
       <Footer />
-    </>
+    </div>
   );
 }
 
 function RowLabel() {
   return (
-    <td className="sticky left-0 border-b border-sb-border-subtle bg-sb-bg px-4 py-4 align-top text-xs font-medium text-sb-cream-faint" />
+    <td className="sticky left-0 border-b border-site-border bg-site-bg px-4 py-4 align-top text-xs font-medium text-site-ink-faint" />
   );
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <tr>
-      <td className="sticky left-0 border-b border-sb-border-subtle bg-sb-bg px-4 py-4 align-top text-xs font-medium text-sb-cream-faint">
+      <td className="sticky left-0 border-b border-site-border bg-site-bg px-4 py-4 align-top text-xs font-medium text-site-ink-faint">
         {label}
       </td>
       {children}
@@ -243,7 +243,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 
 function Cell({ children }: { children: React.ReactNode }) {
   return (
-    <td className="border-b border-sb-border-subtle px-4 py-4 align-top text-sb-cream-muted">
+    <td className="border-b border-site-border px-4 py-4 align-top text-site-ink-muted">
       {children}
     </td>
   );

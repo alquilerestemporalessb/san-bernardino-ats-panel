@@ -34,21 +34,21 @@ export function CompareBar() {
   for (const c of selected) compareParams.append("compare", c);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-sb-border-subtle bg-sb-bg-elevated/95 backdrop-blur-sm">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-site-border bg-site-bg-elevated/95 shadow-[0_-12px_30px_rgba(36,31,24,0.1)] backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-6 py-3">
-        <span className="text-xs font-medium text-sb-cream-muted">Comparar:</span>
+        <span className="text-xs font-medium text-site-ink-muted">Comparar:</span>
         <div className="flex flex-wrap items-center gap-2">
           {selected.map((code) => (
             <span
               key={code}
-              className="inline-flex items-center gap-1.5 rounded-full border border-sb-border-subtle bg-sb-bg px-3 py-1 text-xs text-sb-cream"
+              className="inline-flex items-center gap-1.5 rounded-full border border-site-border bg-site-bg px-3 py-1 text-xs text-site-ink"
             >
               {code.toUpperCase()}
               <button
                 type="button"
                 onClick={() => remove(code)}
                 aria-label={`Quitar ${code.toUpperCase()} de la comparacion`}
-                className="text-sb-cream-faint hover:text-sb-danger"
+                className="text-site-ink-faint hover:text-site-danger"
               >
                 ×
               </button>
@@ -59,13 +59,13 @@ export function CompareBar() {
           <button
             type="button"
             onClick={clear}
-            className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
+            className="text-xs font-medium text-site-ink-muted hover:text-site-ink"
           >
             Limpiar
           </button>
           <Link
             href={`/comparar?${compareParams.toString()}`}
-            className="btn-press rounded-md bg-sb-accent px-4 py-2 text-xs font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
+            className="btn-press rounded-full bg-site-terracotta px-4 py-2 text-xs font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
           >
             Comparar ({selected.length})
           </Link>

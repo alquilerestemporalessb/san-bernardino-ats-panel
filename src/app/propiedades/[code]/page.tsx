@@ -11,6 +11,7 @@ import { priceLines } from "@/lib/rental-pricing";
 import { amenityLabel } from "@/lib/amenities";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
+import { StickyWhatsappFab } from "@/components/site/StickyWhatsappFab";
 import { Gallery } from "@/components/site/Gallery";
 import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "@/components/site/icons";
 import { WhatsappCtaLink } from "@/components/site/WhatsappCtaLink";
@@ -158,28 +159,30 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
   };
 
   return (
-    <>
+    <div className="bg-site-bg font-ui text-site-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Nav />
-      <main className="mx-auto max-w-6xl px-6 py-10 sm:py-14">
-        <Link href="/#catalogo" className="text-xs text-sb-cream-faint hover:text-sb-cream-muted">
+      <main className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
+        <Link href="/#catalogo" className="text-xs text-site-ink-faint hover:text-site-ink-muted">
           ← Volver al catálogo
         </Link>
 
         <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
-          <Gallery photos={property.property_photos} name={property.name} />
+          <div className="min-w-0">
+            <Gallery photos={property.property_photos} name={property.name} />
+          </div>
 
-          <div className="flex flex-col gap-6 lg:sticky lg:top-24">
+          <div className="min-w-0 flex flex-col gap-6 lg:sticky lg:top-24">
             <div>
               <div className="mb-3 flex items-center gap-3">
-                <span className="rounded-full border border-sb-border-accent bg-sb-accent-muted px-3 py-1 text-xs font-semibold tracking-wide text-sb-accent">
+                <span className="rounded-full border border-site-terracotta bg-site-terracotta-muted px-3 py-1 text-xs font-semibold tracking-wide text-site-terracotta">
                   {property.code}
                 </span>
                 {statusLabel && (
-                  <span className="rounded-full border border-sb-border-accent bg-sb-bg px-3 py-1 text-xs font-semibold tracking-wide text-sb-accent">
+                  <span className="rounded-full border border-site-terracotta bg-site-bg px-3 py-1 text-xs font-semibold tracking-wide text-site-terracotta">
                     {statusLabel}
                   </span>
                 )}
@@ -193,34 +196,34 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                 )}
               </div>
 
-              <h1 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+              <h1 className="text-balance font-display text-3xl font-semibold leading-tight text-site-ink sm:text-4xl">
                 {property.name}
               </h1>
 
               <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
-                <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
-                  <PeopleIcon className="h-4 w-4 text-sb-accent" />
+                <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
+                  <PeopleIcon className="h-4 w-4 text-site-terracotta" />
                   Hasta {property.capacity} personas
                 </li>
-                <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
-                  <PinIcon className="h-4 w-4 text-sb-accent" />
+                <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
+                  <PinIcon className="h-4 w-4 text-site-terracotta" />
                   {property.zone}
                 </li>
                 {property.bedrooms !== null && (
-                  <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
-                    <BedIcon className="h-4 w-4 text-sb-accent" />
+                  <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
+                    <BedIcon className="h-4 w-4 text-site-terracotta" />
                     {property.bedrooms} dormitorio{property.bedrooms === 1 ? "" : "s"}
                   </li>
                 )}
                 {property.beds !== null && (
-                  <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
-                    <BedIcon className="h-4 w-4 text-sb-accent" />
+                  <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
+                    <BedIcon className="h-4 w-4 text-site-terracotta" />
                     {property.beds} cama{property.beds === 1 ? "" : "s"}
                   </li>
                 )}
                 {property.bathrooms !== null && (
-                  <li className="inline-flex items-center gap-1.5 text-sm text-sb-cream-muted">
-                    <BathIcon className="h-4 w-4 text-sb-accent" />
+                  <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
+                    <BathIcon className="h-4 w-4 text-site-terracotta" />
                     {property.bathrooms} baño{property.bathrooms === 1 ? "" : "s"}
                   </li>
                 )}
@@ -231,7 +234,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                   {property.amenities.map((amenity) => (
                     <li
                       key={amenity}
-                      className="rounded-full border border-sb-border-subtle px-3 py-1 text-xs text-sb-cream-muted"
+                      className="rounded-full border border-site-border px-3 py-1 text-xs text-site-ink-muted"
                     >
                       {amenityLabel(amenity)}
                     </li>
@@ -241,23 +244,23 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
             </div>
 
             {property.description && (
-              <p className="text-pretty text-sm leading-relaxed text-sb-cream-muted">
+              <p className="text-pretty text-sm leading-relaxed text-site-ink-muted">
                 {property.description}
               </p>
             )}
 
-            <div className="flex flex-col gap-1 text-lg font-medium text-sb-cream">
+            <div className="flex flex-col gap-1 text-lg font-medium text-site-ink">
               {prices.length > 0 ? (
                 prices.map((line) => <p key={line}>{line}</p>)
               ) : (
-                <p className="text-sm font-normal text-sb-cream-muted">Consultar precio</p>
+                <p className="text-sm font-normal text-site-ink-muted">Consultar precio</p>
               )}
             </div>
 
             <WhatsappCtaLink
               propertyId={property.id}
               href={buildWhatsappLink(property)}
-              className="btn-press inline-flex items-center justify-center gap-2 rounded-md bg-sb-accent px-6 py-3.5 text-sm font-semibold text-sb-bg transition-colors hover:bg-sb-accent-hover"
+              className="btn-press inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-6 py-3.5 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
             >
               <WhatsappIcon className="h-[18px] w-[18px]" />
               {available ? "Consultar por WhatsApp" : "Consultar disponibilidad"}
@@ -267,8 +270,8 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
 
         {property.tour_url && (
           <div className="mt-12">
-            <h2 className="mb-4 font-serif text-xl text-sb-cream">Tour virtual</h2>
-            <div className="aspect-video w-full overflow-hidden rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated">
+            <h2 className="mb-4 font-display text-xl text-site-ink">Tour virtual</h2>
+            <div className="aspect-video w-full overflow-hidden rounded-2xl border border-site-border bg-site-bg-elevated">
               <iframe
                 src={property.tour_url}
                 title={`Tour virtual — ${property.name}`}
@@ -282,7 +285,8 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
           </div>
         )}
       </main>
+      <StickyWhatsappFab />
       <Footer />
-    </>
+    </div>
   );
 }

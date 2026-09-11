@@ -13,6 +13,32 @@ Este proyecto Next.js sirve **las dos cosas**:
 son "el sitio" — quedan como material de referencia para handoff a Canva/diseñador (ver
 `../landing/README.md`). El sitio real es este proyecto.
 
+## Diseño del sitio público (rediseño editorial)
+
+El sitio público (`/`, `/propiedades/[code]`, `/comparar`) tiene su **propio sistema de diseño**,
+separado del panel admin (que sigue oscuro/azul noche, es una herramienta interna, no lo ve el
+huésped):
+
+- **Paleta**: fondo crema roto (`--site-bg`), tinta casi negra cálida (`--site-ink`), terracota
+  (`--site-terracotta` — el mismo bronce de marca, `#9d6540`, del logo) y verde oliva
+  (`--site-olive`) como acento secundario para propietarios. Tokens en `src/app/globals.css`
+  (Tailwind v4, `@theme`, prefijo `site-` — ej. `bg-site-bg`, `text-site-ink-muted`).
+- **Tipografía**: Playfair Display (`font-display`) para titulares editoriales, Plus Jakarta Sans
+  (`font-ui`) para el resto. Cargadas en `layout.tsx` vía `next/font/google`, no pisan
+  Fraunces/Inter del panel admin.
+- **Hero asimétrico** (`Hero.tsx`): collage de dos fotos + card flotante de "verificadas", no el
+  bloque de texto centrado de antes.
+- **Tarjetas de propiedad** (`PropertyCard.tsx` + `PropertyCardGallery.tsx`): al pasar el mouse
+  rotan entre las fotos reales de la propiedad (crossfade + puntitos), con zoom sutil — las fotos
+  siguen siendo 100% las que carga el equipo ATS, nunca se reemplazan por stock.
+- **Imágenes decorativas** (Hero, Confianza, Propietarios) vienen de Unsplash —
+  `src/lib/stock-images.ts` centraliza las URLs. Son las únicas imágenes de stock del sitio; el
+  catálogo de propiedades siempre usa fotos reales de Supabase Storage.
+- **CTA de WhatsApp**: además del botón del Nav y el del Hero, hay un boton flotante fijo
+  (`StickyWhatsappFab.tsx`, con brillo pulsante) en todas las páginas públicas.
+- `next.config.ts` ya permite cualquier host `https` en `images.remotePatterns` — no hizo falta
+  agregar `images.unsplash.com` a mano.
+
 Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
 archivos reales desde `/admin` (Supabase Storage), dormitorios/camas/baños, amenities y un link
 opcional a un tour virtual externo (ej. Polycam) o video. El precio admite cualquier combinación de
