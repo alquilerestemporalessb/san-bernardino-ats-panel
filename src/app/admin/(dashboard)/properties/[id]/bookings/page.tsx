@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { BookingForm } from "@/components/BookingForm";
 import { CancelBookingButton } from "@/components/CancelBookingButton";
 import { formatDateEs } from "@/lib/dates";
-import { formatGs } from "@/lib/currency";
+import { formatMoney } from "@/lib/currency";
 
 export default async function PropertyBookingsPage(
   props: PageProps<"/admin/properties/[id]/bookings">
@@ -68,8 +68,8 @@ export default async function PropertyBookingsPage(
                   </div>
                   <div className="mt-1 flex flex-wrap items-center justify-between gap-2 text-sb-cream-muted">
                     <span>
-                      {formatGs(booking.amount)} · comision {booking.commission_pct}% (
-                      {formatGs(commission)})
+                      {formatMoney(booking.amount, booking.currency)} · comision{" "}
+                      {booking.commission_pct}% ({formatMoney(commission, booking.currency)})
                     </span>
                     {cancelled ? (
                       <span className="text-xs font-medium text-sb-danger">Cancelada</span>

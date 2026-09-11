@@ -13,7 +13,8 @@ import { Footer } from "@/components/site/Footer";
 import { HouseGlyph } from "@/components/site/icons";
 import { getSiteUrl } from "@/lib/site-url";
 import { fromISODate } from "@/lib/dates";
-import type { PropertyWithPhotos } from "@/types/database";
+import { convert, getUsdToPygRate } from "@/lib/exchange-rate";
+import type { Currency, PropertyWithPhotos } from "@/types/database";
 
 // Depende de datos en vivo (lo que se carga en /admin tiene que verse aca al instante) — nunca
 // pre-renderizar estatico. Tambien evita que el build intente prerenderizarla contra Supabase.
@@ -25,6 +26,7 @@ interface Filters {
   checkin?: string;
   checkout?: string;
   maxPrice?: string;
+  priceCurrency?: string;
   bedrooms?: string;
   amenities?: string | string[];
 }
@@ -52,7 +54,6 @@ async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhot
 
     if (filters.capacity) query = query.gte("capacity", Number(filters.capacity));
     if (filters.zone) query = query.eq("zone", filters.zone);
-    if (filters.maxPrice) query = query.lte("price_per_night", Number(filters.maxPrice));
     if (filters.bedrooms) query = query.gte("bedrooms", Number(filters.bedrooms));
     if (filters.amenities) {
       const amenities = Array.isArray(filters.amenities) ? filters.amenities : [filters.amenities];
@@ -65,6 +66,19 @@ async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhot
       return [];
     }
     let properties = data ?? [];
+
+    // Filtro por precio/noche maximo: se compara convirtiendo cada precio (en su moneda) a la
+    // moneda elegida en el filtro, con la cotizacion vigente. Una propiedad en Gs entra si su
+    // equivalente en USD cae en el rango, y viceversa. Sin precio/noche cargado -> queda afuera.
+    const maxPrice = Number(filters.maxPrice);
+    if (filters.maxPrice && Number.isFinite(maxPrice) && properties.length > 0) {
+      const target: Currency = filters.priceCurrency === "USD" ? "USD" : "PYG";
+      const rate = await getUsdToPygRate(supabase);
+      properties = properties.filter((p) => {
+        if (p.price_per_night == null) return false;
+        return convert(p.price_per_night, p.price_per_night_currency, target, rate) <= maxPrice;
+      });
+    }
 
     if (filters.checkin && filters.checkout && properties.length > 0) {
       const { data: blocked } = await supabase

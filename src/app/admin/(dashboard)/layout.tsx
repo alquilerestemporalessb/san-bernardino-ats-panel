@@ -36,6 +36,12 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
               Métricas
             </Link>
             <Link
+              href="/admin/configuracion"
+              className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"
+            >
+              Configuración
+            </Link>
+            <Link
               href="/"
               target="_blank"
               className="text-xs font-medium text-sb-cream-muted hover:text-sb-cream"

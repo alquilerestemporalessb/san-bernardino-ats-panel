@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import type { PropertyFormState } from "@/lib/actions/properties";
-import type { Property } from "@/types/database";
+import type { Currency, Property } from "@/types/database";
 import { AMENITIES } from "@/lib/amenities";
 
 const initialState: PropertyFormState = {};
@@ -74,18 +74,13 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
       </Field>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Precio por noche en Gs. (opcional)" htmlFor="price_per_night">
-          <input
-            id="price_per_night"
-            name="price_per_night"
-            type="number"
-            min={0}
-            step="1"
-            placeholder="450000"
-            defaultValue={defaultValues?.price_per_night ?? ""}
-            className={inputClass}
-          />
-        </Field>
+        <PriceField
+          label="Precio por noche (opcional)"
+          name="price_per_night"
+          placeholder="450000"
+          defaultValue={defaultValues?.price_per_night ?? ""}
+          defaultCurrency={defaultValues?.price_per_night_currency ?? "PYG"}
+        />
         <Field label="Minimo de noches (para alquiler por noche)" htmlFor="min_nights">
           <input
             id="min_nights"
@@ -100,34 +95,25 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Precio por semana en Gs. (opcional)" htmlFor="price_per_week">
-          <input
-            id="price_per_week"
-            name="price_per_week"
-            type="number"
-            min={0}
-            step="1"
-            placeholder="2500000"
-            defaultValue={defaultValues?.price_per_week ?? ""}
-            className={inputClass}
-          />
-        </Field>
-        <Field label="Precio por mes en Gs. (opcional)" htmlFor="price_per_month">
-          <input
-            id="price_per_month"
-            name="price_per_month"
-            type="number"
-            min={0}
-            step="1"
-            placeholder="8000000"
-            defaultValue={defaultValues?.price_per_month ?? ""}
-            className={inputClass}
-          />
-        </Field>
+        <PriceField
+          label="Precio por semana (opcional)"
+          name="price_per_week"
+          placeholder="2500000"
+          defaultValue={defaultValues?.price_per_week ?? ""}
+          defaultCurrency={defaultValues?.price_per_week_currency ?? "PYG"}
+        />
+        <PriceField
+          label="Precio por mes (opcional)"
+          name="price_per_month"
+          placeholder="8000000"
+          defaultValue={defaultValues?.price_per_month ?? ""}
+          defaultCurrency={defaultValues?.price_per_month_currency ?? "PYG"}
+        />
       </div>
       <p className="-mt-3 text-xs text-sb-cream-faint">
         Cargá cualquier combinación de precios según cómo se alquile la propiedad — si solo alquilás
-        por mes (ej. enero), dejá el precio por noche vacío.
+        por mes (ej. enero), dejá el precio por noche vacío. Cada precio puede ir en guaraníes o en
+        dólares.
       </p>
 
       <div className="grid gap-5 sm:grid-cols-3">
@@ -304,6 +290,50 @@ export function PropertyForm({ action, defaultValues, submitLabel }: PropertyFor
 
 const inputClass =
   "rounded-md border border-sb-border-subtle bg-sb-bg-elevated px-3.5 py-2.5 text-sm text-sb-cream outline-none focus:border-sb-border-accent";
+
+/** Campo de precio: monto + selector de moneda (Gs / USD) en la misma fila. */
+function PriceField({
+  label,
+  name,
+  placeholder,
+  defaultValue,
+  defaultCurrency,
+}: {
+  label: string;
+  name: string;
+  placeholder: string;
+  defaultValue: number | string;
+  defaultCurrency: Currency;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={name} className="text-xs font-medium text-sb-cream-muted">
+        {label}
+      </label>
+      <div className="flex gap-2">
+        <input
+          id={name}
+          name={name}
+          type="number"
+          min={0}
+          step="1"
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          className={`${inputClass} min-w-0 flex-1`}
+        />
+        <select
+          name={`${name}_currency`}
+          defaultValue={defaultCurrency}
+          aria-label={`Moneda — ${label}`}
+          className={`${inputClass} w-20 shrink-0`}
+        >
+          <option value="PYG">Gs</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+    </div>
+  );
+}
 
 function Field({
   label,

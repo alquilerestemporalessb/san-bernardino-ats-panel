@@ -17,6 +17,9 @@ export function FilterBar({ zones }: { zones: string[] }) {
   const [capacity, setCapacity] = useState(searchParams.get("capacity") ?? "");
   const [zone, setZone] = useState(searchParams.get("zone") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") ?? "");
+  const [priceCurrency, setPriceCurrency] = useState(
+    searchParams.get("priceCurrency") === "USD" ? "USD" : "PYG"
+  );
   const [bedrooms, setBedrooms] = useState(searchParams.get("bedrooms") ?? "");
   const [amenities, setAmenities] = useState<string[]>(searchParams.getAll("amenities"));
   const [range, setRange] = useState<DateRange | undefined>(() => {
@@ -56,7 +59,10 @@ export function FilterBar({ zones }: { zones: string[] }) {
     const params = new URLSearchParams();
     if (capacity) params.set("capacity", capacity);
     if (zone) params.set("zone", zone);
-    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (maxPrice) {
+      params.set("maxPrice", maxPrice);
+      if (priceCurrency === "USD") params.set("priceCurrency", "USD");
+    }
     if (bedrooms) params.set("bedrooms", bedrooms);
     for (const amenity of amenities) params.append("amenities", amenity);
     if (range?.from) params.set("checkin", toISODate(range.from));
@@ -71,6 +77,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
     setCapacity("");
     setZone("");
     setMaxPrice("");
+    setPriceCurrency("PYG");
     setBedrooms("");
     setAmenities([]);
     setRange(undefined);
@@ -157,15 +164,26 @@ export function FilterBar({ zones }: { zones: string[] }) {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
-        <input
-          type="number"
-          min={0}
-          step="1"
-          placeholder="Precio por noche max. (Gs.)"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          className="rounded-md border border-sb-border-subtle bg-sb-bg px-3.5 py-2.5 text-sm text-sb-cream outline-none transition-colors hover:border-sb-border-accent sm:w-48"
-        />
+        <div className="flex gap-2 sm:w-72">
+          <input
+            type="number"
+            min={0}
+            step="1"
+            placeholder="Precio máx. / noche"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            className="min-w-0 flex-1 rounded-md border border-sb-border-subtle bg-sb-bg px-3.5 py-2.5 text-sm text-sb-cream outline-none transition-colors hover:border-sb-border-accent"
+          />
+          <select
+            value={priceCurrency}
+            onChange={(e) => setPriceCurrency(e.target.value)}
+            aria-label="Moneda del precio máximo"
+            className="w-20 shrink-0 rounded-md border border-sb-border-subtle bg-sb-bg px-2 py-2.5 text-sm text-sb-cream outline-none transition-colors hover:border-sb-border-accent"
+          >
+            <option value="PYG">Gs</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
 
         <select
           value={bedrooms}
