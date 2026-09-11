@@ -39,7 +39,7 @@ export function Nav() {
           href={buildGenericWhatsappLink("Hola, quiero consultar por una casa en San Bernardino.")}
           target="_blank"
           rel="noopener"
-          className="btn-press animate-pulse-glow inline-flex items-center gap-2 rounded-full bg-site-terracotta px-4 py-2 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+          className="btn-press animate-pulse-glow inline-flex items-center gap-2 rounded-full bg-site-whatsapp px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
         >
           <WhatsappIcon className="h-4 w-4" />
           <span className="hidden sm:inline">WhatsApp</span>

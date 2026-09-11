@@ -34,8 +34,13 @@
   --site-bg-elevated: #ffffff;
   --site-bg-sunken: #f2ede2;
   --site-ink: #241f18;
-  --site-ink-muted: rgba(36, 31, 24, 0.64);
-  --site-ink-faint: rgba(36, 31, 24, 0.44);
+  /*
+    Antes eran rgba(36,31,24, .64/.44) — con letras chicas sobre el crema quedaban demasiado
+    lavadas (bajo contraste). Colores solidos, equivalentes a stone-600/stone-500 de Tailwind,
+    para que el cuerpo de texto secundario se lea bien sin depender de que fondo tenga atras.
+  */
+  --site-ink-muted: #57534e;
+  --site-ink-faint: #78716c;
 
   --site-terracotta: #9d6540;
   --site-terracotta-hover: #b67a50;
@@ -45,6 +50,11 @@
   --site-olive: #4b5a34;
   --site-olive-hover: #5d7042;
   --site-olive-muted: rgba(75, 90, 52, 0.1);
+
+  /* Verde reservado EXCLUSIVAMENTE para acciones de WhatsApp — el terracota es el color de
+     marca para todo lo demas (botones primarios, navegacion, filtros). */
+  --site-whatsapp: #25d366;
+  --site-whatsapp-hover: #1fb955;
 
   --site-border: rgba(36, 31, 24, 0.12);
   --site-border-strong: rgba(36, 31, 24, 0.24);
@@ -89,6 +99,9 @@
   --color-site-olive: var(--site-olive);
   --color-site-olive-hover: var(--site-olive-hover);
   --color-site-olive-muted: var(--site-olive-muted);
+
+  --color-site-whatsapp: var(--site-whatsapp);
+  --color-site-whatsapp-hover: var(--site-whatsapp-hover);
 
   --color-site-border: var(--site-border);
   --color-site-border-strong: var(--site-border-strong);
@@ -183,15 +196,16 @@ body {
   animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Brillo respirando, para el CTA de WhatsApp (nav, hero, barra sticky mobile) — imposible de
-   ignorar sin ser una animacion agresiva tipo banner. */
+/* Brillo respirando, para el CTA de WhatsApp (nav, hero, widget, barra sticky mobile) — imposible
+   de ignorar sin ser una animacion agresiva tipo banner. Verde WhatsApp, no terracota: solo se usa
+   en botones de WhatsApp. */
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(157, 101, 64, 0.45);
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.45);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(157, 101, 64, 0);
+    box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
   }
 }
 .animate-pulse-glow {

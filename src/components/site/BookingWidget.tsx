@@ -146,7 +146,7 @@ export function BookingWidget({
         <WhatsappCtaLink
           propertyId={property.id}
           href={whatsappHref}
-          className="btn-press animate-pulse-glow inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-6 py-3.5 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+          className="btn-press animate-pulse-glow inline-flex items-center justify-center gap-2 rounded-full bg-site-whatsapp px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
         >
           <WhatsappIcon className="h-[18px] w-[18px]" />
           {ctaLabel}
@@ -178,7 +178,7 @@ export function BookingWidget({
         <WhatsappCtaLink
           propertyId={property.id}
           href={whatsappHref}
-          className="btn-press inline-flex shrink-0 items-center gap-2 rounded-full bg-site-terracotta px-5 py-3 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+          className="btn-press inline-flex shrink-0 items-center gap-2 rounded-full bg-site-whatsapp px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
         >
           <WhatsappIcon className="h-[18px] w-[18px]" />
           WhatsApp

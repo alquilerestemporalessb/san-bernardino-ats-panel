@@ -14,7 +14,7 @@ export function StickyWhatsappFab() {
       target="_blank"
       rel="noopener"
       aria-label="Consultar por WhatsApp"
-      className="btn-press animate-pulse-glow fixed bottom-24 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-site-terracotta text-site-bg shadow-[0_14px_30px_rgba(157,101,64,0.45)] transition-colors hover:bg-site-terracotta-hover"
+      className="btn-press animate-pulse-glow fixed bottom-24 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-site-whatsapp text-white shadow-[0_14px_30px_rgba(37,211,102,0.45)] transition-colors hover:bg-site-whatsapp-hover"
     >
       <WhatsappIcon className="h-6 w-6" />
     </a>

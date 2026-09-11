@@ -42,7 +42,7 @@ export function OwnersSection() {
             )}
             target="_blank"
             rel="noopener"
-            className="btn-press mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-site-olive px-7 py-3.5 text-sm font-semibold text-site-bg transition-colors hover:bg-site-olive-hover"
+            className="btn-press mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-site-whatsapp px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
           >
             <WhatsappIcon className="h-[18px] w-[18px]" />
             Sumar mi propiedad, es gratis
