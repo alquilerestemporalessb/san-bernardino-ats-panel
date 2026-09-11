@@ -9,6 +9,7 @@ import { STATUS_BADGE_LABELS } from "@/lib/property-status";
 import { getUsdToPygRate } from "@/lib/exchange-rate";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
+import { ScrollToTop } from "@/components/site/ScrollToTop";
 import { Gallery } from "@/components/site/Gallery";
 import { AmenitiesGrid } from "@/components/site/AmenitiesGrid";
 import { DescriptionSections } from "@/components/site/DescriptionSections";
@@ -180,6 +181,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <ScrollToTop />
       <Nav />
       {/* pb-24 hasta lg: deja lugar a la barra fija del BookingWidget (solo visible <lg) para que no tape el contenido */}
       <main className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pt-14 lg:pb-14">
