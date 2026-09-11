@@ -5,16 +5,15 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/anon";
-import { buildWhatsappLink } from "@/lib/whatsapp";
-import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
-import { priceLines } from "@/lib/rental-pricing";
-import { amenityLabel } from "@/lib/amenities";
+import { STATUS_BADGE_LABELS } from "@/lib/property-status";
+import { getUsdToPygRate } from "@/lib/exchange-rate";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
-import { StickyWhatsappFab } from "@/components/site/StickyWhatsappFab";
 import { Gallery } from "@/components/site/Gallery";
-import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "@/components/site/icons";
-import { WhatsappCtaLink } from "@/components/site/WhatsappCtaLink";
+import { AmenitiesGrid } from "@/components/site/AmenitiesGrid";
+import { TrustRulesSection } from "@/components/site/TrustRulesSection";
+import { BookingWidget } from "@/components/site/BookingWidget";
+import { SimilarProperties } from "@/components/site/SimilarProperties";
 import { getSiteUrl } from "@/lib/site-url";
 import type { PropertyWithPhotos } from "@/types/database";
 
@@ -34,6 +33,20 @@ async function getProperty(code: string): Promise<PropertyWithPhotos | null> {
   } catch (err) {
     console.error("[propiedad] fallo la conexion a Supabase:", err);
     return null;
+  }
+}
+
+async function getBlockedDates(propertyId: string): Promise<string[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("property_blocked_dates")
+      .select("date")
+      .eq("property_id", propertyId);
+    return (data ?? []).map((d) => d.date);
+  } catch (err) {
+    console.error("[propiedad] fallo cargando fechas bloqueadas:", err);
+    return [];
   }
 }
 
@@ -61,18 +74,20 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
 
   if (!property) notFound();
 
-  const available = isPropertyAvailable(property.status);
   const statusLabel = STATUS_BADGE_LABELS[property.status];
-  const prices = priceLines(property);
+
+  const supabase = await createClient();
+  const [blockedDates, usdRate] = await Promise.all([
+    getBlockedDates(property.id),
+    getUsdToPygRate(supabase),
+  ]);
 
   // Registra la vista despues de mandar la respuesta — no suma latencia a la carga de la pagina.
   // Cliente sin cookies: cookies() no esta disponible dentro de after() en un Server Component.
   after(async () => {
     try {
-      const supabase = createAnonClient();
-      await supabase
-        .from("property_events")
-        .insert({ property_id: property.id, event_type: "view" });
+      const anon = createAnonClient();
+      await anon.from("property_events").insert({ property_id: property.id, event_type: "view" });
     } catch (err) {
       console.error("[propiedad] fallo al registrar la vista:", err);
     }
@@ -165,17 +180,18 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Nav />
-      <main className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
+      {/* pb-24 hasta lg: deja lugar a la barra fija del BookingWidget (solo visible <lg) para que no tape el contenido */}
+      <main className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pt-14 lg:pb-14">
         <Link href="/#catalogo" className="text-xs text-site-ink-faint hover:text-site-ink-muted">
           ← Volver al catálogo
         </Link>
 
-        <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
-          <div className="min-w-0">
-            <Gallery photos={property.property_photos} name={property.name} />
-          </div>
+        <div className="mt-5">
+          <Gallery photos={property.property_photos} name={property.name} />
+        </div>
 
-          <div className="min-w-0 flex flex-col gap-6 lg:sticky lg:top-24">
+        <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start">
+          <div className="min-w-0 flex flex-col gap-8">
             <div>
               <div className="mb-3 flex items-center gap-3">
                 <span className="rounded-full border border-site-terracotta bg-site-terracotta-muted px-3 py-1 text-xs font-semibold tracking-wide text-site-terracotta">
@@ -199,49 +215,9 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               <h1 className="text-balance font-display text-3xl font-semibold leading-tight text-site-ink sm:text-4xl">
                 {property.name}
               </h1>
-
-              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
-                <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
-                  <PeopleIcon className="h-4 w-4 text-site-terracotta" />
-                  Hasta {property.capacity} personas
-                </li>
-                <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
-                  <PinIcon className="h-4 w-4 text-site-terracotta" />
-                  {property.zone}
-                </li>
-                {property.bedrooms !== null && (
-                  <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
-                    <BedIcon className="h-4 w-4 text-site-terracotta" />
-                    {property.bedrooms} dormitorio{property.bedrooms === 1 ? "" : "s"}
-                  </li>
-                )}
-                {property.beds !== null && (
-                  <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
-                    <BedIcon className="h-4 w-4 text-site-terracotta" />
-                    {property.beds} cama{property.beds === 1 ? "" : "s"}
-                  </li>
-                )}
-                {property.bathrooms !== null && (
-                  <li className="inline-flex items-center gap-1.5 text-sm text-site-ink-muted">
-                    <BathIcon className="h-4 w-4 text-site-terracotta" />
-                    {property.bathrooms} baño{property.bathrooms === 1 ? "" : "s"}
-                  </li>
-                )}
-              </ul>
-
-              {property.amenities.length > 0 && (
-                <ul className="mt-4 flex flex-wrap gap-2">
-                  {property.amenities.map((amenity) => (
-                    <li
-                      key={amenity}
-                      className="rounded-full border border-site-border px-3 py-1 text-xs text-site-ink-muted"
-                    >
-                      {amenityLabel(amenity)}
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
+
+            <AmenitiesGrid property={property} />
 
             {property.description && (
               <p className="text-pretty text-sm leading-relaxed text-site-ink-muted">
@@ -249,43 +225,31 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               </p>
             )}
 
-            <div className="flex flex-col gap-1 text-lg font-medium text-site-ink">
-              {prices.length > 0 ? (
-                prices.map((line) => <p key={line}>{line}</p>)
-              ) : (
-                <p className="text-sm font-normal text-site-ink-muted">Consultar precio</p>
-              )}
-            </div>
+            <TrustRulesSection />
 
-            <WhatsappCtaLink
-              propertyId={property.id}
-              href={buildWhatsappLink(property)}
-              className="btn-press inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-6 py-3.5 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
-            >
-              <WhatsappIcon className="h-[18px] w-[18px]" />
-              {available ? "Consultar por WhatsApp" : "Consultar disponibilidad"}
-            </WhatsappCtaLink>
+            {property.tour_url && (
+              <div>
+                <h2 className="mb-4 font-display text-xl text-site-ink">Tour virtual</h2>
+                <div className="aspect-video w-full overflow-hidden rounded-2xl border border-site-border bg-site-bg-elevated">
+                  <iframe
+                    src={property.tour_url}
+                    title={`Tour virtual — ${property.name}`}
+                    className="h-full w-full"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                    loading="lazy"
+                    allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; encrypted-media; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            )}
           </div>
+
+          <BookingWidget property={property} usdRate={usdRate} blockedDates={blockedDates} />
         </div>
 
-        {property.tour_url && (
-          <div className="mt-12">
-            <h2 className="mb-4 font-display text-xl text-site-ink">Tour virtual</h2>
-            <div className="aspect-video w-full overflow-hidden rounded-2xl border border-site-border bg-site-bg-elevated">
-              <iframe
-                src={property.tour_url}
-                title={`Tour virtual — ${property.name}`}
-                className="h-full w-full"
-                sandbox="allow-scripts allow-same-origin allow-popups allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                loading="lazy"
-                allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; encrypted-media; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        )}
+        <SimilarProperties excludeId={property.id} zone={property.zone} />
       </main>
-      <StickyWhatsappFab />
       <Footer />
     </div>
   );

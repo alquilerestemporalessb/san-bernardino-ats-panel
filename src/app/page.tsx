@@ -11,6 +11,7 @@ import { TrustSection } from "@/components/site/TrustSection";
 import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
 import { StickyWhatsappFab } from "@/components/site/StickyWhatsappFab";
+import { CatalogFade, CatalogTransitionProvider } from "@/components/site/CatalogTransition";
 import { HouseGlyph } from "@/components/site/icons";
 import { getSiteUrl } from "@/lib/site-url";
 import { fromISODate } from "@/lib/dates";
@@ -171,30 +172,34 @@ export default async function HomePage({
               </p>
             </div>
 
-            <div className="mb-10">
-              <Suspense fallback={null}>
-                <FilterBar zones={zones} />
-              </Suspense>
-            </div>
+            <CatalogTransitionProvider>
+              <div className="mb-10">
+                <Suspense fallback={null}>
+                  <FilterBar zones={zones} />
+                </Suspense>
+              </div>
 
-            {properties.length === 0 ? (
-              <div className="flex flex-col items-center gap-4 rounded-2xl border border-site-border bg-site-bg-elevated px-6 py-16 text-center">
-                <HouseGlyph className="h-12 w-12 text-site-ink-faint" />
-                <p className="max-w-sm text-sm text-site-ink-muted">
-                  {hasActiveFilters
-                    ? "No encontramos propiedades con esos filtros — probá con otras fechas, capacidad o zona."
-                    : "Estamos sumando las primeras propiedades verificadas. Muy pronto vas a poder verlas acá — mientras tanto, escribinos por WhatsApp y te contamos qué tenemos disponible."}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {properties.map((property, index) => (
-                  <Reveal key={property.id} delayMs={(index % 3) * 80}>
-                    <PropertyCard property={property} />
-                  </Reveal>
-                ))}
-              </div>
-            )}
+              <CatalogFade>
+                {properties.length === 0 ? (
+                  <div className="flex flex-col items-center gap-4 rounded-2xl border border-site-border bg-site-bg-elevated px-6 py-16 text-center">
+                    <HouseGlyph className="h-12 w-12 text-site-ink-faint" />
+                    <p className="max-w-sm text-sm text-site-ink-muted">
+                      {hasActiveFilters
+                        ? "No encontramos propiedades con esos filtros — probá con otras fechas, capacidad o zona."
+                        : "Estamos sumando las primeras propiedades verificadas. Muy pronto vas a poder verlas acá — mientras tanto, escribinos por WhatsApp y te contamos qué tenemos disponible."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {properties.map((property, index) => (
+                      <Reveal key={property.id} delayMs={(index % 3) * 80}>
+                        <PropertyCard property={property} />
+                      </Reveal>
+                    ))}
+                  </div>
+                )}
+              </CatalogFade>
+            </CatalogTransitionProvider>
           </div>
         </section>
 

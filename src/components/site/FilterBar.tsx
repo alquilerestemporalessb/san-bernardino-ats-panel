@@ -6,6 +6,7 @@ import { DayPicker, type DateRange } from "react-day-picker";
 import "react-day-picker/style.css";
 import { toISODate, fromISODate, formatDateEs } from "@/lib/dates";
 import { AMENITIES } from "@/lib/amenities";
+import { useCatalogTransition } from "./CatalogTransition";
 
 const capacityOptions = [2, 4, 6, 8, 10, 12];
 const bedroomsOptions = [1, 2, 3, 4, 5];
@@ -13,6 +14,7 @@ const bedroomsOptions = [1, 2, 3, 4, 5];
 export function FilterBar({ zones }: { zones: string[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { startTransition } = useCatalogTransition();
 
   const [capacity, setCapacity] = useState(searchParams.get("capacity") ?? "");
   const [zone, setZone] = useState(searchParams.get("zone") ?? "");
@@ -68,7 +70,9 @@ export function FilterBar({ zones }: { zones: string[] }) {
     if (range?.from) params.set("checkin", toISODate(range.from));
     if (range?.to) params.set("checkout", toISODate(range.to));
     const query = params.toString();
-    router.push(`/${query ? `?${query}` : ""}#catalogo`);
+    startTransition(() => {
+      router.push(`/${query ? `?${query}` : ""}#catalogo`);
+    });
     setShowCalendar(false);
     setShowAmenities(false);
   }
@@ -81,7 +85,9 @@ export function FilterBar({ zones }: { zones: string[] }) {
     setBedrooms("");
     setAmenities([]);
     setRange(undefined);
-    router.push("/#catalogo");
+    startTransition(() => {
+      router.push("/#catalogo");
+    });
   }
 
   const hasFilters = Boolean(
@@ -94,7 +100,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
     amenities.length > 0 ? `Comodidades (${amenities.length})` : "Comodidades";
 
   return (
-    <div className="flex flex-col gap-3 rounded-3xl border border-site-border bg-site-bg-elevated p-4 shadow-[0_14px_34px_rgba(36,31,24,0.08)]">
+    <div className="sticky top-20 z-20 flex flex-col gap-3 rounded-3xl border border-site-border bg-site-bg-elevated/85 p-4 shadow-[0_14px_34px_rgba(36,31,24,0.1)] backdrop-blur-md">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
         <div className="relative flex-1" ref={popoverRef}>
           <button

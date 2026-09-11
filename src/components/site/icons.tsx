@@ -73,6 +73,139 @@ export function TiktokIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+export function PoolIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M2 17c1.3 1.2 2.6 1.2 4 0 1.3-1.2 2.6-1.2 4 0 1.3 1.2 2.6 1.2 4 0 1.3-1.2 2.6-1.2 4 0 1.3 1.2 2.6 1.2 4 0" />
+      <path d="M6 13V6a2 2 0 0 1 2-2h4l6 6v3" />
+      <path d="M12 4v6h6" />
+    </svg>
+  );
+}
+
+export function WifiIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M5 12.5a11 11 0 0 1 14 0" />
+      <path d="M8.2 16a6.5 6.5 0 0 1 7.6 0" />
+      <path d="M11.5 19.5h.01" />
+    </svg>
+  );
+}
+
+export function SnowflakeIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11" />
+      <path d="M8 4l4 3 4-3M8 20l4-3 4 3M4 9l1 4-4 1M23 9l-1 4 4 1" />
+    </svg>
+  );
+}
+
+export function GrillIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <ellipse cx="12" cy="9" rx="8" ry="4" />
+      <path d="M4 9v3c0 2.2 3.6 4 8 4s8-1.8 8-4V9" />
+      <path d="M9 20l1-4M15 20l-1-4" />
+    </svg>
+  );
+}
+
+export function CarIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M3 16V12l2.5-5h13L21 12v4" />
+      <path d="M3 16h18v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2Z" />
+      <circle cx="7.5" cy="16" r="1.3" />
+      <circle cx="16.5" cy="16" r="1.3" />
+    </svg>
+  );
+}
+
+export function PawIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <ellipse cx="12" cy="16" rx="5" ry="4" />
+      <ellipse cx="5.5" cy="10" rx="2" ry="2.6" />
+      <ellipse cx="18.5" cy="10" rx="2" ry="2.6" />
+      <ellipse cx="9" cy="6" rx="1.7" ry="2.3" />
+      <ellipse cx="15" cy="6" rx="1.7" ry="2.3" />
+    </svg>
+  );
+}
+
+export function WavesIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M2 8c1.3-1.3 2.6-1.3 4 0 1.3 1.3 2.6 1.3 4 0 1.3-1.3 2.6-1.3 4 0 1.3 1.3 2.6 1.3 4 0 1.3-1.3 2.6-1.3 4 0" />
+      <path d="M2 14c1.3-1.3 2.6-1.3 4 0 1.3 1.3 2.6 1.3 4 0 1.3-1.3 2.6-1.3 4 0 1.3 1.3 2.6 1.3 4 0 1.3-1.3 2.6-1.3 4 0" />
+      <path d="M2 20c1.3-1.3 2.6-1.3 4 0 1.3 1.3 2.6 1.3 4 0 1.3-1.3 2.6-1.3 4 0 1.3 1.3 2.6 1.3 4 0 1.3-1.3 2.6-1.3 4 0" />
+    </svg>
+  );
+}
+
+export function LinenIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="3" y="7" width="18" height="12" rx="2" />
+      <path d="M3 11h18" />
+      <path d="M7 7V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2" />
+    </svg>
+  );
+}
+
+export function CloseIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
+export function ChevronLeftIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M9 18l6-6-6-6" />
+    </svg>
+  );
+}
+
+export function CalendarIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
+  );
+}
+
+export function ShieldCheckIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  );
+}
+
+export function ClockIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  );
+}
+
 export function HouseGlyph(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" {...props}>
