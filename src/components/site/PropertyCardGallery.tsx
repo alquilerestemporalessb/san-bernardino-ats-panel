@@ -45,7 +45,7 @@ export function PropertyCardGallery({
           src={photo.url}
           alt={alt}
           fill
-          sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
+          sizes="(min-width: 1024px) 420px, (min-width: 640px) 50vw, 95vw"
           className={`object-cover transition-opacity duration-500 ease-out group-hover:scale-105 motion-safe:transition-transform motion-safe:duration-500 ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
