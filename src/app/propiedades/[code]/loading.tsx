@@ -3,14 +3,14 @@ import { Footer } from "@/components/site/Footer";
 
 export default function Loading() {
   return (
-    <>
+    <div className="bg-site-bg font-ui text-site-ink">
       <Nav />
-      <main className="mx-auto max-w-6xl px-6 py-10 sm:py-14">
+      <main className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
         <div className="skeleton h-3 w-32 rounded" />
 
         <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
           <div className="flex flex-col gap-3">
-            <div className="skeleton aspect-[16/10] w-full rounded-2xl" />
+            <div className="skeleton aspect-[16/10] w-full rounded-3xl" />
             <div className="flex gap-2">
               <div className="skeleton h-16 w-24 rounded-md" />
               <div className="skeleton h-16 w-24 rounded-md" />
@@ -37,11 +37,11 @@ export default function Loading() {
               <div className="skeleton h-3 w-2/3 rounded" />
             </div>
 
-            <div className="skeleton h-12 w-full rounded-md" />
+            <div className="skeleton h-12 w-full rounded-full" />
           </div>
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

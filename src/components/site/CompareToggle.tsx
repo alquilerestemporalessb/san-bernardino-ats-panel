@@ -23,13 +23,13 @@ export function CompareToggle({ code }: { code: string }) {
   }
 
   return (
-    <label className="inline-flex items-center gap-1.5 text-xs text-sb-cream-muted">
+    <label className="inline-flex items-center gap-1.5 text-xs text-site-ink-muted">
       <input
         type="checkbox"
         checked={isSelected}
         disabled={isDisabled}
         onChange={toggle}
-        className="h-3.5 w-3.5 rounded border-sb-border-subtle accent-sb-accent disabled:opacity-40"
+        className="h-3.5 w-3.5 rounded border-site-border accent-site-terracotta disabled:opacity-40"
       />
       Comparar
     </label>

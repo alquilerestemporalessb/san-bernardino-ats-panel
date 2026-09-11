@@ -23,6 +23,33 @@
   --sb-border-accent: rgba(157, 101, 64, 0.45);
 
   --sb-danger: #c2483c;
+
+  /*
+    Tokens del SITIO PUBLICO (landing, detalle, comparador) — paleta editorial calida,
+    rediseño premium separado del panel admin (que sigue en --sb-* / azul noche).
+    El bronce/terracota es el MISMO acento de marca (--sb-accent, #9d6540, viene del
+    logo) — no es un color nuevo, solo se lo usa ahora tambien sobre fondo claro.
+  */
+  --site-bg: #faf9f5;
+  --site-bg-elevated: #ffffff;
+  --site-bg-sunken: #f2ede2;
+  --site-ink: #241f18;
+  --site-ink-muted: rgba(36, 31, 24, 0.64);
+  --site-ink-faint: rgba(36, 31, 24, 0.44);
+
+  --site-terracotta: #9d6540;
+  --site-terracotta-hover: #b67a50;
+  --site-terracotta-active: #7c4e30;
+  --site-terracotta-muted: rgba(157, 101, 64, 0.12);
+
+  --site-olive: #4b5a34;
+  --site-olive-hover: #5d7042;
+  --site-olive-muted: rgba(75, 90, 52, 0.1);
+
+  --site-border: rgba(36, 31, 24, 0.12);
+  --site-border-strong: rgba(36, 31, 24, 0.24);
+
+  --site-danger: #a8402f;
 }
 
 @theme inline {
@@ -46,6 +73,30 @@
 
   --font-serif: var(--font-fraunces);
   --font-sans: var(--font-inter);
+
+  --color-site-bg: var(--site-bg);
+  --color-site-bg-elevated: var(--site-bg-elevated);
+  --color-site-bg-sunken: var(--site-bg-sunken);
+  --color-site-ink: var(--site-ink);
+  --color-site-ink-muted: var(--site-ink-muted);
+  --color-site-ink-faint: var(--site-ink-faint);
+
+  --color-site-terracotta: var(--site-terracotta);
+  --color-site-terracotta-hover: var(--site-terracotta-hover);
+  --color-site-terracotta-active: var(--site-terracotta-active);
+  --color-site-terracotta-muted: var(--site-terracotta-muted);
+
+  --color-site-olive: var(--site-olive);
+  --color-site-olive-hover: var(--site-olive-hover);
+  --color-site-olive-muted: var(--site-olive-muted);
+
+  --color-site-border: var(--site-border);
+  --color-site-border-strong: var(--site-border-strong);
+
+  --color-site-danger: var(--site-danger);
+
+  --font-display: var(--font-playfair);
+  --font-ui: var(--font-jakarta);
 }
 
 body {
@@ -84,6 +135,36 @@ body {
     var(--sb-bg);
 }
 
+/* Grano fino sobre fondos claros del sitio publico — mismo detalle boutique que .bg-noise,
+   pero en multiply (no overlay) para que no ensucie el crema. */
+.bg-noise-light {
+  position: relative;
+  isolation: isolate;
+}
+.bg-noise-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("/noise.svg");
+  background-size: 200px 200px;
+}
+.bg-noise-light > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Halo doble (terracota + oliva) para secciones claras del sitio publico. */
+.bg-site-glow {
+  background:
+    radial-gradient(50% 60% at 12% 0%, rgba(157, 101, 64, 0.14) 0%, rgba(157, 101, 64, 0) 65%),
+    radial-gradient(45% 55% at 100% 20%, rgba(75, 90, 52, 0.1) 0%, rgba(75, 90, 52, 0) 65%),
+    var(--site-bg);
+}
+
 .text-balance {
   text-wrap: balance;
 }
@@ -102,6 +183,21 @@ body {
   animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Brillo respirando, para el CTA de WhatsApp (nav, hero, barra sticky mobile) — imposible de
+   ignorar sin ser una animacion agresiva tipo banner. */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(157, 101, 64, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(157, 101, 64, 0);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2.4s ease-out infinite;
+}
+
 /* ---------- Calendario (react-day-picker) — theming de marca ---------- */
 .rdp-root {
   --rdp-accent-color: var(--sb-accent);
@@ -115,25 +211,34 @@ body {
   text-decoration: line-through;
 }
 
+/* Mismo calendario (react-day-picker) pero sobre fondo claro del sitio publico (FilterBar) —
+   el theming de arriba es para el panel admin (oscuro), sb-cream se veria invisible aca. */
+.site-calendar .rdp-root {
+  --rdp-accent-color: var(--site-terracotta);
+  --rdp-accent-background-color: var(--site-terracotta-muted);
+  --rdp-today-color: var(--site-terracotta);
+  color: var(--site-ink);
+}
+
 /* ---------- Mapa (Leaflet) — pin custom + popup con estilo de marca ---------- */
 .sb-map-pin {
   background: transparent;
   border: none;
 }
 .leaflet-popup-content-wrapper {
-  background: var(--sb-bg-elevated);
-  color: var(--sb-cream);
-  border: 1px solid var(--sb-border-subtle);
+  background: var(--site-bg-elevated);
+  color: var(--site-ink);
+  border: 1px solid var(--site-border);
   border-radius: 12px;
 }
 .leaflet-popup-tip {
-  background: var(--sb-bg-elevated);
+  background: var(--site-bg-elevated);
 }
 .leaflet-popup-content a {
-  color: var(--sb-accent);
+  color: var(--site-terracotta);
 }
 .leaflet-container a.leaflet-popup-close-button {
-  color: var(--sb-cream-muted);
+  color: var(--site-ink-muted);
 }
 
 /* ---------- Skeleton de carga (loading.tsx) ---------- */
@@ -147,7 +252,7 @@ body {
   }
 }
 .skeleton {
-  background: var(--sb-bg-elevated);
+  background: var(--site-border);
   animation: skeleton-pulse 1.6s ease-in-out infinite;
 }
 
@@ -173,6 +278,7 @@ body {
 /* ---------- Accesibilidad: respetar prefers-reduced-motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up,
+  .animate-pulse-glow,
   .skeleton {
     animation: none !important;
   }

@@ -9,7 +9,7 @@ export function Gallery({ photos, name }: { photos: { url: string }[]; name: str
 
   if (photos.length === 0) {
     return (
-      <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl">
+      <div className="aspect-[16/10] w-full overflow-hidden rounded-3xl">
         <PhotoPlaceholder className="h-20 w-20" />
       </div>
     );
@@ -17,7 +17,7 @@ export function Gallery({ photos, name }: { photos: { url: string }[]; name: str
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-sb-bg-elevated">
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-3xl bg-site-bg-sunken shadow-[0_20px_45px_rgba(36,31,24,0.12)]">
         <Image
           src={photos[selected].url}
           alt={name}
@@ -36,10 +36,10 @@ export function Gallery({ photos, name }: { photos: { url: string }[]; name: str
               type="button"
               onClick={() => setSelected(index)}
               aria-label={`Ver foto ${index + 1}`}
-              className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-md border transition-colors ${
+              className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${
                 index === selected
-                  ? "border-sb-accent"
-                  : "border-sb-border-subtle hover:border-sb-border-accent"
+                  ? "border-site-terracotta"
+                  : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
               <Image src={photo.url} alt="" fill sizes="96px" className="object-cover" />

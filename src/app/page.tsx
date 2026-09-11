@@ -10,6 +10,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { TrustSection } from "@/components/site/TrustSection";
 import { OwnersSection } from "@/components/site/OwnersSection";
 import { Footer } from "@/components/site/Footer";
+import { StickyWhatsappFab } from "@/components/site/StickyWhatsappFab";
 import { HouseGlyph } from "@/components/site/icons";
 import { getSiteUrl } from "@/lib/site-url";
 import { fromISODate } from "@/lib/dates";
@@ -147,7 +148,7 @@ export default async function HomePage({
   };
 
   return (
-    <>
+    <div className="bg-site-bg font-ui text-site-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -156,16 +157,16 @@ export default async function HomePage({
       <main>
         <Hero />
 
-        <section id="catalogo" className="bg-sb-bg py-20 sm:py-28">
-          <div className="mx-auto max-w-6xl px-6">
+        <section id="catalogo" className="bg-site-bg py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-6">
             <div className="mb-8 max-w-xl">
-              <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
+              <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-site-terracotta">
                 Catálogo
               </span>
-              <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+              <h2 className="text-balance font-display text-3xl font-semibold leading-tight text-site-ink sm:text-4xl">
                 Propiedades disponibles
               </h2>
-              <p className="mt-4 text-lg text-sb-cream-muted">
+              <p className="mt-4 text-lg text-site-ink-muted">
                 Una selección curada de casas en San Ber, para cada tipo de grupo y presupuesto.
               </p>
             </div>
@@ -177,9 +178,9 @@ export default async function HomePage({
             </div>
 
             {properties.length === 0 ? (
-              <div className="flex flex-col items-center gap-4 rounded-2xl border border-sb-border-subtle bg-sb-bg-elevated px-6 py-16 text-center">
-                <HouseGlyph className="h-12 w-12 text-sb-cream-faint" />
-                <p className="max-w-sm text-sm text-sb-cream-muted">
+              <div className="flex flex-col items-center gap-4 rounded-2xl border border-site-border bg-site-bg-elevated px-6 py-16 text-center">
+                <HouseGlyph className="h-12 w-12 text-site-ink-faint" />
+                <p className="max-w-sm text-sm text-site-ink-muted">
                   {hasActiveFilters
                     ? "No encontramos propiedades con esos filtros — probá con otras fechas, capacidad o zona."
                     : "Estamos sumando las primeras propiedades verificadas. Muy pronto vas a poder verlas acá — mientras tanto, escribinos por WhatsApp y te contamos qué tenemos disponible."}
@@ -198,14 +199,14 @@ export default async function HomePage({
         </section>
 
         {propertiesWithLocation.length > 0 && (
-          <section id="ubicacion" className="bg-sb-bg-sunken py-20 sm:py-28">
-            <div className="mx-auto max-w-6xl px-6">
+          <section id="ubicacion" className="bg-site-bg-sunken py-20 sm:py-28">
+            <div className="mx-auto max-w-7xl px-6">
               <Reveal>
                 <div className="mb-8 max-w-xl">
-                  <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-sb-accent">
+                  <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-site-terracotta">
                     Ubicación
                   </span>
-                  <h2 className="text-balance font-serif text-3xl font-medium leading-tight text-sb-cream sm:text-4xl">
+                  <h2 className="text-balance font-display text-3xl font-semibold leading-tight text-site-ink sm:text-4xl">
                     Dónde están las propiedades
                   </h2>
                 </div>
@@ -218,8 +219,9 @@ export default async function HomePage({
         <TrustSection />
         <OwnersSection />
       </main>
+      <StickyWhatsappFab />
       <CompareBar />
       <Footer />
-    </>
+    </div>
   );
 }
