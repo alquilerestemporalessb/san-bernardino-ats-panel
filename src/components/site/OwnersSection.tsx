@@ -13,7 +13,7 @@ const benefits = [
 
 export function OwnersSection() {
   return (
-    <section id="propietarios" className="border-y border-site-border bg-site-bg py-20 sm:py-28">
+    <section id="propietarios" className="bg-site-bg py-20 sm:py-28">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-2 lg:items-center lg:gap-16">
         <Reveal className="order-2 lg:order-1">
           <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.2em] text-site-olive">
@@ -42,7 +42,7 @@ export function OwnersSection() {
             )}
             target="_blank"
             rel="noopener"
-            className="btn-press mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-site-whatsapp px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
+            className="btn-press mt-9 inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-7 py-3.5 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
           >
             <WhatsappIcon className="h-[18px] w-[18px]" />
             Sumar mi propiedad, es gratis

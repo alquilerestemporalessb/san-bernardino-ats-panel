@@ -34,7 +34,7 @@ export function CompareBar() {
   for (const c of selected) compareParams.append("compare", c);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-site-border bg-site-bg-elevated/95 shadow-[0_-12px_30px_rgba(36,31,24,0.1)] backdrop-blur-sm">
+    <div className="fixed inset-x-0 bottom-0 z-30 bg-site-bg-elevated/95 shadow-[0_-16px_40px_rgba(36,31,24,0.07)] backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-6 py-3">
         <span className="text-xs font-medium text-site-ink-muted">Comparar:</span>
         <div className="flex flex-wrap items-center gap-2">

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { buildGenericWhatsappLink } from "@/lib/whatsapp";
@@ -10,8 +13,27 @@ const links = [
 ];
 
 export function Nav() {
+  // Header inmerso en el hero al tope de la pagina (sin fondo, sin blur) — al scrollear, levita
+  // sobre el contenido con glassmorphism en vez del clasico fondo blanco solido con filete.
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 8);
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-site-border bg-site-bg/85 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-40 transition-all duration-300 ${
+        scrolled
+          ? "bg-site-bg/75 shadow-[0_8px_30px_rgba(36,31,24,0.05)] backdrop-blur-xl"
+          : "bg-transparent"
+      }`}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="#top" className="flex items-center gap-3">
           <Image src="/isotype.png" alt="" width={32} height={32} className="h-8 w-8" />

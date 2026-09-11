@@ -11,6 +11,7 @@ import {
   BathIcon,
   BedIcon,
   CheckIcon,
+  HouseGlyph,
   PeopleIcon,
   PinIcon,
   WhatsappIcon,
@@ -69,11 +70,18 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
         <h1 className="mt-4 font-display text-3xl text-site-ink">Comparar propiedades</h1>
 
         {properties.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-site-border bg-site-bg-elevated px-6 py-16 text-center">
-            <p className="text-sm text-site-ink-muted">
+          <div className="mt-8 flex flex-col items-center gap-6 px-6 py-24 text-center">
+            <HouseGlyph className="h-14 w-14 text-site-ink-faint/30" />
+            <p className="max-w-sm text-sm text-site-ink-muted">
               No elegiste propiedades para comparar. Volvé al catálogo y marcá &quot;Comparar&quot;
               en las que te interesen.
             </p>
+            <Link
+              href="/#catalogo"
+              className="btn-press rounded-full bg-site-terracotta px-6 py-3 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+            >
+              Explorar catálogo
+            </Link>
           </div>
         ) : (
           <div className="mt-8 overflow-x-auto">
@@ -82,7 +90,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                 <tr>
                   <RowLabel />
                   {properties.map((p) => (
-                    <td key={p.id} className="border-b border-site-border px-4 py-4 align-top">
+                    <td key={p.id} className="px-4 py-6 align-top">
                       <div className="relative aspect-[4/3] w-48 overflow-hidden rounded-xl">
                         {p.property_photos[0] ? (
                           <Image
@@ -226,14 +234,14 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
 
 function RowLabel() {
   return (
-    <td className="sticky left-0 border-b border-site-border bg-site-bg px-4 py-4 align-top text-xs font-medium text-site-ink-faint" />
+    <td className="sticky left-0 bg-site-bg px-4 py-6 align-top text-xs font-medium text-site-ink-faint" />
   );
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <tr>
-      <td className="sticky left-0 border-b border-site-border bg-site-bg px-4 py-4 align-top text-xs font-medium text-site-ink-faint">
+      <td className="sticky left-0 bg-site-bg px-4 py-6 align-top text-xs font-medium uppercase tracking-[0.08em] text-site-ink-faint">
         {label}
       </td>
       {children}
@@ -243,7 +251,7 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 
 function Cell({ children }: { children: React.ReactNode }) {
   return (
-    <td className="border-b border-site-border px-4 py-4 align-top text-site-ink-muted">
+    <td className="px-4 py-6 align-top text-site-ink-muted">
       {children}
     </td>
   );

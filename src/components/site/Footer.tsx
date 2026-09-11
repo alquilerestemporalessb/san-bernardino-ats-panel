@@ -6,8 +6,8 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-site-ink py-12">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6">
+    <footer className="bg-site-ink py-16">
+      <div className="mx-auto flex max-w-7xl flex-col gap-14 px-6">
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <Image src="/isotype.png" alt="" width={30} height={30} className="h-[30px] w-[30px]" />
@@ -41,11 +41,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-site-bg/12 pt-6 text-xs text-site-bg/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 text-[0.65rem] tracking-[0.05em] text-site-bg/40 sm:flex-row sm:items-center sm:justify-between">
           <span>© {year} San Bernardino — Alquileres Temporales. San Bernardino, Paraguay.</span>
           <div className="flex items-center gap-4">
             <span>Todas las reservas se coordinan directamente por WhatsApp.</span>
-            <Link href="/admin" className="text-site-bg/35 transition-colors hover:text-site-bg/60">
+            <Link href="/admin" className="text-site-bg/30 transition-colors hover:text-site-bg/55">
               Acceso equipo
             </Link>
           </div>

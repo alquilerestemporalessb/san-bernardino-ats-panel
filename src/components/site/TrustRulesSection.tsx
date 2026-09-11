@@ -14,7 +14,7 @@ const rules = [
  */
 export function TrustRulesSection() {
   return (
-    <div className="grid grid-cols-1 gap-6 rounded-3xl border border-site-border bg-site-bg-elevated p-6 sm:grid-cols-2 sm:p-8">
+    <div className="grid grid-cols-1 gap-8 rounded-3xl bg-site-bg-elevated p-6 shadow-[0_30px_70px_rgba(36,31,24,0.05)] sm:grid-cols-2 sm:gap-6 sm:p-8">
       <div className="flex items-start gap-4">
         <Image
           src="/verified-badge.svg"

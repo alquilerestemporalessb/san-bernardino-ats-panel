@@ -100,7 +100,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
     amenities.length > 0 ? `Comodidades (${amenities.length})` : "Comodidades";
 
   return (
-    <div className="sticky top-20 z-20 flex flex-col gap-3 rounded-3xl border border-site-border bg-site-bg-elevated/85 p-4 shadow-[0_14px_34px_rgba(36,31,24,0.1)] backdrop-blur-md">
+    <div className="sticky top-20 z-20 flex flex-col gap-3 rounded-3xl bg-site-bg-elevated/85 p-4 shadow-[0_30px_60px_rgba(36,31,24,0.06)] backdrop-blur-md">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
         <div className="relative flex-1" ref={popoverRef}>
           <button

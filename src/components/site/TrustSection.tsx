@@ -69,11 +69,11 @@ export function TrustSection() {
             </div>
           </Reveal>
 
-          {/* Lista editorial, sin cards: las citas viven directo sobre el fondo, separadas por un
-              filete fino — no tres bloques blancos flotando. */}
-          <div className="flex flex-col divide-y divide-site-border">
+          {/* Lista editorial, sin cards: las citas viven directo sobre el fondo, separadas solo
+              por aire generoso — nada de filetes ni bloques blancos flotando. */}
+          <div className="flex flex-col gap-12">
             {testimonials.map((t, index) => (
-              <Reveal key={t.author} delayMs={index * 100} className="py-6 first:pt-0 last:pb-0">
+              <Reveal key={t.author} delayMs={index * 100}>
                 <figure className="relative pl-8">
                   <span
                     aria-hidden
