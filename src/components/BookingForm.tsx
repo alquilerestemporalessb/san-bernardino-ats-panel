@@ -75,16 +75,27 @@ export function BookingForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Monto acordado (Gs.)" htmlFor="amount">
-          <input
-            id="amount"
-            name="amount"
-            type="number"
-            min={0}
-            step="1"
-            required
-            className={inputClass}
-          />
+        <Field label="Monto acordado" htmlFor="amount">
+          <div className="flex gap-2">
+            <input
+              id="amount"
+              name="amount"
+              type="number"
+              min={0}
+              step="1"
+              required
+              className={`${inputClass} min-w-0 flex-1`}
+            />
+            <select
+              name="currency"
+              defaultValue="PYG"
+              aria-label="Moneda del monto"
+              className={`${inputClass} w-20 shrink-0`}
+            >
+              <option value="PYG">Gs</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
         </Field>
         <Field label="Comision ATS (%)" htmlFor="commission_pct">
           <input

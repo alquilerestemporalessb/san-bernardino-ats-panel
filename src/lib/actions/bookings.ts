@@ -41,6 +41,7 @@ export async function createBooking(
   const checkIn = String(formData.get("check_in") ?? "").trim();
   const checkOut = String(formData.get("check_out") ?? "").trim();
   const amountRaw = String(formData.get("amount") ?? "").trim();
+  const currency = String(formData.get("currency")) === "USD" ? "USD" : "PYG";
   const commissionRaw = String(formData.get("commission_pct") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
 
@@ -98,6 +99,7 @@ export async function createBooking(
     check_in: checkIn,
     check_out: checkOut,
     amount,
+    currency,
     commission_pct: commissionPct,
     notes: notes || null,
   });

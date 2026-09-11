@@ -3,11 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { PropertyStatus } from "@/types/database";
+import type { Currency, PropertyStatus } from "@/types/database";
 import { AMENITIES } from "@/lib/amenities";
 
 export interface PropertyFormState {
   error?: string;
+}
+
+/** El selector del form solo ofrece Gs/USD; cualquier otra cosa cae a guaranies. */
+function readCurrency(value: FormDataEntryValue | null): Currency {
+  return String(value) === "USD" ? "USD" : "PYG";
 }
 
 async function requireUser() {
@@ -42,6 +47,9 @@ function readPropertyFields(formData: FormData) {
   const pricePerNightRaw = String(formData.get("price_per_night") ?? "").trim();
   const pricePerWeekRaw = String(formData.get("price_per_week") ?? "").trim();
   const pricePerMonthRaw = String(formData.get("price_per_month") ?? "").trim();
+  const pricePerNightCurrency = readCurrency(formData.get("price_per_night_currency"));
+  const pricePerWeekCurrency = readCurrency(formData.get("price_per_week_currency"));
+  const pricePerMonthCurrency = readCurrency(formData.get("price_per_month_currency"));
   const minNightsRaw = String(formData.get("min_nights") ?? "").trim();
   const bedroomsRaw = String(formData.get("bedrooms") ?? "").trim();
   const bedsRaw = String(formData.get("beds") ?? "").trim();
@@ -164,6 +172,9 @@ function readPropertyFields(formData: FormData) {
       price_per_night: pricePerNight,
       price_per_week: pricePerWeek,
       price_per_month: pricePerMonth,
+      price_per_night_currency: pricePerNightCurrency,
+      price_per_week_currency: pricePerWeekCurrency,
+      price_per_month_currency: pricePerMonthCurrency,
       min_nights: minNights,
       bedrooms,
       beds,

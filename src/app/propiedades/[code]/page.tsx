@@ -112,15 +112,21 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
       ? {
           offers: {
             "@type": "Offer",
-            priceCurrency: "PYG",
-            price: property.price_per_night ?? property.price_per_week ?? property.price_per_month,
+            priceCurrency:
+              property.price_per_night !== null
+                ? property.price_per_night_currency
+                : property.price_per_week !== null
+                  ? property.price_per_week_currency
+                  : property.price_per_month_currency,
+            price:
+              property.price_per_night ?? property.price_per_week ?? property.price_per_month,
             priceSpecification: [
               ...(property.price_per_night !== null
                 ? [
                     {
                       "@type": "UnitPriceSpecification",
                       price: property.price_per_night,
-                      priceCurrency: "PYG",
+                      priceCurrency: property.price_per_night_currency,
                       unitText: "NIGHT",
                     },
                   ]
@@ -130,7 +136,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                     {
                       "@type": "UnitPriceSpecification",
                       price: property.price_per_week,
-                      priceCurrency: "PYG",
+                      priceCurrency: property.price_per_week_currency,
                       unitText: "WEEK",
                     },
                   ]
@@ -140,7 +146,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
                     {
                       "@type": "UnitPriceSpecification",
                       price: property.price_per_month,
-                      priceCurrency: "PYG",
+                      priceCurrency: property.price_per_month_currency,
                       unitText: "MONTH",
                     },
                   ]

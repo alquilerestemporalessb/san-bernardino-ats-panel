@@ -5,6 +5,9 @@
  * (incluidos los selects anidados via Relationships, ej. properties -> property_photos).
  * Si el esquema crece mucho mas, conviene migrar a tipos generados de verdad.
  */
+/** Monedas soportadas para precios y reservas. PYG = guaraníes, USD = dólares. */
+export type Currency = "PYG" | "USD";
+
 export interface Database {
   public: {
     Tables: {
@@ -25,6 +28,9 @@ export interface Database {
           price_per_night: number | null;
           price_per_week: number | null;
           price_per_month: number | null;
+          price_per_night_currency: Currency;
+          price_per_week_currency: Currency;
+          price_per_month_currency: Currency;
           min_nights: number;
           bedrooms: number | null;
           beds: number | null;
@@ -50,6 +56,9 @@ export interface Database {
           price_per_night?: number | null;
           price_per_week?: number | null;
           price_per_month?: number | null;
+          price_per_night_currency?: Currency;
+          price_per_week_currency?: Currency;
+          price_per_month_currency?: Currency;
           min_nights?: number;
           bedrooms?: number | null;
           beds?: number | null;
@@ -75,6 +84,9 @@ export interface Database {
           price_per_night?: number | null;
           price_per_week?: number | null;
           price_per_month?: number | null;
+          price_per_night_currency?: Currency;
+          price_per_week_currency?: Currency;
+          price_per_month_currency?: Currency;
           min_nights?: number;
           bedrooms?: number | null;
           beds?: number | null;
@@ -214,6 +226,7 @@ export interface Database {
           check_in: string;
           check_out: string;
           amount: number;
+          currency: Currency;
           commission_pct: number;
           status: "confirmada" | "cancelada";
           notes: string | null;
@@ -227,6 +240,7 @@ export interface Database {
           check_in: string;
           check_out: string;
           amount: number;
+          currency?: Currency;
           commission_pct?: number;
           status?: "confirmada" | "cancelada";
           notes?: string | null;
@@ -240,6 +254,7 @@ export interface Database {
           check_in?: string;
           check_out?: string;
           amount?: number;
+          currency?: Currency;
           commission_pct?: number;
           status?: "confirmada" | "cancelada";
           notes?: string | null;
@@ -254,6 +269,24 @@ export interface Database {
             referencedColumns: ["id"];
           },
         ];
+      };
+      app_settings: {
+        Row: {
+          key: string;
+          value: string;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          value: string;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          value?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
@@ -273,3 +306,4 @@ export type PropertyOwner = Database["public"]["Tables"]["property_owners"]["Row
 export type Booking = Database["public"]["Tables"]["property_bookings"]["Row"];
 export type BookingStatus = Booking["status"];
 export type BookingWithProperty = Booking & { properties: Pick<Property, "code" | "name"> };
+export type AppSetting = Database["public"]["Tables"]["app_settings"]["Row"];
