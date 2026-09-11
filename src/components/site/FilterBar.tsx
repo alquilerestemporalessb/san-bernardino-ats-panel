@@ -164,12 +164,12 @@ export function FilterBar({ zones }: { zones: string[] }) {
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
-        <div className="flex gap-2 sm:w-48">
+        <div className="flex gap-2 sm:w-72">
           <input
             type="number"
             min={0}
             step="1"
-            placeholder="Precio por noche máx."
+            placeholder="Precio máx. / noche"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             className="min-w-0 flex-1 rounded-md border border-sb-border-subtle bg-sb-bg px-3.5 py-2.5 text-sm text-sb-cream outline-none transition-colors hover:border-sb-border-accent"

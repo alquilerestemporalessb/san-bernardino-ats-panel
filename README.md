@@ -18,9 +18,14 @@ archivos reales desde `/admin` (Supabase Storage), dormitorios/camas/baños, ame
 opcional a un tour virtual externo (ej. Polycam) o video. El precio admite cualquier combinación de
 modalidades — por noche (con mínimo de noches opcional), por semana y/o por mes (para el caso típico
 de "solo alquilo enero completo") — sin un campo de "modalidad" aparte: la modalidad la define qué
-precio está cargado. Desde el catálogo se pueden marcar hasta 3 propiedades para comparar lado a lado
+precio está cargado. Cada precio lleva su propia moneda (guaraníes o dólares), así que una misma
+propiedad puede cotizar la noche en Gs y el mes en USD. El filtro de "precio máximo" del catálogo
+tiene su propio selector Gs/USD y convierte con la cotización cargada en `/admin/configuracion`
+(tabla `app_settings`) — una casa en Gs aparece si su equivalente en USD entra en el rango, y
+viceversa. Desde el catálogo se pueden marcar hasta 3 propiedades para comparar lado a lado
 en `/comparar`. El equipo ATS opera como agencia curadora: carga las propiedades, y registra reservas
-formales (huésped, fechas, monto y comisión) en `/admin/reservas` — el modelo de negocio es comisión
+formales (huésped, fechas, monto —en Gs o USD— y comisión) en `/admin/reservas`; el resumen del mes
+muestra los totales por moneda y un combinado en Gs de referencia. El modelo de negocio es comisión
 por reserva cerrada, cobrada por transferencia, no un marketplace de pagos online. Ver
 `C:\Users\HP\.claude\plans\dynamic-snacking-dahl.md` para el detalle de alcance y las decisiones de
 arquitectura de la iteración más reciente.
@@ -48,6 +53,7 @@ En el dashboard del proyecto: **SQL Editor** → **New query**. Correr, en orden
 9. Contenido completo de `supabase/migrations/0009_property_bookings.sql` (reservas formales + comisión).
 10. Contenido completo de `supabase/migrations/0010_property_details.sql` (precio, dormitorios/camas/baños, amenities, tour virtual).
 11. Contenido completo de `supabase/migrations/0011_rental_pricing.sql` (precio por semana/mes, minimo de noches).
+12. Contenido completo de `supabase/migrations/0012_multi_currency.sql` (moneda por precio Gs/USD, moneda en reservas, `app_settings` con la cotización del dólar).
 
 Confirmar en **Table Editor** que la tabla `properties` se creó.
 
@@ -112,8 +118,9 @@ src/
         properties/[id]/edit/page.tsx -> edicion
         properties/[id]/availability/page.tsx -> calendario de disponibilidad
         properties/[id]/bookings/page.tsx -> reservas de una propiedad (alta + lista + cancelar)
-        reservas/page.tsx             -> dashboard global de reservas (resumen del mes + tabla)
+        reservas/page.tsx             -> dashboard global de reservas (resumen del mes por moneda + combinado en Gs + tabla)
         metrics/page.tsx              -> dashboard de vistas/clics por propiedad (ultimos 30 dias)
+        configuracion/page.tsx       -> cotizacion del dolar editable (app_settings)
     propiedades/[code]/page.tsx       -> pagina publica de detalle por propiedad (galeria, SEO, JSON-LD)
     comparar/page.tsx                 -> comparador publico (tabla lado a lado, hasta 3 propiedades)
     api/events/route.ts               -> registra clics a WhatsApp (fetch keepalive desde el cliente)
@@ -130,7 +137,7 @@ src/
       Nav.tsx, Hero.tsx, PropertyCard.tsx, TrustSection.tsx, OwnersSection.tsx, Footer.tsx, icons.tsx
       Gallery.tsx                     -> galeria con miniaturas (pagina de detalle)
       PhotoPlaceholder.tsx            -> placeholder compartido cuando una propiedad no tiene fotos
-      FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas, precio maximo, dormitorios, amenities)
+      FilterBar.tsx                   -> filtro publico (capacidad, zona, fechas, precio maximo con selector Gs/USD, dormitorios, amenities)
       PropertiesMap.tsx / PropertiesMapLoader.tsx -> mapa Leaflet (el Loader hace el dynamic import ssr:false)
       WhatsappCtaLink.tsx             -> link de WhatsApp que registra el clic (fetch keepalive a /api/events)
       CompareToggle.tsx               -> checkbox "Comparar" en cada card (estado vive en la URL, param compare)
@@ -140,17 +147,19 @@ src/
     supabase/server.ts                -> cliente server (Server Components/Actions), respeta RLS
     supabase/anon.ts                  -> cliente sin cookies, para escrituras publicas dentro de after()
     actions/auth.ts                   -> login, logout
-    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive/updatePropertyStatus + fotos + lat/lng + propietario
+    actions/properties.ts             -> create/update/delete/toggleVerified/toggleActive/updatePropertyStatus + fotos + lat/lng + propietario + moneda por precio
     actions/availability.ts           -> blockDates, unblockDates
-    actions/bookings.ts               -> createBooking (valida, chequea solapamiento, bloquea fechas), cancelBooking
+    actions/bookings.ts               -> createBooking (valida, chequea solapamiento, bloquea fechas, guarda moneda), cancelBooking
+    actions/settings.ts               -> updateUsdRate: guarda la cotizacion del dolar en app_settings
     whatsapp.ts                       -> numero + armado de mensajes prearmados (un solo lugar)
     dates.ts                          -> helpers de fecha compartidos (ISO <-> Date, formato es-PY, datesInRange)
-    currency.ts                       -> formatGs (formato de guaranies)
+    currency.ts                       -> formatMoney(monto, moneda) + formatGs (atajo para guaranies)
+    exchange-rate.ts                  -> getUsdToPygRate (lee app_settings, con fallback) + convert(monto, de, a, rate)
     site-url.ts                       -> URL base del sitio (VERCEL_PROJECT_PRODUCTION_URL)
     property-status.ts                -> labels del badge de estado + helper isPropertyAvailable
     amenities.ts                      -> lista fija de amenities + helper amenityLabel
-    rental-pricing.ts                 -> priceLines: arma las lineas de precio (noche/semana/mes) de una propiedad
-  types/database.ts                   -> tipos de properties (con precio/detalles/amenities/tour_url), property_photos, property_blocked_dates, property_events, property_owners, property_bookings
+    rental-pricing.ts                 -> priceLines: arma las lineas de precio (noche/semana/mes, cada una en su moneda) de una propiedad
+  types/database.ts                   -> tipos de properties (precio/moneda/detalles/amenities/tour_url), property_photos, property_blocked_dates, property_events, property_owners, property_bookings, app_settings
   proxy.ts                            -> protege /admin/* excepto /admin/login (Next 16 renombro "middleware" a "proxy")
 supabase/migrations/
   0001_properties.sql                 -> tabla + escritura autenticada
@@ -164,6 +173,7 @@ supabase/migrations/
   0009_property_bookings.sql          -> reservas formales + comision (uso interno, sin politica publica)
   0010_property_details.sql           -> precio, dormitorios/camas/banos, amenities, tour_url (publico)
   0011_rental_pricing.sql             -> precio por semana/mes, minimo de noches (publico)
+  0012_multi_currency.sql             -> moneda (PYG/USD) por cada precio y por reserva + app_settings (cotizacion del dolar, lectura publica)
 ```
 
 ## Por qué este stack
