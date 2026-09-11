@@ -39,7 +39,7 @@ export function TrustSection() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           <Reveal className="relative aspect-[4/3] overflow-hidden rounded-3xl shadow-[0_20px_45px_rgba(36,31,24,0.14)] lg:aspect-auto">
             <Image
               src={STOCK_IMAGES.trust}
@@ -48,8 +48,8 @@ export function TrustSection() {
               sizes="(min-width: 1024px) 560px, 90vw"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-site-ink/75 via-site-ink/10 to-transparent" />
-            <div className="absolute inset-x-6 bottom-6 flex items-start gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md">
+            <div className="absolute inset-0 bg-gradient-to-t from-site-ink/85 via-site-ink/15 to-transparent" />
+            <div className="absolute inset-x-6 bottom-6 flex items-start gap-4 rounded-2xl border border-white/25 bg-white/15 p-5 backdrop-blur-md">
               <Image
                 src="/verified-badge.svg"
                 alt="Propiedad Verificada ATS"
@@ -61,7 +61,7 @@ export function TrustSection() {
                 <h3 className="font-display text-lg font-semibold text-white">
                   Propiedad Verificada ATS
                 </h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-white/80">
+                <p className="mt-1.5 text-sm leading-relaxed text-white/90">
                   El sello indica que visitamos la propiedad en persona, verificamos fotos y
                   comodidades, y validamos al propietario.
                 </p>
@@ -69,21 +69,23 @@ export function TrustSection() {
             </div>
           </Reveal>
 
-          <div className="flex flex-col gap-4">
+          {/* Lista editorial, sin cards: las citas viven directo sobre el fondo, separadas por un
+              filete fino — no tres bloques blancos flotando. */}
+          <div className="flex flex-col divide-y divide-site-border">
             {testimonials.map((t, index) => (
-              <Reveal key={t.author} delayMs={index * 100}>
-                <figure className="relative rounded-2xl border border-site-border bg-site-bg-elevated p-6 shadow-[0_10px_26px_rgba(36,31,24,0.06)]">
+              <Reveal key={t.author} delayMs={index * 100} className="py-6 first:pt-0 last:pb-0">
+                <figure className="relative pl-8">
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -top-3 left-5 font-display text-5xl text-site-terracotta/25"
+                    className="pointer-events-none absolute -left-1 -top-3 font-display text-6xl leading-none text-site-terracotta/30"
                   >
                     &ldquo;
                   </span>
-                  <blockquote className="relative text-sm italic leading-relaxed text-site-ink">
+                  <blockquote className="text-base italic leading-relaxed text-site-ink">
                     {t.quote}
                   </blockquote>
-                  <figcaption className="mt-3 text-xs font-medium tracking-wide text-site-terracotta">
-                    — {t.author}
+                  <figcaption className="mt-3 text-xs font-medium uppercase tracking-wide text-site-terracotta">
+                    {t.author}
                   </figcaption>
                 </figure>
               </Reveal>

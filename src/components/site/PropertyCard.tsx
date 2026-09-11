@@ -17,7 +17,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
   const prices = priceLines(property);
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-3xl border border-site-border bg-site-bg-elevated shadow-[0_10px_28px_rgba(36,31,24,0.07)] transition-all duration-300 hover:-translate-y-1.5 hover:border-site-terracotta/40 hover:shadow-[0_26px_54px_rgba(36,31,24,0.16)]">
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-stone-200/60 bg-site-bg-elevated shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
       <Link href={detailHref} className="relative block aspect-[4/3] overflow-hidden">
         {property.property_photos.length > 0 ? (
           <PropertyCardGallery photos={property.property_photos} alt={property.name} />
@@ -25,14 +25,14 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
           <PhotoPlaceholder />
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
 
-        <span className="absolute left-3 top-3 rounded-full border border-white/25 bg-site-ink/70 px-3 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-sm">
+        <span className="absolute left-2.5 top-2.5 rounded-md bg-white/90 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-stone-600 backdrop-blur-sm">
           {property.code}
         </span>
 
         {statusLabel && (
-          <span className="absolute bottom-3 left-3 rounded-full border border-white/25 bg-site-ink/70 px-3 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-sm">
+          <span className="absolute bottom-2.5 left-2.5 rounded-md border border-white/25 bg-site-ink/70 px-2.5 py-1 text-xs font-semibold tracking-wide text-white backdrop-blur-sm">
             {statusLabel}
           </span>
         )}
@@ -41,9 +41,9 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
           <Image
             src="/verified-badge.svg"
             alt="Propiedad Verificada ATS"
-            width={42}
-            height={42}
-            className="absolute right-3 top-3 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]"
+            width={38}
+            height={38}
+            className="absolute right-2.5 top-2.5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)]"
           />
         )}
       </Link>
@@ -91,7 +91,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
         <WhatsappCtaLink
           propertyId={property.id}
           href={buildWhatsappLink(property)}
-          className="btn-press mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-4 py-2.5 text-sm font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+          className="btn-press mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-site-whatsapp px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
         >
           <WhatsappIcon className="h-[18px] w-[18px]" />
           {available ? "Consultar por WhatsApp" : "Consultar disponibilidad"}

@@ -44,10 +44,10 @@ export function AmenitiesGrid({ property }: { property: AmenitiesProperty }) {
     <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:gap-x-10">
       {items.map(({ icon: Icon, label }) => (
         <div key={label} className="flex items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-site-terracotta-muted text-site-terracotta">
-            {Icon ? <Icon className="h-[18px] w-[18px]" /> : null}
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-site-terracotta-muted text-site-terracotta">
+            {Icon ? <Icon className="h-5 w-5" /> : null}
           </span>
-          <span className="text-sm text-site-ink">{label}</span>
+          <span className="text-sm font-medium text-site-ink">{label}</span>
         </div>
       ))}
     </div>

@@ -205,7 +205,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
                       <WhatsappCtaLink
                         propertyId={p.id}
                         href={buildWhatsappLink(p)}
-                        className="btn-press inline-flex items-center justify-center gap-2 rounded-full bg-site-terracotta px-4 py-2.5 text-xs font-semibold text-site-bg transition-colors hover:bg-site-terracotta-hover"
+                        className="btn-press inline-flex items-center justify-center gap-2 rounded-full bg-site-whatsapp px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-site-whatsapp-hover"
                       >
                         <WhatsappIcon className="h-4 w-4" />
                         {isPropertyAvailable(p.status) ? "Consultar" : "Consultar disponibilidad"}

@@ -69,6 +69,36 @@ huésped):
   `CatalogTransition.tsx` comparte el `isPending` de un `useTransition` entre `FilterBar` (que
   dispara la navegación) y la grilla (que se atenúa con `CatalogFade`).
 
+### Pulido editorial (Fase 2)
+
+- **Contraste**: `--site-ink-muted`/`--site-ink-faint` pasaron de rgba semitransparente a colores
+  sólidos (equivalentes a `stone-600`/`stone-500`) — los párrafos secundarios se leían lavados
+  sobre el fondo crema. Al ser tokens, el fix propaga a todo el sitio sin tocar cada componente.
+- **Verde solo para WhatsApp**: nuevo token `--site-whatsapp` (`#25d366`, verde oficial de
+  WhatsApp). Todo botón que abre un chat de WhatsApp (Nav, Hero, tarjetas, `BookingWidget`,
+  `StickyWhatsappFab`, comparador) usa ese verde; cualquier otro botón primario (Buscar, Ver
+  propiedades, Comparar) sigue en terracota. `.animate-pulse-glow` tambien paso a brillar en verde.
+- **Tarjetas** (`PropertyCard.tsx`, se reusa en catálogo y "otras casas similares"):
+  `rounded-xl`, sombra editorial suave (`shadow-[0_4px_20px_rgba(0,0,0,0.03)]`,
+  `border-stone-200/60`), badge de código mucho más chico y sutil (chip claro, no pill oscura).
+- **Confianza**: los 3 testimonios dejaron de ser cards blancas — ahora es una lista editorial con
+  comillas grandes en terracota, separada por un filete fino, directo sobre el fondo. El badge
+  "Propiedad Verificada ATS" sobre la foto subió de contraste (`bg-white/15`, texto `white/90`).
+- **Descripción de la ficha** (`src/lib/description.ts` + `DescriptionSections.tsx`): el equipo
+  carga la descripción como texto libre con su propia convención (título + datos rápidos + bajada
+  con emojis, después un divisor `━━━` y secciones tipo "📍 UBICACIÓN" / "🏡 ESPACIOS INTERIORES").
+  El parser descarta el título y los datos rápidos (ya se ven en el `<h1>` y en `AmenitiesGrid`,
+  mostrarlos de nuevo sería redundante), saca los emojis, y arma cada sección con su encabezado y
+  sus líneas como párrafo o lista (según traigan "|" o vengan con "✓") — sin inventar contenido,
+  solo reestructura lo que ya está cargado.
+- **Layout de la ficha**: `grid-cols-1 lg:grid-cols-3 gap-12` (contenido `col-span-2`, widget
+  `col-span-1`), **sin** `items-start` en el grid — a proposito: el widget necesita que su columna
+  se estire para que el `sticky top-24` tenga contenedor de sobra y no se despegue a mitad de
+  página (con `items-start` el contenedor quedaba del alto del widget nomás, y el sticky se
+  quedaba sin recorrido).
+- Tour virtual: `rounded-2xl overflow-hidden shadow-sm border-stone-200/60`, integrado a la
+  paleta crema en vez del borde/fondo oscuro que tenía.
+
 Cada propiedad tiene una página propia (`/propiedades/[code]`) con galería de fotos, subidas como
 archivos reales desde `/admin` (Supabase Storage), dormitorios/camas/baños, amenities y un link
 opcional a un tour virtual externo (ej. Polycam) o video. El precio admite cualquier combinación de

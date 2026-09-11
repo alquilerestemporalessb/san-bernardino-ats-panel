@@ -58,9 +58,9 @@ export function Hero() {
               )}
               target="_blank"
               rel="noopener"
-              className="btn-press animate-pulse-glow inline-flex items-center gap-2 rounded-full border border-site-terracotta/35 bg-site-bg-elevated px-7 py-4 text-sm font-semibold text-site-ink transition-colors hover:border-site-terracotta"
+              className="btn-press animate-pulse-glow inline-flex items-center gap-2 rounded-full border border-site-whatsapp/40 bg-site-bg-elevated px-7 py-4 text-sm font-semibold text-site-ink transition-colors hover:border-site-whatsapp"
             >
-              <WhatsappIcon className="h-4 w-4 text-site-terracotta" />
+              <WhatsappIcon className="h-4 w-4 text-site-whatsapp" />
               Escribinos
             </a>
           </div>

@@ -11,6 +11,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Gallery } from "@/components/site/Gallery";
 import { AmenitiesGrid } from "@/components/site/AmenitiesGrid";
+import { DescriptionSections } from "@/components/site/DescriptionSections";
 import { TrustRulesSection } from "@/components/site/TrustRulesSection";
 import { BookingWidget } from "@/components/site/BookingWidget";
 import { SimilarProperties } from "@/components/site/SimilarProperties";
@@ -190,8 +191,12 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
           <Gallery photos={property.property_photos} name={property.name} />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start">
-          <div className="min-w-0 flex flex-col gap-8">
+        {/* Sin items-start a proposito: la columna del widget necesita estirarse para que su
+            "sticky" tenga contenedor suficiente y quede pegado durante todo el scroll de la
+            columna izquierda (mas larga ahora, con la descripcion estructurada) — con items-start
+            el sticky se quedaba sin alto donde pegarse y el widget desaparecia a mitad de pagina. */}
+        <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
+          <div className="min-w-0 flex flex-col gap-8 lg:col-span-2">
             <div>
               <div className="mb-3 flex items-center gap-3">
                 <span className="rounded-full border border-site-terracotta bg-site-terracotta-muted px-3 py-1 text-xs font-semibold tracking-wide text-site-terracotta">
@@ -219,33 +224,33 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
 
             <AmenitiesGrid property={property} />
 
-            {property.description && (
-              <p className="text-pretty text-sm leading-relaxed text-site-ink-muted">
-                {property.description}
-              </p>
-            )}
+            <DescriptionSections description={property.description} />
 
             <TrustRulesSection />
 
             {property.tour_url && (
               <div>
                 <h2 className="mb-4 font-display text-xl text-site-ink">Tour virtual</h2>
-                <div className="aspect-video w-full overflow-hidden rounded-2xl border border-site-border bg-site-bg-elevated">
-                  <iframe
-                    src={property.tour_url}
-                    title={`Tour virtual — ${property.name}`}
-                    className="h-full w-full"
-                    sandbox="allow-scripts allow-same-origin allow-popups allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                    loading="lazy"
-                    allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; encrypted-media; picture-in-picture"
-                    allowFullScreen
-                  />
+                <div className="rounded-2xl border border-stone-200/60 shadow-sm overflow-hidden">
+                  <div className="aspect-video w-full bg-site-bg-elevated">
+                    <iframe
+                      src={property.tour_url}
+                      title={`Tour virtual — ${property.name}`}
+                      className="h-full w-full"
+                      sandbox="allow-scripts allow-same-origin allow-popups allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                      loading="lazy"
+                      allow="xr-spatial-tracking; gyroscope; accelerometer; autoplay; fullscreen; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          <BookingWidget property={property} usdRate={usdRate} blockedDates={blockedDates} />
+          <div className="lg:col-span-1">
+            <BookingWidget property={property} usdRate={usdRate} blockedDates={blockedDates} />
+          </div>
         </div>
 
         <SimilarProperties excludeId={property.id} zone={property.zone} />
