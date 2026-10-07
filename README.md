@@ -180,12 +180,12 @@ real del negocio.
 
 ## Deploy
 
-Ya está en producción: https://panel-admin-phi-nine.vercel.app (cuenta y proyecto de Vercel propios
+Ya está en producción: https://alquilersanbernardino.com.py (cuenta y proyecto de Vercel propios
 de `alquilerestemporalessb`, sin relación con GES). El repo
 (`github.com/alquilerestemporalessb/san-bernardino-ats-panel`) está conectado a Vercel — cualquier
 `git push` a `main` dispara un deploy automático a producción. Variables de entorno
-(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) ya cargadas en Vercel → Project
-Settings → Environment Variables (production + development).
+(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`) ya cargadas en
+Vercel → Project Settings → Environment Variables (production + development).
 
 ## Estructura
 

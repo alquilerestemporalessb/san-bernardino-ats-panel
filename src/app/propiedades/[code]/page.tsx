@@ -62,11 +62,14 @@ export async function generateMetadata(
 
   const description = property.description ?? `${property.name} en ${property.zone}, San Bernardino. Hasta ${property.capacity} personas.`;
   const image = property.property_photos[0]?.url ?? "/isotype.png";
+  const path = `/propiedades/${property.code.toLowerCase()}`;
 
   return {
     title: property.name,
     description,
-    openGraph: { title: property.name, description, images: [image] },
+    alternates: { canonical: path },
+    openGraph: { title: property.name, description, url: path, images: [image] },
+    twitter: { card: "summary_large_image", title: property.name, description, images: [image] },
   };
 }
 
