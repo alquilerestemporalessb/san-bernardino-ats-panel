@@ -44,11 +44,21 @@ export const metadata: Metadata = {
     template: "%s · San Bernardino ATS",
   },
   description,
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title,
     description,
     type: "website",
     locale: "es_PY",
+    url: "/",
+    images: ["/isotype.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
     images: ["/isotype.png"],
   },
 };

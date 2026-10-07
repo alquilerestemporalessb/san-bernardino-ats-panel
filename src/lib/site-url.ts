@@ -1,11 +1,12 @@
 /**
- * URL base del sitio para links absolutos (metadataBase, sitemap, robots, JSON-LD).
+ * URL base del sitio para links absolutos (metadataBase, canonical, sitemap, robots, JSON-LD,
+ * Open Graph/Twitter).
  *
- * VERCEL_PROJECT_PRODUCTION_URL la expone Vercel solo, sin configurar nada — apunta siempre
- * al dominio de produccion vigente (si algun dia se agrega un dominio propio, se actualiza sola).
- * En local (sin esa env var) cae a localhost.
+ * Se lee de NEXT_PUBLIC_SITE_URL (asi se puede apuntar a localhost en desarrollo sin tocar
+ * codigo); sin esa variable cae al dominio de produccion.
  */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alquilersanbernardino.com.py";
+
 export function getSiteUrl(): string {
-  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-  return vercelUrl ? `https://${vercelUrl}` : "http://localhost:3000";
+  return SITE_URL;
 }
