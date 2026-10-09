@@ -5,7 +5,7 @@ import { STOCK_IMAGES } from "@/lib/stock-images";
 const testimonials = [
   {
     quote:
-      "Alquilamos la Casa del Lago para el fin de año y todo fue tal cual la descripción. Coordinar por WhatsApp directo con los dueños fue lo mejor.",
+      "Alquilamos Las Orquídeas para el fin de año y todo fue tal cual la descripción. Coordinar por WhatsApp directo con los dueños fue lo mejor.",
     author: "Familia Duarte, Asunción",
   },
   {

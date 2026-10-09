@@ -1,8 +1,30 @@
 import { createAnonClient } from "@/lib/supabase/anon";
 
 const VALID_EVENT_TYPES = new Set(["view", "whatsapp_click"]);
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Limite de frecuencia simple en memoria: por IP, ventana deslizante. No persiste datos
+// personales — el Map vive solo en el proceso y se pierde en cada reinicio/instancia.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 20;
+const requestLog = new Map<string, number[]>();
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const timestamps = (requestLog.get(key) ?? []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS
+  );
+  timestamps.push(now);
+  requestLog.set(key, timestamps);
+  return timestamps.length > RATE_LIMIT_MAX_REQUESTS;
+}
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (isRateLimited(ip)) {
+    return new Response(null, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -17,6 +39,7 @@ export async function POST(request: Request) {
 
   if (
     typeof property_id !== "string" ||
+    !UUID_RE.test(property_id) ||
     typeof event_type !== "string" ||
     !VALID_EVENT_TYPES.has(event_type)
   ) {
