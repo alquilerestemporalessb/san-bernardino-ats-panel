@@ -45,6 +45,19 @@ async function getZones(): Promise<string[]> {
   }
 }
 
+async function getActivePropertiesCount(): Promise<number> {
+  try {
+    const supabase = await createClient();
+    const { count } = await supabase
+      .from("properties")
+      .select("id", { count: "exact", head: true })
+      .eq("active", true);
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhotos[]> {
   try {
     const supabase = await createClient();
@@ -115,9 +128,10 @@ export default async function HomePage({
   searchParams,
 }: PageProps<"/">) {
   const filters = (await searchParams) as Filters;
-  const [properties, zones] = await Promise.all([
+  const [properties, zones, casasCount] = await Promise.all([
     getFilteredProperties(filters),
     getZones(),
+    getActivePropertiesCount(),
   ]);
   const hasActiveFilters = Boolean(
     filters.capacity || filters.zone || filters.checkin || filters.maxPrice || filters.bedrooms || filters.amenities
@@ -157,7 +171,7 @@ export default async function HomePage({
       />
       <Nav />
       <main>
-        <Hero />
+        <Hero casasCount={casasCount} />
 
         <section id="catalogo" className="bg-site-bg py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-6">

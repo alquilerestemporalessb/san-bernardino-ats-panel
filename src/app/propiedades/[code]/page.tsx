@@ -27,7 +27,7 @@ async function getProperty(code: string): Promise<PropertyWithPhotos | null> {
     const { data } = await supabase
       .from("properties")
       .select("*, property_photos(*)")
-      .ilike("code", code)
+      .eq("code", code.toUpperCase())
       .eq("active", true)
       .order("sort_order", { referencedTable: "property_photos" })
       .maybeSingle();
