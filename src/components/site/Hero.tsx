@@ -3,13 +3,17 @@ import { buildGenericWhatsappLink } from "@/lib/whatsapp";
 import { PinIcon, WhatsappIcon } from "./icons";
 import { STOCK_IMAGES } from "@/lib/stock-images";
 
-const stats = [
-  { value: "+40", label: "familias hospedadas" },
-  { value: "100%", label: "propiedades visitadas" },
-  { value: "Gs. 0", label: "costo de reserva" },
-];
+interface HeroProps {
+  casasCount: number;
+}
 
-export function Hero() {
+export function Hero({ casasCount }: HeroProps) {
+  const stats = [
+    { value: "+40", label: "familias hospedadas" },
+    { value: "100%", label: "propiedades visitadas" },
+    { value: String(casasCount), label: "casas en San Bernardino" },
+  ];
+
   return (
     <section id="top" className="relative overflow-hidden bg-site-glow bg-noise-light">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-6 pb-16 pt-12 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pb-24 lg:pt-20">
