@@ -37,6 +37,7 @@ export interface Database {
           bathrooms: number | null;
           amenities: string[];
           tour_url: string | null;
+          included_services: string[] | null;
           created_at: string;
           updated_at: string;
         };
@@ -65,6 +66,7 @@ export interface Database {
           bathrooms?: number | null;
           amenities?: string[];
           tour_url?: string | null;
+          included_services?: string[] | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -93,6 +95,7 @@ export interface Database {
           bathrooms?: number | null;
           amenities?: string[];
           tour_url?: string | null;
+          included_services?: string[] | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -270,6 +273,62 @@ export interface Database {
           },
         ];
       };
+      property_rates: {
+        Row: {
+          id: string;
+          property_id: string;
+          kind: "bloque" | "fin_de_semana" | "noche" | "extension";
+          label: string;
+          date_from: string;
+          date_to: string;
+          price_gs: number;
+          extra_night_gs: number | null;
+          min_nights: number | null;
+          deposit_gs: number | null;
+          sort_order: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          property_id: string;
+          kind: "bloque" | "fin_de_semana" | "noche" | "extension";
+          label: string;
+          date_from: string;
+          date_to: string;
+          price_gs: number;
+          extra_night_gs?: number | null;
+          min_nights?: number | null;
+          deposit_gs?: number | null;
+          sort_order?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          property_id?: string;
+          kind?: "bloque" | "fin_de_semana" | "noche" | "extension";
+          label?: string;
+          date_from?: string;
+          date_to?: string;
+          price_gs?: number;
+          extra_night_gs?: number | null;
+          min_nights?: number | null;
+          deposit_gs?: number | null;
+          sort_order?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "property_rates_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       app_settings: {
         Row: {
           key: string;
@@ -307,3 +366,5 @@ export type Booking = Database["public"]["Tables"]["property_bookings"]["Row"];
 export type BookingStatus = Booking["status"];
 export type BookingWithProperty = Booking & { properties: Pick<Property, "code" | "name"> };
 export type AppSetting = Database["public"]["Tables"]["app_settings"]["Row"];
+export type PropertyRate = Database["public"]["Tables"]["property_rates"]["Row"];
+export type PropertyRateKind = PropertyRate["kind"];
