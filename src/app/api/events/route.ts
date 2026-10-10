@@ -1,6 +1,7 @@
 import { createAnonClient } from "@/lib/supabase/anon";
 
 const VALID_EVENT_TYPES = new Set(["view", "whatsapp_click"]);
+const VALID_MODALITIES = new Set(["bloque", "fin_de_semana", "noche", "custom"]);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // Limite de frecuencia simple en memoria: por IP, ventana deslizante. No persiste datos
@@ -32,9 +33,11 @@ export async function POST(request: Request) {
     return new Response(null, { status: 400 });
   }
 
-  const { property_id, event_type } = (body ?? {}) as {
+  const { property_id, event_type, modality, total_gs } = (body ?? {}) as {
     property_id?: unknown;
     event_type?: unknown;
+    modality?: unknown;
+    total_gs?: unknown;
   };
 
   if (
@@ -46,11 +49,20 @@ export async function POST(request: Request) {
     return new Response(null, { status: 400 });
   }
 
+  if (modality !== undefined && (typeof modality !== "string" || !VALID_MODALITIES.has(modality))) {
+    return new Response(null, { status: 400 });
+  }
+  if (total_gs !== undefined && (typeof total_gs !== "number" || !Number.isFinite(total_gs) || total_gs <= 0)) {
+    return new Response(null, { status: 400 });
+  }
+
   try {
     const supabase = createAnonClient();
     await supabase.from("property_events").insert({
       property_id,
       event_type: event_type as "view" | "whatsapp_click",
+      modality: (modality as string | undefined) ?? null,
+      total_gs: (total_gs as number | undefined) ?? null,
     });
   } catch (err) {
     console.error("[api/events] fallo al registrar evento:", err);

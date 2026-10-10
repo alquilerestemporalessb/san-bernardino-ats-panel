@@ -167,18 +167,24 @@ export interface Database {
           id: string;
           property_id: string;
           event_type: "view" | "whatsapp_click";
+          modality: string | null;
+          total_gs: number | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           property_id: string;
           event_type: "view" | "whatsapp_click";
+          modality?: string | null;
+          total_gs?: number | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           property_id?: string;
           event_type?: "view" | "whatsapp_click";
+          modality?: string | null;
+          total_gs?: number | null;
           created_at?: string;
         };
         Relationships: [
