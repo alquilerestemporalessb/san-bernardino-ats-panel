@@ -9,6 +9,7 @@ import { buildQuoteWhatsappLink, buildCustomQuoteWhatsappLink } from "@/lib/what
 import { formatDateEs, fromISODate, toISODate } from "@/lib/dates";
 import { quoteStay, type QuoteSuggestion } from "@/lib/quote-stay";
 import { CHECK_IN_TIME, CHECK_OUT_TIME } from "@/lib/stay-rules";
+import { dayPickerEsProps } from "./day-picker-locale";
 import { CalendarIcon, WhatsappIcon } from "./icons";
 import { WhatsappCtaLink } from "./WhatsappCtaLink";
 import type { Property, PropertyRate } from "@/types/database";
@@ -105,6 +106,7 @@ export function RateBookingWidget({
             setShowCalendar(false);
           }
         }}
+        {...dayPickerEsProps}
         disabled={[{ before: today }, ...blockedDays]}
         numberOfMonths={1}
       />

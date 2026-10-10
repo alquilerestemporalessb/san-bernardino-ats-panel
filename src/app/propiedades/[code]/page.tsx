@@ -254,6 +254,13 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
 
             <DescriptionSections description={property.description} />
 
+            {hasRates && (
+              <>
+                <IncludedServices services={property.included_services} />
+                <RateFaq />
+              </>
+            )}
+
             <TrustRulesSection />
 
             {property.tour_url && (
@@ -281,17 +288,6 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
               <RateBookingWidget property={property} rates={rates} blockedDates={blockedDates} />
             ) : (
               <BookingWidget property={property} usdRate={usdRate} blockedDates={blockedDates} />
-            )}
-
-            {hasRates && (
-              <>
-                <div className="mt-16">
-                  <IncludedServices services={property.included_services} />
-                </div>
-                <div className="mt-16">
-                  <RateFaq />
-                </div>
-              </>
             )}
           </div>
         </div>

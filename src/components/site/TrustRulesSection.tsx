@@ -60,8 +60,7 @@ export function TrustRulesSection() {
         <div>
           <h3 className="font-display text-base font-semibold text-site-ink">Sin costo de reserva</h3>
           <p className="mt-1.5 text-sm leading-relaxed text-site-ink-muted">
-            Consultar disponibilidad y coordinar por WhatsApp no tiene costo. La comisión de ATS
-            la paga el propietario, no el huésped.
+            Consultar disponibilidad y coordinar por WhatsApp no tiene costo.
           </p>
         </div>
       </div>

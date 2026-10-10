@@ -8,6 +8,7 @@ import { convert } from "@/lib/exchange-rate";
 import { buildBookingWhatsappLink } from "@/lib/whatsapp";
 import { formatDateEs, fromISODate, toISODate } from "@/lib/dates";
 import { isPropertyAvailable } from "@/lib/property-status";
+import { dayPickerEsProps } from "./day-picker-locale";
 import { CalendarIcon, WhatsappIcon } from "./icons";
 import { WhatsappCtaLink } from "./WhatsappCtaLink";
 import type { Property } from "@/types/database";
@@ -95,6 +96,7 @@ export function BookingWidget({
             setShowCalendar(false);
           }
         }}
+        {...dayPickerEsProps}
         disabled={[{ before: today }, ...blockedDays]}
         numberOfMonths={1}
       />
