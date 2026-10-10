@@ -234,6 +234,15 @@ body {
   color: var(--site-ink);
 }
 
+/* Calendario de tarifas (RateBookingWidget, ficha de Casa Roma): celdas sin borde, ocupadas en
+   opacidad baja sin tachado ni linea (nunca .rdp-day_blocked, eso es del calendario del panel
+   admin) y seleccion en terracota suave — nada de la directriz anti-IA tolera bordes de 1px. */
+.site-calendar--rates .rdp-root {
+  --rdp-day_button-border: none;
+  --rdp-selected-border: none;
+  --rdp-disabled-opacity: 0.32;
+}
+
 /* ---------- Mapa (Leaflet) — pin custom + popup con estilo de marca ---------- */
 .sb-map-pin {
   background: transparent;

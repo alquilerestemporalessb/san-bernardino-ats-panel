@@ -15,9 +15,12 @@ import { AmenitiesGrid } from "@/components/site/AmenitiesGrid";
 import { DescriptionSections } from "@/components/site/DescriptionSections";
 import { TrustRulesSection } from "@/components/site/TrustRulesSection";
 import { BookingWidget } from "@/components/site/BookingWidget";
+import { RateBookingWidget } from "@/components/site/RateBookingWidget";
+import { IncludedServices } from "@/components/site/IncludedServices";
+import { RateFaq } from "@/components/site/RateFaq";
 import { SimilarProperties } from "@/components/site/SimilarProperties";
 import { getSiteUrl } from "@/lib/site-url";
-import type { PropertyWithPhotos } from "@/types/database";
+import type { PropertyWithPhotos, PropertyRate } from "@/types/database";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +55,24 @@ async function getBlockedDates(propertyId: string): Promise<string[]> {
   }
 }
 
+/** Tarifas activas para el calendario de la ficha. Vacio para toda propiedad que todavia cotiza
+ * con el precio fijo de properties.price_per_* — ahi la ficha sigue mostrando el widget viejo. */
+async function getPropertyRates(propertyId: string): Promise<PropertyRate[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("property_rates")
+      .select("*")
+      .eq("property_id", propertyId)
+      .eq("active", true)
+      .order("sort_order");
+    return data ?? [];
+  } catch (err) {
+    console.error("[propiedad] fallo cargando tarifas:", err);
+    return [];
+  }
+}
+
 export async function generateMetadata(
   props: PageProps<"/propiedades/[code]">
 ): Promise<Metadata> {
@@ -82,10 +103,12 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
   const statusLabel = STATUS_BADGE_LABELS[property.status];
 
   const supabase = await createClient();
-  const [blockedDates, usdRate] = await Promise.all([
+  const [blockedDates, usdRate, rates] = await Promise.all([
     getBlockedDates(property.id),
     getUsdToPygRate(supabase),
+    getPropertyRates(property.id),
   ]);
+  const hasRates = rates.length > 0;
 
   // Registra la vista despues de mandar la respuesta — no suma latencia a la carga de la pagina.
   // Cliente sin cookies: cookies() no esta disponible dentro de after() en un Server Component.
@@ -254,7 +277,22 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
           </div>
 
           <div className="lg:col-span-1">
-            <BookingWidget property={property} usdRate={usdRate} blockedDates={blockedDates} />
+            {hasRates ? (
+              <RateBookingWidget property={property} rates={rates} blockedDates={blockedDates} />
+            ) : (
+              <BookingWidget property={property} usdRate={usdRate} blockedDates={blockedDates} />
+            )}
+
+            {hasRates && (
+              <>
+                <div className="mt-16">
+                  <IncludedServices services={property.included_services} />
+                </div>
+                <div className="mt-16">
+                  <RateFaq />
+                </div>
+              </>
+            )}
           </div>
         </div>
 

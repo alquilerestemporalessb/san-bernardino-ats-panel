@@ -28,3 +28,27 @@ export function buildBookingWhatsappLink(
   const message = `Hola, quiero consultar disponibilidad de ${property.name} (${property.code}) del ${dateRangeLabel}, ¿sigue disponible?`;
   return buildGenericWhatsappLink(message);
 }
+
+/**
+ * Link de WhatsApp para una cotizacion exacta/calculada del calendario de tarifas: incluye
+ * fechas, noches y el total ya calculado por quoteStay() para que el equipo arranque la
+ * conversacion con el mismo numero que ve el huesped.
+ */
+export function buildQuoteWhatsappLink(
+  property: Pick<Property, "code" | "name">,
+  params: { dateRangeLabel: string; nights: number; totalLabel: string }
+) {
+  const { dateRangeLabel, nights, totalLabel } = params;
+  const message = `Hola, quiero consultar disponibilidad de ${property.name} (${property.code}) del ${dateRangeLabel} (${nights} noche${nights === 1 ? "" : "s"}). Total: ${totalLabel}. ¿Confirmamos?`;
+  return buildGenericWhatsappLink(message);
+}
+
+/** Link de WhatsApp para fechas que no encajan en ninguna tarifa cargada: cotizacion a medida. */
+export function buildCustomQuoteWhatsappLink(
+  property: Pick<Property, "code" | "name">,
+  params: { dateRangeLabel: string; nights: number }
+) {
+  const { dateRangeLabel, nights } = params;
+  const message = `Hola, quiero una cotización a medida para ${property.name} (${property.code}) del ${dateRangeLabel} (${nights} noche${nights === 1 ? "" : "s"}), ¿me ayudan?`;
+  return buildGenericWhatsappLink(message);
+}
