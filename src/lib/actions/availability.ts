@@ -19,15 +19,15 @@ function revalidateAvailability(propertyId: string) {
   revalidatePath("/");
 }
 
-/** dates: array de strings "YYYY-MM-DD". */
-export async function blockDates(propertyId: string, dates: string[]) {
+/** dates: array de strings "YYYY-MM-DD". bookingId: si el bloqueo viene de una reserva. */
+export async function blockDates(propertyId: string, dates: string[], bookingId?: string) {
   if (dates.length === 0) return;
   const supabase = await requireUser();
 
   const { error } = await supabase
     .from("property_blocked_dates")
     .upsert(
-      dates.map((date) => ({ property_id: propertyId, date })),
+      dates.map((date) => ({ property_id: propertyId, date, booking_id: bookingId ?? null })),
       { onConflict: "property_id,date", ignoreDuplicates: true }
     );
 
@@ -44,6 +44,20 @@ export async function unblockDates(propertyId: string, dates: string[]) {
     .delete()
     .eq("property_id", propertyId)
     .in("date", dates);
+
+  if (error) throw new Error(error.message);
+  revalidateAvailability(propertyId);
+}
+
+/** Libera solo las fechas que bloqueo esa reserva puntual, nunca bloqueos manuales ajenos. */
+export async function unblockBookingDates(propertyId: string, bookingId: string) {
+  const supabase = await requireUser();
+
+  const { error } = await supabase
+    .from("property_blocked_dates")
+    .delete()
+    .eq("property_id", propertyId)
+    .eq("booking_id", bookingId);
 
   if (error) throw new Error(error.message);
   revalidateAvailability(propertyId);
