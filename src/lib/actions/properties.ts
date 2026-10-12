@@ -10,6 +10,26 @@ export interface PropertyFormState {
   error?: string;
 }
 
+const PHOTOS_BUCKET = "property-photos";
+const STORAGE_PUBLIC_PATH = `/storage/v1/object/public/${PHOTOS_BUCKET}/`;
+
+/** Convierte la URL publica de una foto al path interno del bucket, o null si no es de este bucket. */
+function storagePathFromUrl(url: string): string | null {
+  const idx = url.indexOf(STORAGE_PUBLIC_PATH);
+  if (idx === -1) return null;
+  return url.slice(idx + STORAGE_PUBLIC_PATH.length);
+}
+
+/** Borra archivos huerfanos del bucket. Best-effort: no bloquea el guardado si falla. */
+async function deletePhotoFiles(
+  supabase: Awaited<ReturnType<typeof requireUser>>,
+  urls: string[]
+) {
+  const paths = urls.map(storagePathFromUrl).filter((p): p is string => Boolean(p));
+  if (paths.length === 0) return;
+  await supabase.storage.from(PHOTOS_BUCKET).remove(paths);
+}
+
 /** El selector del form solo ofrece Gs/USD; cualquier otra cosa cae a guaranies. */
 function readCurrency(value: FormDataEntryValue | null): Currency {
   return String(value) === "USD" ? "USD" : "PYG";
@@ -217,22 +237,41 @@ async function replacePropertyPhotos(
   propertyId: string,
   photoUrls: string[]
 ) {
+  const { data: existing, error: fetchError } = await supabase
+    .from("property_photos")
+    .select("url")
+    .eq("property_id", propertyId);
+  if (fetchError) throw new Error(fetchError.message);
+  const existingUrls = (existing ?? []).map((p) => p.url);
+
   const { error: deleteError } = await supabase
     .from("property_photos")
     .delete()
     .eq("property_id", propertyId);
   if (deleteError) throw new Error(deleteError.message);
 
-  if (photoUrls.length === 0) return;
+  if (photoUrls.length > 0) {
+    const { error: insertError } = await supabase.from("property_photos").insert(
+      photoUrls.map((url, index) => ({
+        property_id: propertyId,
+        url,
+        sort_order: index,
+      }))
+    );
+    if (insertError) {
+      // Compensacion: si el insert falla, restauramos las fotos anteriores en vez de dejar
+      // la propiedad sin galeria.
+      if (existingUrls.length > 0) {
+        await supabase.from("property_photos").insert(
+          existingUrls.map((url, index) => ({ property_id: propertyId, url, sort_order: index }))
+        );
+      }
+      throw new Error(insertError.message);
+    }
+  }
 
-  const { error: insertError } = await supabase.from("property_photos").insert(
-    photoUrls.map((url, index) => ({
-      property_id: propertyId,
-      url,
-      sort_order: index,
-    }))
-  );
-  if (insertError) throw new Error(insertError.message);
+  const orphanedUrls = existingUrls.filter((url) => !photoUrls.includes(url));
+  await deletePhotoFiles(supabase, orphanedUrls);
 }
 
 export async function createProperty(
@@ -292,6 +331,12 @@ export async function updateProperty(
 
 export async function deleteProperty(id: string) {
   const supabase = await requireUser();
+
+  const { data: files } = await supabase.storage.from(PHOTOS_BUCKET).list(id);
+  if (files && files.length > 0) {
+    await supabase.storage.from(PHOTOS_BUCKET).remove(files.map((f) => `${id}/${f.name}`));
+  }
+
   const { error } = await supabase.from("properties").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidateCatalog();
