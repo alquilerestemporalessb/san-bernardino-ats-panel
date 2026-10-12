@@ -20,7 +20,7 @@ export function Hero({ casasCount }: HeroProps) {
         {/* Columna de texto */}
         <div className="relative z-10 flex flex-col items-start lg:pr-4">
           <span
-            className="mb-6 inline-flex animate-fade-up items-center gap-2 rounded-full border border-site-border bg-site-bg-elevated px-4 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-site-terracotta"
+            className="mb-6 inline-flex animate-fade-up items-center gap-2 rounded-full bg-site-bg-elevated px-4 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-site-terracotta shadow-[0_8px_20px_rgba(36,31,24,0.08)]"
           >
             <PinIcon className="h-3 w-3" />
             San Bernardino, Paraguay
@@ -110,7 +110,7 @@ export function Hero({ casasCount }: HeroProps) {
             />
           </div>
 
-          <div className="absolute -top-2 right-2 flex items-center gap-3 rounded-2xl border border-site-border bg-site-bg-elevated/95 px-4 py-3 shadow-[0_16px_32px_rgba(36,31,24,0.16)] backdrop-blur-sm sm:right-6">
+          <div className="absolute -top-2 right-2 flex items-center gap-3 rounded-2xl bg-site-bg-elevated/95 px-4 py-3 shadow-[0_16px_32px_rgba(36,31,24,0.16)] backdrop-blur-sm sm:right-6">
             <Image src="/verified-badge.svg" alt="" width={34} height={34} />
             <div className="leading-tight">
               <p className="text-xs font-semibold text-site-ink">100% verificadas</p>

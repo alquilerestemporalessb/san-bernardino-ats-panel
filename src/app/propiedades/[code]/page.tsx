@@ -266,7 +266,7 @@ export default async function PropertyDetailPage(props: PageProps<"/propiedades/
             {property.tour_url && (
               <div>
                 <h2 className="mb-4 font-display text-xl text-site-ink">Tour virtual</h2>
-                <div className="rounded-2xl border border-stone-200/60 shadow-sm overflow-hidden">
+                <div className="rounded-2xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.05)]">
                   <div className="aspect-video w-full bg-site-bg-elevated">
                     <iframe
                       src={property.tour_url}

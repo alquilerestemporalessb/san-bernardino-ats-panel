@@ -41,7 +41,7 @@ export function CompareBar() {
           {selected.map((code) => (
             <span
               key={code}
-              className="inline-flex items-center gap-1.5 rounded-full border border-site-border bg-site-bg px-3 py-1 text-xs text-site-ink"
+              className="inline-flex items-center gap-1.5 rounded-full bg-site-bg px-3 py-1 text-xs text-site-ink shadow-[0_4px_12px_rgba(36,31,24,0.06)]"
             >
               {code.toUpperCase()}
               <button
