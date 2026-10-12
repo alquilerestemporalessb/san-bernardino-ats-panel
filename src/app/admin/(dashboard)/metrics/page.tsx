@@ -9,27 +9,22 @@ interface PropertyStats {
 
 async function getStats(): Promise<PropertyStats[]> {
   const supabase = await createClient();
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [{ data: properties }, { data: events }] = await Promise.all([
+  const [{ data: properties }, { data: counts }] = await Promise.all([
     supabase.from("properties").select("id, code, name"),
-    supabase
-      .from("property_events")
-      .select("property_id, event_type")
-      .gte("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()),
+    supabase.rpc("property_event_counts", { since }),
   ]);
 
   const countsByProperty = new Map<string, { views: number; whatsappClicks: number }>();
-  for (const event of events ?? []) {
-    const entry = countsByProperty.get(event.property_id) ?? { views: 0, whatsappClicks: 0 };
-    if (event.event_type === "view") entry.views += 1;
-    else entry.whatsappClicks += 1;
-    countsByProperty.set(event.property_id, entry);
+  for (const row of counts ?? []) {
+    countsByProperty.set(row.property_id, { views: row.views, whatsappClicks: row.whatsapp_clicks });
   }
 
   return (properties ?? [])
     .map((property) => {
-      const counts = countsByProperty.get(property.id) ?? { views: 0, whatsappClicks: 0 };
-      return { code: property.code, name: property.name, ...counts };
+      const propertyCounts = countsByProperty.get(property.id) ?? { views: 0, whatsappClicks: 0 };
+      return { code: property.code, name: property.name, ...propertyCounts };
     })
     .sort((a, b) => b.whatsappClicks - a.whatsappClicks || b.views - a.views);
 }
