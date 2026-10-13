@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { blockDates, unblockDates } from "@/lib/actions/availability";
-import { datesInRange, fromISODate } from "@/lib/dates";
+import { blockDates, unblockBookingDates } from "@/lib/actions/availability";
+import { nightsInRange, fromISODate } from "@/lib/dates";
 
 export interface BookingFormState {
   error?: string;
@@ -63,9 +63,8 @@ export async function createBooking(
     return { error: "La comision tiene que ser un numero entre 0 y 100." };
   }
 
-  const nights = Math.round(
-    (fromISODate(checkOut).getTime() - fromISODate(checkIn).getTime()) / 86400000
-  );
+  const nightDates = nightsInRange(fromISODate(checkIn), fromISODate(checkOut));
+  const nightsCount = nightDates.length;
 
   const { data: property, error: propertyError } = await supabase
     .from("properties")
@@ -73,39 +72,48 @@ export async function createBooking(
     .eq("id", propertyId)
     .single();
   if (propertyError) return { error: propertyError.message };
-  if (nights < property.min_nights) {
+  if (nightsCount < property.min_nights) {
     return {
       error: `La estadia tiene que ser de al menos ${property.min_nights} noche${property.min_nights === 1 ? "" : "s"} para esta propiedad.`,
     };
   }
 
-  const dates = datesInRange(fromISODate(checkIn), fromISODate(checkOut));
-
   const { data: overlapping, error: overlapError } = await supabase
     .from("property_blocked_dates")
     .select("date")
     .eq("property_id", propertyId)
-    .in("date", dates)
+    .in("date", nightDates)
     .limit(1);
   if (overlapError) return { error: overlapError.message };
   if (overlapping && overlapping.length > 0) {
     return { error: "Esas fechas ya estan ocupadas para esta propiedad." };
   }
 
-  const { error } = await supabase.from("property_bookings").insert({
-    property_id: propertyId,
-    guest_name: guestName,
-    guest_contact: guestContact || null,
-    check_in: checkIn,
-    check_out: checkOut,
-    amount,
-    currency,
-    commission_pct: commissionPct,
-    notes: notes || null,
-  });
+  const { data: booking, error } = await supabase
+    .from("property_bookings")
+    .insert({
+      property_id: propertyId,
+      guest_name: guestName,
+      guest_contact: guestContact || null,
+      check_in: checkIn,
+      check_out: checkOut,
+      amount,
+      currency,
+      commission_pct: commissionPct,
+      notes: notes || null,
+    })
+    .select("id")
+    .single();
   if (error) return { error: error.message };
 
-  await blockDates(propertyId, dates);
+  try {
+    await blockDates(propertyId, nightDates, booking.id);
+  } catch (blockError) {
+    // Compensacion: si no se pudieron bloquear las fechas, no dejamos la reserva huerfana.
+    await supabase.from("property_bookings").delete().eq("id", booking.id);
+    const message = blockError instanceof Error ? blockError.message : "Error desconocido";
+    return { error: `No se pudieron bloquear las fechas, la reserva no se guardo: ${message}` };
+  }
 
   revalidateBookings(propertyId);
   return {};
@@ -116,7 +124,7 @@ export async function cancelBooking(id: string) {
 
   const { data: booking, error: fetchError } = await supabase
     .from("property_bookings")
-    .select("property_id, check_in, check_out")
+    .select("property_id, status")
     .eq("id", id)
     .single();
   if (fetchError) throw new Error(fetchError.message);
@@ -127,8 +135,15 @@ export async function cancelBooking(id: string) {
     .eq("id", id);
   if (error) throw new Error(error.message);
 
-  const dates = datesInRange(fromISODate(booking.check_in), fromISODate(booking.check_out));
-  await unblockDates(booking.property_id, dates);
+  try {
+    // Solo libera las fechas que bloqueo esta reserva, nunca bloqueos manuales ajenos.
+    await unblockBookingDates(booking.property_id, id);
+  } catch (unblockError) {
+    // Compensacion: si no se pudieron liberar las fechas, no dejamos la reserva marcada
+    // como cancelada con las fechas todavia bloqueadas por ella.
+    await supabase.from("property_bookings").update({ status: booking.status }).eq("id", id);
+    throw unblockError;
+  }
 
   revalidateBookings(booking.property_id);
 }

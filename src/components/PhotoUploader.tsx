@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const BUCKET = "property-photos";
+const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp"]);
 
 interface Photo {
   key: number;
@@ -47,7 +48,18 @@ export function PhotoUploader({
   }, []);
 
   async function uploadOne(key: number, file: File) {
-    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+    const rawExt = file.name.includes(".") ? file.name.split(".").pop() : "";
+    const ext = rawExt?.toLowerCase() ?? "";
+    if (!ALLOWED_EXTENSIONS.has(ext)) {
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.key === key
+            ? { ...p, status: "error", errorMessage: "Formato no permitido (jpg, png o webp)." }
+            : p
+        )
+      );
+      return;
+    }
     const path = `${propertyId}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
       contentType: file.type,

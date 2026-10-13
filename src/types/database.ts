@@ -138,18 +138,21 @@ export interface Database {
           id: string;
           property_id: string;
           date: string;
+          booking_id: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           property_id: string;
           date: string;
+          booking_id?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           property_id?: string;
           date?: string;
+          booking_id?: string | null;
           created_at?: string;
         };
         Relationships: [
@@ -158,6 +161,13 @@ export interface Database {
             columns: ["property_id"];
             isOneToOne: false;
             referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "property_blocked_dates_booking_id_fkey";
+            columns: ["booking_id"];
+            isOneToOne: false;
+            referencedRelation: "property_bookings";
             referencedColumns: ["id"];
           },
         ];
@@ -355,7 +365,16 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      property_event_counts: {
+        Args: { since: string };
+        Returns: {
+          property_id: string;
+          views: number;
+          whatsapp_clicks: number;
+        }[];
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

@@ -23,12 +23,6 @@ export function BookingForm({
   const formRef = useRef<HTMLFormElement>(null);
   const submittedRef = useRef(false);
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-
   const blockedDays = useMemo(() => blockedDates.map(fromISODate), [blockedDates]);
 
   useEffect(() => {
@@ -52,12 +46,7 @@ export function BookingForm({
       <input type="hidden" name="check_out" value={range?.to ? toISODate(range.to) : ""} />
 
       <div className="self-start rounded-xl border border-sb-border-subtle bg-sb-bg-elevated p-3">
-        <DayPicker
-          mode="range"
-          selected={range}
-          onSelect={setRange}
-          disabled={[{ before: today }, ...blockedDays]}
-        />
+        <DayPicker mode="range" selected={range} onSelect={setRange} disabled={blockedDays} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

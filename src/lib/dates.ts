@@ -27,3 +27,13 @@ export function datesInRange(from: Date, to: Date): string[] {
   }
   return dates;
 }
+
+/**
+ * Noches ocupadas por una estadia: el check-out no cuenta, porque es el mismo dia en que puede
+ * entrar el siguiente huesped (misma convencion que los bloques de property_rates).
+ */
+export function nightsInRange(checkIn: Date, checkOut: Date): string[] {
+  const nights = datesInRange(checkIn, checkOut);
+  nights.pop();
+  return nights;
+}

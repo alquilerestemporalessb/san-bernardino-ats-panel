@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { CancelBookingButton } from "@/components/CancelBookingButton";
-import { formatDateEs, toISODate } from "@/lib/dates";
+import { formatDateEs } from "@/lib/dates";
 import { formatMoney, formatGs } from "@/lib/currency";
 import { convert, getUsdToPygRate } from "@/lib/exchange-rate";
 import type { BookingWithProperty, Currency } from "@/types/database";
@@ -14,11 +14,20 @@ async function getBookings(): Promise<BookingWithProperty[]> {
   return (data ?? []) as unknown as BookingWithProperty[];
 }
 
+/**
+ * El servidor corre en UTC (Vercel); Paraguay es UTC-3. Cerca de fin de mes, usar la hora del
+ * servidor puede ubicar una reserva en el mes equivocado, asi que calculamos "hoy" con la zona
+ * horaria de Asuncion en vez de confiar en new Date().getMonth().
+ */
 function isThisMonth(iso: string) {
-  const now = new Date();
-  const monthStart = toISODate(new Date(now.getFullYear(), now.getMonth(), 1));
-  const monthEnd = toISODate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
-  return iso >= monthStart && iso <= monthEnd;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Asuncion",
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(new Date());
+  const year = parts.find((p) => p.type === "year")?.value;
+  const month = parts.find((p) => p.type === "month")?.value;
+  return iso.startsWith(`${year}-${month}`);
 }
 
 const CURRENCIES: Currency[] = ["PYG", "USD"];

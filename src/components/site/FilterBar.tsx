@@ -106,12 +106,12 @@ export function FilterBar({ zones }: { zones: string[] }) {
           <button
             type="button"
             onClick={() => setShowCalendar((v) => !v)}
-            className="w-full rounded-md border border-site-border bg-site-bg px-3.5 py-2.5 text-left text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta"
+            className="w-full rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-3.5 py-2.5 text-left text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta"
           >
             {dateLabel}
           </button>
           {showCalendar && (
-            <div className="site-calendar absolute left-0 top-full z-20 mt-2 rounded-xl border border-site-border bg-site-bg-elevated p-3 shadow-[0_16px_36px_rgba(36,31,24,0.16)]">
+            <div className="site-calendar absolute left-0 top-full z-20 mt-2 rounded-xl bg-site-bg-elevated p-3 shadow-[0_16px_36px_rgba(36,31,24,0.16)]">
               <DayPicker
                 mode="range"
                 selected={range}
@@ -126,7 +126,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
         <select
           value={capacity}
           onChange={(e) => setCapacity(e.target.value)}
-          className="rounded-md border border-site-border bg-site-bg px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-44"
+          className="rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-44"
         >
           <option value="">Capacidad</option>
           {capacityOptions.map((n) => (
@@ -139,7 +139,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
         <select
           value={zone}
           onChange={(e) => setZone(e.target.value)}
-          className="rounded-md border border-site-border bg-site-bg px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-44"
+          className="rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-44"
         >
           <option value="">Zona</option>
           {zones.map((z) => (
@@ -161,7 +161,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
             <button
               type="button"
               onClick={handleClear}
-              className="rounded-md border border-site-border px-3 py-2.5 text-sm text-site-ink-muted transition-colors hover:border-site-terracotta"
+              className="rounded-md border border-transparent px-3 py-2.5 text-sm text-site-ink-muted shadow-[0_2px_10px_rgba(36,31,24,0.05)] transition-colors hover:border-site-terracotta"
             >
               Limpiar
             </button>
@@ -178,13 +178,13 @@ export function FilterBar({ zones }: { zones: string[] }) {
             placeholder="Precio máx. / noche"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
-            className="min-w-0 flex-1 rounded-md border border-site-border bg-site-bg px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta"
+            className="min-w-0 flex-1 rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta"
           />
           <select
             value={priceCurrency}
             onChange={(e) => setPriceCurrency(e.target.value)}
             aria-label="Moneda del precio máximo"
-            className="w-20 shrink-0 rounded-md border border-site-border bg-site-bg px-2 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta"
+            className="w-20 shrink-0 rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-2 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta"
           >
             <option value="PYG">Gs</option>
             <option value="USD">USD</option>
@@ -194,7 +194,7 @@ export function FilterBar({ zones }: { zones: string[] }) {
         <select
           value={bedrooms}
           onChange={(e) => setBedrooms(e.target.value)}
-          className="rounded-md border border-site-border bg-site-bg px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-44"
+          className="rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-3.5 py-2.5 text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-44"
         >
           <option value="">Dormitorios</option>
           {bedroomsOptions.map((n) => (
@@ -208,12 +208,12 @@ export function FilterBar({ zones }: { zones: string[] }) {
           <button
             type="button"
             onClick={() => setShowAmenities((v) => !v)}
-            className="w-full rounded-md border border-site-border bg-site-bg px-3.5 py-2.5 text-left text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-48"
+            className="w-full rounded-md border border-transparent bg-site-bg shadow-[0_2px_10px_rgba(36,31,24,0.05)]px-3.5 py-2.5 text-left text-sm text-site-ink outline-none transition-colors hover:border-site-terracotta sm:w-48"
           >
             {amenitiesLabel}
           </button>
           {showAmenities && (
-            <div className="absolute left-0 top-full z-20 mt-2 flex flex-col gap-2 rounded-xl border border-site-border bg-site-bg-elevated p-4 shadow-[0_16px_36px_rgba(0,0,0,0.45)]">
+            <div className="absolute left-0 top-full z-20 mt-2 flex flex-col gap-2 rounded-xl bg-site-bg-elevated p-4 shadow-[0_16px_36px_rgba(36,31,24,0.16)]">
               {AMENITIES.map((amenity) => (
                 <label
                   key={amenity.value}
