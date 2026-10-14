@@ -5,9 +5,10 @@
  * prefijadas con "✓". Este parser limpia esa "sopa de emojis" y arma bloques prolijos — sin
  * inventar contenido: solo reestructura lo que el equipo ya escribio.
  *
- * El titulo y los datos rapidos (primeras 2 lineas) se descartan porque ya se muestran aparte
- * (nombre en el <h1>, capacidad/zona/dormitorios en AmenitiesGrid) — mostrarlos de nuevo aca
- * seria redundante.
+ * Cuando el titulo y los datos rapidos estan (a lo sumo en los primeros 2 bloques), se descartan
+ * porque ya se muestran aparte (nombre en el <h1>, capacidad/zona/dormitorios en AmenitiesGrid).
+ * Si una descripcion no sigue esa convencion y arranca directo con texto libre, no se descarta
+ * nada — nunca se pierde contenido real por asumir una estructura que no esta.
  */
 
 export type DescriptionBlock =
@@ -46,6 +47,24 @@ function splitBlocks(text: string): string[] {
     .filter(Boolean);
 }
 
+/**
+ * Titulo ("🌅 SAN BERNARDINO COUNTRY CLUB - CASA ATARDECER") o datos rapidos en formato
+ * "COUNTRY CLUB | 12 personas | 4 habitaciones" — nunca una oracion real. Sin esta deteccion,
+ * descartar siempre los primeros 2 bloques se come parrafos de verdad en descripciones que no
+ * siguen la convencion de "emoji + titulo + datos rapidos" (texto libre desde el primer parrafo).
+ */
+function looksLikeTitleOrQuickFacts(block: string): boolean {
+  const stripped = stripEmoji(block);
+  if (!stripped) return true;
+  if (stripped.includes(" | ")) return true;
+
+  const letters = stripped.replace(/[^\p{L}]/gu, "");
+  if (!letters) return true;
+  const isAllCaps = letters === letters.toUpperCase() && letters !== letters.toLowerCase();
+  const endsLikeSentence = /[.!?]$/.test(stripped);
+  return isAllCaps && !endsLikeSentence;
+}
+
 export function parseDescription(raw: string | null | undefined): DescriptionSection[] {
   if (!raw) return [];
   const normalized = raw.replace(/\r\n/g, "\n");
@@ -54,10 +73,16 @@ export function parseDescription(raw: string | null | undefined): DescriptionSec
 
   const sections: DescriptionSection[] = [];
 
-  // Bajada introductoria: se descartan el titulo y los datos rapidos (bloques 0 y 1) y
-  // cualquier bloque que sea solo precio/rating — el resto se muestra tal cual, linea por linea.
-  const introLines = splitBlocks(preamble)
-    .slice(2)
+  // Bajada introductoria: se descartan el titulo y los datos rapidos, si los hay (a lo sumo los
+  // primeros 2 bloques, y solo si realmente tienen pinta de titulo/datos rapidos — nunca una
+  // oracion real) y cualquier bloque que sea solo precio/rating. El resto se muestra tal cual.
+  const preambleBlocks = splitBlocks(preamble);
+  let introStart = 0;
+  while (introStart < preambleBlocks.length && introStart < 2 && looksLikeTitleOrQuickFacts(preambleBlocks[introStart])) {
+    introStart++;
+  }
+  const introLines = preambleBlocks
+    .slice(introStart)
     .filter((block) => !PRICE_LINE_RE.test(block))
     .flatMap((block) => block.split("\n"))
     .map(stripEmoji)
