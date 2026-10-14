@@ -17,7 +17,7 @@ import {
   WhatsappIcon,
 } from "@/components/site/icons";
 import { buildWhatsappLink } from "@/lib/whatsapp";
-import { priceLines } from "@/lib/rental-pricing";
+import { catalogPrice } from "@/lib/rental-pricing";
 import { AMENITIES } from "@/lib/amenities";
 import { isPropertyAvailable } from "@/lib/property-status";
 import type { PropertyWithPhotos } from "@/types/database";
@@ -39,7 +39,7 @@ async function getProperties(codes: string[]): Promise<PropertyWithPhotos[]> {
     const supabase = await createClient();
     const { data } = await supabase
       .from("properties")
-      .select("*, property_photos(*)")
+      .select("*, property_photos(*), property_rates(*)")
       .in(
         "code",
         codes.map((c) => c.toUpperCase())
@@ -117,16 +117,8 @@ export default async function ComparePage({ searchParams }: PageProps<"/comparar
 
                 <Row label="Precio">
                   {properties.map((p) => {
-                    const lines = priceLines(p);
-                    return (
-                      <Cell key={p.id}>
-                        {lines.length > 0 ? (
-                          lines.map((line) => <p key={line}>{line}</p>)
-                        ) : (
-                          <>Consultar precio</>
-                        )}
-                      </Cell>
-                    );
+                    const monthlyPrice = catalogPrice(p.property_rates ?? []);
+                    return <Cell key={p.id}>{monthlyPrice ?? "Consultar precio"}</Cell>;
                   })}
                 </Row>
 
