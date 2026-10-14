@@ -16,7 +16,7 @@ async function getSimilarProperties(
 
     const { data: sameZone } = await supabase
       .from("properties")
-      .select("*, property_photos(*)")
+      .select("*, property_photos(*), property_rates(*)")
       .eq("active", true)
       .eq("zone", zone)
       .neq("id", excludeId)
@@ -28,7 +28,7 @@ async function getSimilarProperties(
 
     const { data: rest } = await supabase
       .from("properties")
-      .select("*, property_photos(*)")
+      .select("*, property_photos(*), property_rates(*)")
       .eq("active", true)
       .neq("id", excludeId)
       .not("zone", "eq", zone)

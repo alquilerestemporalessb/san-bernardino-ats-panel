@@ -385,7 +385,10 @@ export type PropertyStatus = Property["status"];
 export type PropertyPhoto = Database["public"]["Tables"]["property_photos"]["Row"];
 export type PropertyBlockedDate = Database["public"]["Tables"]["property_blocked_dates"]["Row"];
 export type PropertyEvent = Database["public"]["Tables"]["property_events"]["Row"];
-export type PropertyWithPhotos = Property & { property_photos: PropertyPhoto[] };
+export type PropertyWithPhotos = Property & {
+  property_photos: PropertyPhoto[];
+  property_rates?: PropertyRate[];
+};
 export type PropertyOwner = Database["public"]["Tables"]["property_owners"]["Row"];
 export type Booking = Database["public"]["Tables"]["property_bookings"]["Row"];
 export type BookingStatus = Booking["status"];

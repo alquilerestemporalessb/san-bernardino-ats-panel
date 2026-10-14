@@ -63,7 +63,7 @@ async function getFilteredProperties(filters: Filters): Promise<PropertyWithPhot
     const supabase = await createClient();
     let query = supabase
       .from("properties")
-      .select("*, property_photos(*)")
+      .select("*, property_photos(*), property_rates(*)")
       .eq("active", true)
       .order("code", { ascending: true })
       .order("sort_order", { referencedTable: "property_photos" });

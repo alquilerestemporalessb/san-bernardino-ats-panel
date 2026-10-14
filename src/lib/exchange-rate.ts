@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Currency, Database } from "@/types/database";
 
 /** Fallback si todavia no se cargo la cotizacion en app_settings (o quedo invalida). */
-export const DEFAULT_USD_TO_PYG_RATE = 7500;
+export const DEFAULT_USD_TO_PYG_RATE = 5600;
 
 export const USD_RATE_SETTING_KEY = "usd_to_pyg_rate";
 

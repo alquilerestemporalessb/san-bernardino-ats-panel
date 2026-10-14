@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { PropertyWithPhotos } from "@/types/database";
 import { buildWhatsappLink } from "@/lib/whatsapp";
 import { STATUS_BADGE_LABELS, isPropertyAvailable } from "@/lib/property-status";
-import { priceLines } from "@/lib/rental-pricing";
+import { catalogPrice } from "@/lib/rental-pricing";
 import { BathIcon, BedIcon, PeopleIcon, PinIcon, WhatsappIcon } from "./icons";
 import { PhotoPlaceholder } from "./PhotoPlaceholder";
 import { PropertyCardGallery } from "./PropertyCardGallery";
@@ -14,7 +14,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
   const detailHref = `/propiedades/${property.code.toLowerCase()}`;
   const available = isPropertyAvailable(property.status);
   const statusLabel = STATUS_BADGE_LABELS[property.status];
-  const prices = priceLines(property);
+  const monthlyPrice = catalogPrice(property.property_rates ?? []);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl bg-site-bg-elevated shadow-[0_30px_60px_rgba(36,31,24,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_40px_80px_rgba(36,31,24,0.09)]">
@@ -79,11 +79,7 @@ export function PropertyCard({ property }: { property: PropertyWithPhotos }) {
         </ul>
 
         <div className="text-sm font-medium text-site-ink">
-          {prices.length > 0 ? (
-            prices.map((line) => <p key={line}>{line}</p>)
-          ) : (
-            <p className="text-site-ink-muted">Consultar precio</p>
-          )}
+          {monthlyPrice ? <p>{monthlyPrice}</p> : <p className="text-site-ink-muted">Consultar precio</p>}
         </div>
 
         <CompareToggle code={property.code.toLowerCase()} />
