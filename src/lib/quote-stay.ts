@@ -40,6 +40,16 @@ function addDays(iso: string, days: number): string {
   return toISODate(date);
 }
 
+/** [dateFrom, dateTo) se superpone con alguna fecha bloqueada (checkout exclusivo). */
+function overlapsBlocked(dateFrom: string, dateTo: string, blocked: Set<string>): boolean {
+  if (blocked.size === 0) return false;
+  const nights = daysBetween(dateFrom, dateTo);
+  for (let i = 0; i < nights; i++) {
+    if (blocked.has(addDays(dateFrom, i))) return true;
+  }
+  return false;
+}
+
 /**
  * Camino mas barato entre checkIn y checkOut usando filas 'bloque'/'extension' como aristas
  * (date_from -> date_to, peso price_gs; convencion: el check-out de una es el check-in de la
@@ -50,9 +60,15 @@ function addDays(iso: string, days: number): string {
 function cheapestBlockChain(
   rates: PropertyRate[],
   checkIn: string,
-  checkOut: string
+  checkOut: string,
+  blocked: Set<string>
 ): { total: number; deposit: number | null; rows: PropertyRate[] } | null {
-  const edges = rates.filter((r) => r.active && (r.kind === "bloque" || r.kind === "extension"));
+  const edges = rates.filter(
+    (r) =>
+      r.active &&
+      (r.kind === "bloque" || r.kind === "extension") &&
+      !overlapsBlocked(r.date_from, r.date_to, blocked)
+  );
 
   const nodes = new Set<string>([checkIn, checkOut]);
   for (const edge of edges) {
@@ -109,7 +125,12 @@ function cheapestBlockChain(
 }
 
 /** Fin de semana: check-in jueves/viernes, check-out domingo/lunes, con extra por noche agregada. */
-function weekendMatch(rates: PropertyRate[], checkIn: string, checkOut: string): QuoteResult | null {
+function weekendMatch(
+  rates: PropertyRate[],
+  checkIn: string,
+  checkOut: string,
+  blocked: Set<string>
+): QuoteResult | null {
   const nights = daysBetween(checkIn, checkOut);
   if (nights < 2 || nights > 4) return null;
 
@@ -117,6 +138,8 @@ function weekendMatch(rates: PropertyRate[], checkIn: string, checkOut: string):
   const outDay = weekday(checkOut);
   if (inDay !== THURSDAY && inDay !== FRIDAY) return null;
   if (outDay !== SUNDAY && outDay !== MONDAY) return null;
+
+  if (overlapsBlocked(checkIn, checkOut, blocked)) return null;
 
   const row = rates.find(
     (r) => r.active && r.kind === "fin_de_semana" && r.date_from <= checkIn && checkOut <= r.date_to
@@ -141,13 +164,19 @@ function weekendMatch(rates: PropertyRate[], checkIn: string, checkOut: string):
  * cubre (soporta estadias que cruzan de una temporada a otra). Si no llega al minimo exigido,
  * no se cotiza — se sugiere la misma fecha de entrada extendida hasta cumplirlo.
  */
-function nightlyMatch(rates: PropertyRate[], checkIn: string, checkOut: string): QuoteResult | null {
+function nightlyMatch(
+  rates: PropertyRate[],
+  checkIn: string,
+  checkOut: string,
+  blocked: Set<string>
+): QuoteResult | null {
   const nights = daysBetween(checkIn, checkOut);
   const nocheRows = rates.filter((r) => r.active && r.kind === "noche");
 
   const perNight: PropertyRate[] = [];
   for (let i = 0; i < nights; i++) {
     const date = addDays(checkIn, i);
+    if (blocked.has(date)) return null;
     const row = nocheRows.find((r) => r.date_from <= date && date < r.date_to);
     if (!row) return null;
     perNight.push(row);
@@ -159,7 +188,7 @@ function nightlyMatch(rates: PropertyRate[], checkIn: string, checkOut: string):
 
   if (nights < requiredMinNights) {
     const suggestedCheckOut = addDays(checkIn, requiredMinNights);
-    const suggestion = nightlyMatch(rates, checkIn, suggestedCheckOut);
+    const suggestion = nightlyMatch(rates, checkIn, suggestedCheckOut, blocked);
     if (!suggestion || suggestion.total == null) return null;
     return {
       status: "suggest",
@@ -183,20 +212,31 @@ function nightlyMatch(rates: PropertyRate[], checkIn: string, checkOut: string):
   return { status: "computed", modality: "noche", nights, total, deposit, suggestions: [] };
 }
 
-/** Bloques completos mas cercanos a las fechas pedidas, cuando nada calzo exacto ni por noche. */
-function nearestBlockSuggestions(
+/** Bloques activos (kind 'bloque'), excluyendo los bloqueados, ordenados por cercania al rango pedido. */
+function nearestBlocks(
   rates: PropertyRate[],
   checkIn: string,
-  checkOut: string
-): QuoteSuggestion[] {
+  checkOut: string,
+  blocked: Set<string>
+): { row: PropertyRate; distance: number }[] {
   return rates
-    .filter((r) => r.active && r.kind === "bloque")
+    .filter((r) => r.active && r.kind === "bloque" && !overlapsBlocked(r.date_from, r.date_to, blocked))
     .map((row) => ({
       row,
       distance: Math.abs(daysBetween(checkIn, row.date_from)) + Math.abs(daysBetween(checkOut, row.date_to)),
     }))
+    .sort((a, b) => a.distance - b.distance);
+}
+
+/** Bloques completos mas cercanos a las fechas pedidas, cuando nada calzo exacto ni por noche. */
+function nearestBlockSuggestions(
+  rates: PropertyRate[],
+  checkIn: string,
+  checkOut: string,
+  blocked: Set<string>
+): QuoteSuggestion[] {
+  return nearestBlocks(rates, checkIn, checkOut, blocked)
     .filter((s) => s.distance <= 10)
-    .sort((a, b) => a.distance - b.distance)
     .slice(0, 3)
     .map(({ row }) => ({
       label: row.label,
@@ -209,17 +249,66 @@ function nearestBlockSuggestions(
 }
 
 /**
- * Cotiza una estadia a partir de las tarifas activas de una propiedad. Pura: no hace I/O.
- * Orden de resolucion: bloque exacto (o fiesta + extension encadenada) > fin de semana > noche
- * suelta > bloque mas cercano (sugerencia) > a medida por WhatsApp.
+ * Distancia en dias entre dos rangos [aFrom, aTo) y [bFrom, bTo) (checkout exclusivo): 0 si se
+ * tocan o se superponen, si no el hueco entre el borde mas cercano de uno y el del otro. A
+ * diferencia de sumar las distancias de cada punta por separado, esto no favorece bloques
+ * diminutos que por casualidad caen pegados a una punta del rango pedido.
  */
-export function quoteStay(rates: PropertyRate[], checkIn: string, checkOut: string): QuoteResult {
+function rangeGap(aFrom: string, aTo: string, bFrom: string, bTo: string): number {
+  if (bFrom >= aTo) return daysBetween(aTo, bFrom);
+  if (aFrom >= bTo) return daysBetween(bTo, aFrom);
+  return 0;
+}
+
+/**
+ * Bloque activo (no bloqueado) mas cercano al rango pedido, sin tope de distancia, para el
+ * fallback "a medida" cuando ni siquiera hay una sugerencia cercana (ver RateBookingWidget).
+ * `todayISO` se pasa desde afuera para mantener esta funcion pura (sin Date.now()).
+ */
+export function nearestAvailableBlock(
+  rates: PropertyRate[],
+  checkIn: string,
+  checkOut: string,
+  blockedDates: string[],
+  todayISO: string
+): PropertyRate | null {
+  const blocked = new Set(blockedDates);
+  return (
+    rates
+      .filter(
+        (r) =>
+          r.active &&
+          r.kind === "bloque" &&
+          r.date_from >= todayISO &&
+          !overlapsBlocked(r.date_from, r.date_to, blocked)
+      )
+      .map((row) => ({ row, distance: rangeGap(checkIn, checkOut, row.date_from, row.date_to) }))
+      .sort((a, b) => a.distance - b.distance)[0]?.row ?? null
+  );
+}
+
+/**
+ * Cotiza una estadia a partir de las tarifas activas de una propiedad y las fechas ya
+ * bloqueadas (reservas confirmadas o bloqueos manuales). Pura: no hace I/O, blockedDates se
+ * pasa desde afuera. Orden de resolucion: bloque exacto (o fiesta + extension encadenada) >
+ * fin de semana > noche suelta > bloque mas cercano (sugerencia) > a medida por WhatsApp.
+ * Cualquier tarifa (bloque, fin de semana, noche) que se superponga con una fecha bloqueada
+ * se descarta antes de intentar matchear — nunca se cotiza ni se sugiere un rango ocupado.
+ */
+export function quoteStay(
+  rates: PropertyRate[],
+  checkIn: string,
+  checkOut: string,
+  blockedDates: string[] = []
+): QuoteResult {
   const nights = daysBetween(checkIn, checkOut);
   if (nights <= 0) {
     return { status: "custom", modality: null, nights: 0, total: null, deposit: null, suggestions: [] };
   }
 
-  const chain = cheapestBlockChain(rates, checkIn, checkOut);
+  const blocked = new Set(blockedDates);
+
+  const chain = cheapestBlockChain(rates, checkIn, checkOut, blocked);
   if (chain) {
     return {
       status: "exact",
@@ -231,13 +320,13 @@ export function quoteStay(rates: PropertyRate[], checkIn: string, checkOut: stri
     };
   }
 
-  const weekend = weekendMatch(rates, checkIn, checkOut);
+  const weekend = weekendMatch(rates, checkIn, checkOut, blocked);
   if (weekend) return weekend;
 
-  const nightly = nightlyMatch(rates, checkIn, checkOut);
+  const nightly = nightlyMatch(rates, checkIn, checkOut, blocked);
   if (nightly) return nightly;
 
-  const suggestions = nearestBlockSuggestions(rates, checkIn, checkOut);
+  const suggestions = nearestBlockSuggestions(rates, checkIn, checkOut, blocked);
   if (suggestions.length > 0) {
     return { status: "suggest", modality: null, nights, total: null, deposit: null, suggestions };
   }

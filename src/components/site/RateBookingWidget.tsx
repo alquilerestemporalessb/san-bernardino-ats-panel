@@ -7,7 +7,7 @@ import "react-day-picker/style.css";
 import { formatMoney } from "@/lib/currency";
 import { buildQuoteWhatsappLink, buildCustomQuoteWhatsappLink } from "@/lib/whatsapp";
 import { formatDateEs, fromISODate, toISODate } from "@/lib/dates";
-import { quoteStay, type QuoteSuggestion } from "@/lib/quote-stay";
+import { quoteStay, nearestAvailableBlock, type QuoteSuggestion } from "@/lib/quote-stay";
 import { CHECK_IN_TIME, CHECK_OUT_TIME } from "@/lib/stay-rules";
 import { dayPickerEsProps } from "./day-picker-locale";
 import { CalendarIcon, WhatsappIcon } from "./icons";
@@ -49,23 +49,22 @@ export function RateBookingWidget({
 
   const quote = useMemo(() => {
     if (!hasRealRange || !checkInISO || !checkOutISO) return null;
-    return quoteStay(rates, checkInISO, checkOutISO);
-  }, [hasRealRange, checkInISO, checkOutISO, rates]);
+    return quoteStay(rates, checkInISO, checkOutISO, blockedDates);
+  }, [hasRealRange, checkInISO, checkOutISO, rates, blockedDates]);
 
   const dateRangeLabel =
     checkInISO && checkOutISO ? `${formatDateEs(checkInISO)} al ${formatDateEs(checkOutISO)}` : undefined;
 
-  // Si la cotizacion es a medida y no hay sugerencias cercanas, igual ofrecemos el proximo
-  // bloque libre (por fecha, sin el tope de distancia que usa quoteStay para "suggest") para que
-  // nunca sea un callejon sin salida.
+  // Si la cotizacion es a medida y no hay sugerencias cercanas, igual ofrecemos el bloque libre
+  // mas cercano a las fechas pedidas (sin el tope de distancia que usa quoteStay para "suggest",
+  // y excluyendo bloques que se superpongan con fechas ya bloqueadas) para que nunca sea un
+  // callejon sin salida.
   const nearestFutureBlock = useMemo(() => {
-    if (!quote || quote.status !== "custom" || quote.suggestions.length > 0) return null;
-    return (
-      rates
-        .filter((r) => r.active && r.kind === "bloque" && r.date_from >= todayISO)
-        .sort((a, b) => (a.date_from < b.date_from ? -1 : 1))[0] ?? null
-    );
-  }, [quote, rates, todayISO]);
+    if (!quote || quote.status !== "custom" || quote.suggestions.length > 0 || !checkInISO || !checkOutISO) {
+      return null;
+    }
+    return nearestAvailableBlock(rates, checkInISO, checkOutISO, blockedDates, todayISO);
+  }, [quote, rates, blockedDates, checkInISO, checkOutISO, todayISO]);
 
   function selectSuggestion(s: QuoteSuggestion) {
     setRange({ from: fromISODate(s.checkIn), to: fromISODate(s.checkOut) });
